@@ -1,0 +1,114 @@
+baseURL: https://blog.saranmahadev.tech/
+languageCode: en-us
+title: Dev Maestro
+paginate: 6
+theme: PaperMod
+
+enableInlineShortcodes: true
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+enableEmoji: true
+pygmentsUseClasses: true
+
+minify:
+    disableXML: false
+    minifyOutput: true
+
+languages:
+    en:
+      languageName: "English"
+      weight: 1
+      taxonomies:
+        category: categories
+        tag: tags
+        series: series
+      menu:
+          main:
+            - name: Home
+              url: /
+              weight: 5
+            - name: Archive
+              url: archives/
+              weight: 10
+            - name: Search
+              url: search/
+              weight: 10
+            - name: Tags
+              url: tags/
+              weight: 10
+            - name: RSS
+              url: "index.xml"
+            - name: 😎
+              url: https://saranmahadev.tech/portfolio       
+              weigth: 10     
+
+outputs:
+    home:
+        - HTML
+        - RSS
+        - JSON
+
+params:
+    env: production 
+    description: "Dev Maestro - An Techy Blog"
+    author: Saran Mahadev
+    keywords: ["Dev", "Technology"]
+    defaultTheme: auto
+    ShowShareButtons: true
+    ShowReadingTime: true
+    displayFullLangName: true
+    ShowPostNavLinks: true
+    ShowBreadCrumbs: true
+    ShowCodeCopyButtons: true
+    ShowRssButtonInSectionTermList: true
+    ShowToc: true
+    comments: true    
+
+    homeInfoParams:
+        Title: "Welcome to Dev Maestro 🤗!"
+        Content: >
+            💕 Love and Passion🕺 towards Technologies. I explore new technologies in different areas and will share
+            my insights and experience in that. Hope you guys like it!            
+    socialIcons:
+        - name: github
+          url: "https://github.com/saranmahadev"
+        - name: Instagram
+          url: "https://instagram.com/_saran_mahadev_"
+        
+
+    # analytics:
+    #     google:
+    #         SiteVerificationTag: "XYZabc"
+
+markup:
+    goldmark:
+        renderer:
+            unsafe: true
+    highlight:
+        noClasses: false        
+
+privacy:
+    vimeo:
+        disabled: false
+        simple: true
+
+    twitter:
+        disabled: false
+        enableDNT: true
+        simple: true
+
+    instagram:
+        disabled: false
+        simple: true
+
+    youtube:
+        disabled: false
+        privacyEnhanced: true
+
+services:
+    instagram:
+        disableInlineCSS: true
+    twitter:
+        disableInlineCSS: true
