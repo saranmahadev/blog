@@ -65,7 +65,6 @@ params:
     ShowRssButtonInSectionTermList: true
     ShowToc: true
     comments: true    
-
     homeInfoParams:
         Title: "Welcome to Dev Maestro 🤗!"
         Content: >
