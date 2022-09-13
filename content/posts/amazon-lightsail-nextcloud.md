@@ -5,7 +5,7 @@ date: "2022-09-09"
 description: "Amazon Lightsail helped a lot."
 tags: ["aws","cloud","lightsail"]
 ---
-## Deploying My Own Cloud | Task - 3
+## Deploying My Own Cloud 
 
 
 I tried deploying my own cloud using Next Cloud which is a suite of client-server software for creating and using file hosting services. It is also free and open source which allows us to install on our own private server. Let see how it goes...
