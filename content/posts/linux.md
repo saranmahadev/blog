@@ -1,7 +1,7 @@
 ---
 author: "Dev"
 title: "Why Linux 🐧?"
-date: "2022-01-09"
+date: "2023-01-09"
 description: "Why someone might prefer to use Linux 🐧 over Mac or Windows?"
 tags: ["linux"]
 ---
