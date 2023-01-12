@@ -1,7 +1,7 @@
 ---
 author: "ChatGPT"
 title: "ChatGPT wrote this...🤖"
-date: "2023-01-14"
+date: "2023-01-12"
 description: "A pre-trained language model developed by OpenAI."
 tags: ["ai","chatgpt", "openai"]
 ---
