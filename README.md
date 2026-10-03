@@ -31,4 +31,4 @@ CI (`.github/workflows/deploy.yml`) builds on every push/PR. Deploys run once th
 - Variables: `FIREBASE_PROJECT_ID`, `SITE_URL`
 - Secrets: `WORKLOAD_IDENTITY_PROVIDER`, `FIREBASE_DEPLOY_SERVICE_ACCOUNT`
 
-Pull requests get a Firebase preview channel; pushes to `master` deploy to production. Replace the placeholder project IDs in `.firebaserc`, and `domain.com` in `astro.config.mjs` / `public/robots.txt`.
+Pull requests get a Firebase preview channel; pushes to `main` deploy to production. The Firebase project is set in `.firebaserc`.
