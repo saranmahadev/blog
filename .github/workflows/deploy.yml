@@ -137,6 +137,14 @@ jobs:
           FUNCS=$(grep -oP '^export const \K\w+' functions/src/index.ts | sed 's/^/functions:/' | paste -sd, -)
           echo "Deploying: firestore:rules,firestore:indexes,$FUNCS"
           npx --yes firebase-tools@latest deploy --only "firestore:rules,firestore:indexes,$FUNCS" --project "$FIREBASE_PROJECT" --non-interactive
+      - name: Remove retired Cloud Functions
+        if: vars.DEPLOY_BACKEND == 'true'
+        run: |
+          # Functions this repo used to have and no longer does. Listed by name so nothing else in a shared project is touched;
+          # already-deleted ones are skipped. Add a name here when you remove a function from functions/src/index.ts.
+          for F in onUserCreated; do
+            npx --yes firebase-tools@latest functions:delete "$F" --region asia-south1 --project "$FIREBASE_PROJECT" --force || echo "$F: nothing to delete"
+          done
       - name: Deploy to Firebase Hosting
         run: npx --yes firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT"
 

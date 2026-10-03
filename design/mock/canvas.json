@@ -75,8 +75,8 @@
     },
     "Profile.dc.html": {
       "expand": "fill",
-      "h": 1340,
-      "title": "Profile: name, preferences, account",
+      "h": 2200,
+      "title": "Profile: bookmarks, name, preferences, account",
       "w": 1440,
       "x": 0,
       "y": 12608
@@ -151,14 +151,6 @@
       "w": 1440,
       "h": 2240,
       "title": "Inbox: reader and author views",
-      "expand": "fill"
-    },
-    "Library.dc.html": {
-      "x": 1520,
-      "y": 32400,
-      "w": 1440,
-      "h": 1470,
-      "title": "Library: continue reading, bookmarks",
       "expand": "fill"
     }
   },

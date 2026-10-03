@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { User } from 'firebase/auth';
 import { firebaseConfigured, getAuthClient } from './firebase';
+import { AUTHOR_EMAIL } from './site';
 
 const RESEND_AFTER_MS = 60_000;
 
@@ -32,17 +33,8 @@ export function useAuth(): AuthState {
   return state;
 }
 
-/** The signed-in user's role claim ("admin" is the blog author). `null` until the token has been read. */
-export function useRole(user: User | null): string | null {
-  const [role, setRole] = useState<string | null>(null);
-  useEffect(() => {
-    let live = true;
-    setRole(null);
-    user?.getIdTokenResult().then((r) => { if (live) setRole(String(r.claims.role ?? '')); }).catch(() => {});
-    return () => { live = false; };
-  }, [user, user?.emailVerified]);
-  return role;
-}
+/** Is this the author? The verified owner of the author address (the server and the rules check the same thing). */
+export const isAuthorUser = (user: User | null) => !!user && user.emailVerified && (user.email ?? '').toLowerCase() === AUTHOR_EMAIL;
 
 /** Plain-language messages for Firebase auth errors. Never reveals whether an email is registered. */
 export function authMessage(err: unknown): string {

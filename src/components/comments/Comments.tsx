@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth, useRole } from '@/lib/auth';
+import { isAuthorUser, useAuth } from '@/lib/auth';
 import { firebaseConfigured } from '@/lib/firebase';
 import { useMessages } from '@/lib/useMessages';
 import { Composer, Item, PendingItem, canReplyTo as canReplyRule, fromStored, type Comment } from './parts';
@@ -7,8 +7,7 @@ import { Composer, Item, PendingItem, canReplyTo as canReplyRule, fromStored, ty
 /** The comments under one post: this reader's conversation with the author (or, for the author, every reader's). */
 export default function Comments({ postKey }: { postKey: string }) {
   const { status, user } = useAuth();
-  const role = useRole(user);
-  const isAuthor = role === 'admin';
+  const isAuthor = isAuthorUser(user);
   const msgs = useMessages();
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);

@@ -12,6 +12,7 @@ export default defineConfig({
   site,
   trailingSlash: 'always',
   build: { format: 'directory' },
+  redirects: { '/library/': '/profile/#bookmarks' }, // bookmarks moved into the profile
   integrations: [mdx(), react()],
   vite: { plugins: [tailwindcss()] },
   markdown: {

@@ -7,9 +7,9 @@ import SyncStatus from '@/components/sync/SyncStatus';
 export type PostInfo = { slug: string; title: string; url: string; description: string; series?: string; minutes: number };
 
 /** The reader's library: bookmarks, what they are part way through, and what they have finished. */
-export default function Library({ posts }: { posts: PostInfo[] }) {
+export default function Library({ posts, showStatus = true }: { posts: PostInfo[]; showStatus?: boolean }) {
   const s = useSync();
-  const [tab, setTab] = useState<'bookmarks' | 'progress' | 'done'>('progress');
+  const [tab, setTab] = useState<'bookmarks' | 'progress' | 'done'>('bookmarks');
   const bySlug = useMemo(() => new Map(posts.map((p) => [p.slug, p])), [posts]);
   const known = (key: string) => bySlug.get(decKey(key)); // unknown slugs (posts that were removed) are ignored
 
@@ -37,22 +37,22 @@ export default function Library({ posts }: { posts: PostInfo[] }) {
   const top = reading[0];
   return (
     <div>
-      {top?.post && tab !== 'progress' && (
+      {top?.post && tab === 'bookmarks' && (
         <a className="slab tone-accent lib-resume" href={top.post.url}>
           <span className="mono">Continue reading</span>
           <span className="head" style={{ fontSize: 24 }}>{top.post.title}</span>
           <span className="mono">{top.pct}% read →</span>
         </a>
       )}
-      <div className="seg" role="tablist" aria-label="Library" style={{ marginTop: 24 }}>
-        <button type="button" role="tab" aria-selected={tab === 'progress'} className={tab === 'progress' ? 'on' : ''} onClick={() => setTab('progress')}>Continue reading ({reading.length})</button>
+      <div className="seg" role="tablist" aria-label="Bookmarks and reading" style={{ marginTop: 24 }}>
         <button type="button" role="tab" aria-selected={tab === 'bookmarks'} className={tab === 'bookmarks' ? 'on' : ''} onClick={() => setTab('bookmarks')}>Bookmarks ({bookmarks.length})</button>
+        <button type="button" role="tab" aria-selected={tab === 'progress'} className={tab === 'progress' ? 'on' : ''} onClick={() => setTab('progress')}>Continue reading ({reading.length})</button>
         <button type="button" role="tab" aria-selected={tab === 'done'} className={tab === 'done' ? 'on' : ''} onClick={() => setTab('done')}>Finished ({finished.length})</button>
       </div>
       {tab === 'progress' && list(reading.map((x) => ({ post: x.post, extra: `${x.pct}% read` })), 'Nothing in progress. Open a post and it will show up here.')}
       {tab === 'bookmarks' && list(bookmarks.map((x) => ({ post: x.post, extra: `saved ${new Date(x.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`, remove: true })), 'No bookmarks yet. Use the bookmark button next to a post.')}
       {tab === 'done' && list(finished.map((x) => ({ post: x.post, extra: 'read' })), 'Nothing finished yet.')}
-      <div style={{ marginTop: 28 }}><SyncStatus /></div>
+      {showStatus && <div style={{ marginTop: 28 }}><SyncStatus /></div>}
     </div>
   );
 }
