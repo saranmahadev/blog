@@ -1,46 +1,78 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import PostCard from '@/components/blog/PostCard.astro';
-import SeriesCard from '@/components/blog/SeriesCard.astro';
-import TagPill from '@/components/blog/TagPill.astro';
+import Pill from '@/components/blog/Pill.astro';
+import Cover from '@/components/blog/Cover.astro';
+import StoryRow from '@/components/blog/StoryRow.astro';
+import FeedCard from '@/components/blog/FeedCard.astro';
+import SeriesTile from '@/components/blog/SeriesTile.astro';
 import { getContent } from '@/lib/content';
-import { SITE } from '@/lib/site';
+import { formatDate, formatShort, readingTime, SITE } from '@/lib/site';
 
 const { posts, series } = await getContent();
-const seriesTitle = new Map(series.map((s) => [s.slug, s.entry.data.title]));
-const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+const lead = posts.find((p) => p.data.featured) ?? posts[0];
+const rest = posts.filter((p) => p !== lead);
+const stories = [...rest.filter((p) => p.data.featured), ...rest.filter((p) => !p.data.featured)].slice(0, 3);
+const latest = rest.slice(0, 5);
 ---
 
 <BaseLayout>
-  <section class="mx-auto max-w-5xl px-5 pt-14 pb-10">
-    <h1 class="font-serif text-4xl sm:text-6xl font-bold tracking-tight leading-[1.05] max-w-2xl">
-      Ideas worth <span class="clay-sm tone-peach px-4 inline-block -rotate-1">building</span>, written down.
-    </h1>
-    <p class="mt-6 font-serif text-xl text-muted max-w-xl">{SITE.description}</p>
-  </section>
+  {lead ? (
+    <div class="wrap" style="padding-top:40px">
+      <div class="top">
+        <article>
+          <div class="row" style="gap:10px;flex-wrap:wrap">
+            <Pill label={lead.seriesTitle ? `${lead.seriesTitle} · Part ${(series.find((s) => s.slug === lead.seriesSlug)?.posts.indexOf(lead) ?? 0) + 1}` : 'Standalone'} tone={lead.tone} />
+            <span class="meta"><time datetime={lead.data.date.toISOString()}>{formatDate(lead.data.date)}</time> · {readingTime(lead.entry.body ?? '')} min read</span>
+          </div>
+          <h1 class="disp lead-h" style="margin-top:16px"><a href={lead.url}>{lead.data.title}</a></h1>
+          <p class="serif dek">{lead.data.description}</p>
+          <Cover tone={lead.tone ?? 'sky'} pattern={lead.pattern} ratio="21 / 9" tag={lead.seriesTitle} style="margin-top:24px" />
+          <div class="row" style="margin-top:22px">
+            <span class="av tone-ink" aria-hidden="true">{lead.data.author[0]}</span>
+            <div><div style="font-weight:700">{lead.data.author}</div><div class="meta">{lead.data.tags.slice(0, 3).join(' · ')}</div></div>
+            <span class="sp"></span>
+            <a class="btn ink" href={lead.url}>Read the story <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
 
-  <div class="mx-auto max-w-5xl px-5 grid lg:grid-cols-[minmax(0,1fr)_300px] gap-14">
-    <section aria-label="Latest posts">
-      <h2 class="text-sm font-semibold uppercase tracking-wider text-muted mb-6">Latest</h2>
-      {posts.length === 0 && <p class="text-muted">Nothing published yet.</p>}
-      <div>
-        {posts.map((p) => <PostCard post={p} seriesTitle={p.seriesSlug ? seriesTitle.get(p.seriesSlug) : undefined} />)}
+        <section aria-label="Top stories">
+          <div class="col-h"><span class="mono">Top stories</span></div>
+          {stories.map((p) => <StoryRow post={p} />)}
+        </section>
+
+        <section aria-label="Latest">
+          <div class="col-h"><span class="mono">Latest</span></div>
+          <ol class="numl">
+            {latest.map((p, i) => (
+              <li>
+                <span class="num">{String(i + 1).padStart(2, '0')}</span>
+                <div><a class="head" style="font-size:19px;display:block" href={p.url}>{p.data.title}</a><span class="meta">{formatShort(p.data.date)}</span></div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
+    </div>
+  ) : (
+    <div class="wrap" style="padding:96px 0"><h1 class="disp sec-t">{SITE.title}</h1><p class="serif dek">Nothing published yet.</p></div>
+  )}
+
+  {series.length > 0 && (
+    <section class="band acc" style="margin-top:72px" aria-label="Series">
+      <div class="wrap">
+        <div class="sec-h">
+          <h2 class="disp sec-t">Series</h2>
+          <a class="btn" href="/series/">All series <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="stiles">{series.slice(0, 4).map((s) => <SeriesTile series={s} />)}</div>
       </div>
     </section>
+  )}
 
-    <aside class="space-y-10 lg:pt-1">
-      {series.length > 0 && (
-        <section aria-label="Series">
-          <h2 class="text-sm font-semibold uppercase tracking-wider text-muted mb-4">Series</h2>
-          <div class="space-y-5">{series.map((s) => <SeriesCard series={s} />)}</div>
-        </section>
-      )}
-      {tags.length > 0 && (
-        <section aria-label="Topics">
-          <h2 class="text-sm font-semibold uppercase tracking-wider text-muted mb-4">Topics</h2>
-          <ul class="flex flex-wrap gap-2">{tags.map((t) => <li><TagPill label={t} /></li>)}</ul>
-        </section>
-      )}
-    </aside>
-  </div>
+  {posts.length > 0 && (
+    <section class="wrap" style="padding-top:72px;padding-bottom:72px" aria-label="All posts">
+      <div class="sec-h"><h2 class="disp sec-t">All posts</h2></div>
+      <div class="feed">{posts.map((p) => <FeedCard post={p} />)}</div>
+    </section>
+  )}
 </BaseLayout>

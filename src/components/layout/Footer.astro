@@ -1,10 +1,33 @@
 ---
-import { SITE } from '@/lib/site';
+import { SITE, NAV } from '@/lib/site';
 ---
 
-<footer class="border-t border-line mt-24">
-  <div class="mx-auto max-w-5xl px-5 py-10 text-sm text-muted flex flex-wrap items-center justify-between gap-3">
-    <p>© {new Date().getFullYear()} {SITE.title}</p>
-    <p>Built with Astro</p>
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-cols">
+      <div>
+        <div class="logo" style="font-size:24px"><i></i><span>{SITE.title}</span><small class="by mono">{SITE.byline}</small></div>
+        <p class="serif" style="margin-top:16px;font-size:19px;max-width:30ch;color:#cfcbbf">{SITE.description}</p>
+      </div>
+      <div>
+        <div class="mono foot-h">Read</div>
+        <ul>
+          <li><a href="/">Latest</a></li>
+          <li><a href="/series/">Series</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="mono foot-h">Site</div>
+        <ul>
+          {NAV.filter((n) => n.href === '/about/').map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+        </ul>
+      </div>
+    </div>
+    <div class="foot-word disp" aria-hidden="true">{SITE.title}</div>
+    <div class="row mono" style="margin-top:24px;color:#a8a498">
+      <span>© {new Date().getFullYear()} {SITE.title} · {SITE.byline}</span>
+      <span class="sp"></span>
+      <span>Built with Astro</span>
+    </div>
   </div>
 </footer>

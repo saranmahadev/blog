@@ -14,6 +14,6 @@ export default defineConfig({
   integrations: [mdx(), react(), sitemap()],
   vite: { plugins: [tailwindcss()] },
   markdown: {
-    shikiConfig: { themes: { light: 'github-light', dark: 'github-dark' } },
+    shikiConfig: { theme: 'github-dark' },
   },
 });

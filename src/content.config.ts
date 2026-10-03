@@ -28,6 +28,9 @@ const series = defineCollection({
     title: z.string(),
     description: z.string().max(200),
     cover: z.object({ image: z.string(), alt: z.string() }).optional(),
+    // Optional look of the series; falls back to a stable choice derived from its slug.
+    tone: z.enum(['mint', 'lilac', 'sky', 'rose']).optional(),
+    pattern: z.enum(['dots', 'rings', 'grid', 'stripes', 'check']).optional(),
     draft: z.boolean().default(false),
   }),
 });

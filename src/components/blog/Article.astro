@@ -1,16 +1,23 @@
 ---
 import { render } from 'astro:content';
-import type { Post, Series } from '@/lib/content';
-import { formatDate, readingTime } from '@/lib/site';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import TagPill from './TagPill.astro';
-import SeriesNav from './SeriesNav.astro';
+import { getContent, getRelated, type Post, type Series } from '@/lib/content';
+import { formatDate, readingTime } from '@/lib/site';
+import Pill from './Pill.astro';
+import Cover from './Cover.astro';
 
 interface Props { post: Post; series?: Series }
 const { post, series } = Astro.props;
-const { Content } = await render(post.entry);
+const { Content, headings } = await render(post.entry);
 const { data } = post;
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const { posts: all } = await getContent();
+const related = getRelated(post, all);
 const minutes = readingTime(post.entry.body ?? '');
+const idx = series ? series.posts.findIndex((p) => p.key === post.key) : -1;
+const prev = series?.posts[idx - 1];
+const next = series?.posts[idx + 1];
+const hasHeroArt = !!series || !!data.cover;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -24,51 +31,138 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout
-  title={data.title}
-  description={data.description}
-  canonical={data.canonical}
-  image={data.cover?.image}
-  type="article"
->
+<BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={data.cover?.image} type="article">
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-  <article class="mx-auto max-w-[680px] px-5 pt-12 sm:pt-16">
-    <header>
-      {series && (
-        <p class="mb-4">
-          <TagPill label={series.entry.data.title} href={series.url} />
-        </p>
-      )}
-      <h1 class="text-4xl sm:text-[2.75rem] font-bold tracking-tight leading-[1.15]">{data.title}</h1>
-      <p class="mt-4 font-serif text-xl sm:text-[1.375rem] text-muted leading-snug">{data.description}</p>
-      <div class="mt-8 py-4 border-y border-line flex items-center gap-3 text-sm">
-        <span class="clay-sm tone-peach size-10 grid place-items-center font-bold" aria-hidden="true">{data.author[0]}</span>
+
+  <div class="readbar" aria-hidden="true"><i id="readbar" style="width:0"></i></div>
+
+  <section class:list={['art-band', post.tone ? `tone-${post.tone}` : 'art-neutral']}>
+    <div class="wrap">
+      <div class:list={['art-hero', !hasHeroArt && 'solo']}>
         <div>
-          <p class="font-medium">{data.author}</p>
-          <p class="text-muted">
-            <time datetime={data.date.toISOString()}>{formatDate(data.date)}</time>{' '}
-            · {minutes} min read
-          </p>
+          <div class="mono" style="margin-bottom:26px">
+            <a href="/">Home</a>{' / '}
+            {series ? <><a href={series.url}>{series.entry.data.title}</a>{` / Part ${idx + 1}`}</> : 'Post'}
+          </div>
+          <h1 class="disp art-h">{data.title}</h1>
+          <p class="serif" style="font-size:26px;line-height:1.4;max-width:46ch;margin-top:22px">{data.description}</p>
+          <div class="row" style="margin-top:30px;gap:14px;flex-wrap:wrap">
+            <span class="av tone-ink" aria-hidden="true">{data.author[0]}</span>
+            <div>
+              <div style="font-weight:700">{data.author}</div>
+              <div class="meta" style="color:inherit;opacity:.8"><time datetime={data.date.toISOString()}>{formatDate(data.date)}</time> · {minutes} min read</div>
+            </div>
+            <span class="sp"></span>
+            {data.tags.map((t) => <Pill label={t} />)}
+          </div>
         </div>
+        {data.cover
+          ? <img src={data.cover.image} alt={data.cover.alt} class="rounded-2xl w-full" style="border:1.5px solid var(--line);box-shadow:var(--hard)" />
+          : series && <Cover tone={series.tone} pattern={series.pattern} ratio="4 / 3" tag={`${series.entry.data.title} / ${String(idx + 1).padStart(2, '0')}`} style="background-color:var(--card);box-shadow:var(--hard)" />}
       </div>
-    </header>
-
-    {data.cover && (
-      <figure class="mt-10">
-        <img src={data.cover.image} alt={data.cover.alt} class="w-full rounded-2xl" loading="eager" />
-      </figure>
-    )}
-
-    <div class="prose-article mt-10">
-      <Content />
     </div>
+  </section>
 
-    {data.tags.length > 0 && (
-      <ul class="mt-12 flex flex-wrap gap-2" aria-label="Tags">
-        {data.tags.map((t) => <li><TagPill label={t} /></li>)}
-      </ul>
-    )}
+  <div class="wrap">
+    <div class="art-grid">
+      <aside class="rail rail-l" aria-label="Contents and series">
+        {toc.length > 1 && (
+          <nav aria-label="On this page">
+            <div class="mono" style="margin-bottom:10px">On this page</div>
+            <ul class="toc">
+              {toc.map((h) => <li class:list={[h.depth === 3 && 'l2']}><a class="toc-link" href={`#${h.slug}`}>{h.text}</a></li>)}
+            </ul>
+          </nav>
+        )}
+        {series && (
+          <nav class:list={['slab', `tone-${series.tone}`]} style="padding:18px" aria-label="Series">
+            <div class="mono">Part {idx + 1} of {series.posts.length}</div>
+            <div class="head" style="font-size:22px;margin:4px 0 12px"><a href={series.url}>{series.entry.data.title}</a></div>
+            <ol style="font-size:14px">
+              {series.posts.map((p, n) => (
+                <li class="row" style="padding:5px 0;gap:8px;align-items:baseline">
+                  <span class="mono">{String(n + 1).padStart(2, '0')}</span>
+                  {p.key === post.key ? <strong>{p.data.title}</strong> : <a href={p.url} style="text-decoration:underline">{p.data.title}</a>}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
+      </aside>
 
-    {series && <SeriesNav series={series} current={post} />}
-  </article>
+      <div class="prose-col">
+        <article class="prose">
+          <Content />
+        </article>
+
+        {series && (prev || next) && (
+          <nav aria-label="More in this series" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:56px;max-width:720px;margin-inline:auto">
+            {prev ? <a href={prev.url} class="slab hov" style="padding:20px;display:block"><span class="mono">Previous</span><div class="head" style="font-size:22px;margin-top:6px">← {prev.data.title}</div></a> : <span />}
+            {next ? <a href={next.url} class:list={['slab', 'hov', `tone-${series.tone}`]} style="padding:20px;display:block"><span class="mono">Up next</span><div class="head" style="font-size:22px;margin-top:6px">{next.data.title} →</div></a> : <span />}
+          </nav>
+        )}
+      </div>
+
+      <aside class="rail rail-r" aria-label="Actions and related">
+        <div class="art-actions" role="toolbar" aria-label="Post actions">
+          <button class="ib sm" type="button" aria-label="Copy link" data-copy>
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1" /></svg>
+          </button>
+          <button class="ib sm" type="button" aria-label="Share" data-share>
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v14" /></svg>
+          </button>
+        </div>
+        {related.length > 0 && (
+          <div>
+            <div class="mono" style="margin-bottom:10px">Related</div>
+            <ul>
+              {related.map((p) => (
+                <li style="padding:12px 0;border-top:1px solid var(--hair)">
+                  <a class="head" style="font-size:18px" href={p.url}>{p.data.title}</a>
+                  <div class="meta" style="margin-top:4px">{readingTime(p.entry.body ?? '')} min</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+
+  <div id="copied" class="toast copied-toast" role="status" hidden>Link copied</div>
 </BaseLayout>
+
+<script>
+  const bar = document.getElementById('readbar');
+  const update = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    if (bar) bar.style.width = (max > 0 ? Math.min(100, (h.scrollTop / max) * 100) : 0) + '%';
+  };
+  addEventListener('scroll', update, { passive: true });
+  update();
+
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc-link')];
+  const targets = links
+    .map((l) => document.getElementById(decodeURIComponent(l.hash.slice(1))))
+    .filter((t): t is HTMLElement => !!t);
+  if (targets.length) {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && links.forEach((l) => l.classList.toggle('on', l.hash === '#' + e.target.id))),
+      { rootMargin: '0px 0px -70% 0px' },
+    );
+    targets.forEach((t) => io.observe(t));
+  }
+
+  const toast = document.getElementById('copied');
+  document.querySelector('[data-copy]')?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      toast?.removeAttribute('hidden');
+      setTimeout(() => toast?.setAttribute('hidden', ''), 2000);
+    } catch {}
+  });
+  const share = document.querySelector<HTMLButtonElement>('[data-share]');
+  if (share && !navigator.share) share.hidden = true;
+  share?.addEventListener('click', () => navigator.share?.({ title: document.title, url: location.href }).catch(() => {}));
+</script>

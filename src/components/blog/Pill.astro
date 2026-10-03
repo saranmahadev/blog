@@ -1,0 +1,9 @@
+---
+import type { Tone } from '@/lib/site';
+
+interface Props { label: string; href?: string; tone?: Tone | 'accent'; on?: boolean; lg?: boolean }
+const { label, href, tone, on, lg } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag href={href} class:list={['pill', tone && `tone-${tone}`, on && 'on', lg && 'lg']}>{label}</Tag>

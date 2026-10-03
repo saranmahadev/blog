@@ -1,0 +1,21 @@
+---
+import type { Series } from '@/lib/content';
+
+interface Props { series: Series }
+const { series } = Astro.props;
+const n = series.posts.length;
+---
+
+<a href={series.url} class:list={['slab', 'hov', 'stile', `tone-${series.tone}`]}>
+  <div class:list={['cover', `cv-${series.pattern}`]} style="position:absolute;inset:0;border:0;border-radius:0;opacity:.35" aria-hidden="true"></div>
+  <div style="position:relative">
+    <span class="mono">Series</span>
+    <h3 class="head" style="font-size:30px;margin-top:8px">{series.entry.data.title}</h3>
+    <p style="margin-top:8px;font-size:15px">{series.entry.data.description}</p>
+  </div>
+  <div class="row" style="position:relative">
+    <span class="head parts">{n} {n === 1 ? 'part' : 'parts'}</span>
+    <span class="sp"></span>
+    <span class="ib sm" aria-hidden="true" style="background-color:var(--card);color:var(--on-tone)">→</span>
+  </div>
+</a>

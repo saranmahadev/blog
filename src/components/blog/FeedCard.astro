@@ -1,0 +1,21 @@
+---
+import { formatShort, readingTime } from '@/lib/site';
+import { initialOf, type Post } from '@/lib/content';
+import Pill from './Pill.astro';
+import Thumb from './Thumb.astro';
+
+interface Props { post: Post }
+const { post } = Astro.props;
+---
+
+<article class="card">
+  <div>
+    <div class="row" style="gap:10px;flex-wrap:wrap">
+      <Pill label={post.seriesTitle ?? 'Standalone'} tone={post.tone} href={post.seriesSlug ? `/${post.seriesSlug}/` : undefined} />
+      <span class="meta"><time datetime={post.data.date.toISOString()}>{formatShort(post.data.date)}</time> · {readingTime(post.entry.body ?? '')} min</span>
+    </div>
+    <h3 class="head"><a href={post.url}>{post.data.title}</a></h3>
+    <p>{post.data.description}</p>
+  </div>
+  <Thumb letter={initialOf(post)} tone={post.tone} />
+</article>

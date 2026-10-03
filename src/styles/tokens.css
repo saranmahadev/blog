@@ -1,0 +1,56 @@
+/* Drafted design tokens. The accent is one token: change --accent (and --accent-lt,
+   --on-accent) here and nothing else needs editing. See design/README.md. */
+:root {
+  --ink: #1c1c1c;
+  --paper: #f6f3ea;
+  --paper2: #ebe6d8;
+  --card: #fffdf6;
+  --text: #1c1c1c;
+  --muted: #5c584f;
+  --line: #1c1c1c;
+  --accent: #0f7b4d;
+  --accent-lt: #6aad91;
+  --on-accent: #ffffff;
+  --hair: color-mix(in srgb, var(--line) 26%, transparent);
+  --signal: #3a3dff;
+  --t-lilac: #d6cbff;
+  --t-sky: #b8dcff;
+  --t-mint: #b6f0d3;
+  --t-rose: #ffc6d6;
+  --clay-bg: #efe9d9;
+  --clay-hi: rgba(255, 255, 255, 0.9);
+  --clay-lo: rgba(28, 28, 28, 0.2);
+  --clay-sh: 6px 6px 14px var(--clay-lo), -4px -4px 10px var(--clay-hi), inset 2px 2px 3px var(--clay-hi), inset -3px -3px 5px rgba(28, 28, 28, 0.1);
+  --clay-sh-sm: 3px 3px 7px var(--clay-lo), -2px -2px 6px var(--clay-hi), inset 1px 1px 2px var(--clay-hi), inset -2px -2px 3px rgba(28, 28, 28, 0.1);
+  --clay-in: inset 3px 3px 7px var(--clay-lo), inset -3px -3px 6px var(--clay-hi);
+  --cv-ink: rgba(28, 28, 28, 0.3);
+  --on-tone: #1c1c1c;
+  --hard: 4px 4px 0 var(--line);
+  --hard-sm: 2px 2px 0 var(--line);
+  --font-display: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --font-sans: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --font-serif: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, serif;
+  --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root[data-theme='dark'] {
+  --accent: #6aad91;
+  --on-accent: #1c1c1c;
+  --t-lilac: #40386a;
+  --t-sky: #2c4565;
+  --t-mint: #28493b;
+  --t-rose: #5d3446;
+  --on-tone: #f4f1e8;
+  --cv-ink: rgba(244, 241, 232, 0.16);
+  --paper: #1c1c1c;
+  --paper2: #262626;
+  --card: #2a2a2a;
+  --text: #f4f1e8;
+  --muted: #a8a498;
+  --line: #f4f1e8;
+  --clay-bg: #303030;
+  --clay-hi: rgba(255, 255, 255, 0.08);
+  --clay-lo: rgba(0, 0, 0, 0.65);
+  --hard: 4px 4px 0 var(--accent);
+  --hard-sm: 2px 2px 0 var(--accent);
+}
