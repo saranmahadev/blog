@@ -35,7 +35,7 @@ const fail = functions.https.HttpsError;
 let authorCache: { uid: string | null; at: number } | null = null;
 /** Who the author is (written by scripts/set-role.mjs), so a new message can raise their unread count. */
 async function authorUid(): Promise<string | null> {
-  if (authorCache && Date.now() - authorCache.at < 10 * 60_000) return authorCache.uid;
+  if (authorCache && Date.now() - authorCache.at < (authorCache.uid ? 10 * 60_000 : 30_000)) return authorCache.uid; // a missing record is re-checked soon, so setting the role takes effect quickly
   const d = await getFirestore().doc('config/author').get();
   authorCache = { uid: (d.get('uid') as string | undefined) ?? null, at: Date.now() };
   return authorCache.uid;
