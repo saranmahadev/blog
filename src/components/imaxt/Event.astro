@@ -1,0 +1,15 @@
+---
+import '@/styles/imaxt.css';
+
+interface Props { date: string; title: string }
+const { date, title } = Astro.props;
+---
+
+<li class="imx-event">
+  <div class="imx-event-d imx-label">{date}</div>
+  <span class="imx-event-dot" aria-hidden="true"></span>
+  <div>
+    <div class="imx-event-t">{title}</div>
+    <div class="imx-event-b"><slot /></div>
+  </div>
+</li>

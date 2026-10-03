@@ -1,0 +1,11 @@
+---
+import '@/styles/imaxt.css';
+import TypeLabIsland from './TypeLab.tsx';
+
+interface Props { sample?: string; family?: 'archivo' | 'fraunces' | 'source-serif' }
+const { sample, family } = Astro.props;
+---
+
+<div class="imx imx-wide">
+  <TypeLabIsland client:visible sample={sample} family={family} />
+</div>

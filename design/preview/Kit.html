@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Design system kit</title><link rel="stylesheet" href="mock.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet"></head><body style="margin:0">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Design system kit</title><link rel="stylesheet" href="mock.css"><link rel="stylesheet" href="imaxt-cover.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap" rel="stylesheet"></head><body style="margin:0">
 
 
 
@@ -117,15 +117,14 @@
 
   <!-- 7 covers -->
   <section style="margin-top:72px" aria-label="Generated covers">
-    <h2 class="mono rule" style="padding:14px 0 20px">07 · Generated covers (when a post has no image)</h2>
-    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px">
-      <div class="cover cv-dots tone-mint r43"><span class="cv-tag mono">Dots</span></div>
-      <div class="cover cv-stripes tone-rose r43"><span class="cv-tag mono">Stripes</span></div>
-      <div class="cover cv-grid tone-sky r43"><span class="cv-tag mono">Grid</span></div>
-      <div class="cover cv-rings tone-lilac r43"><span class="cv-tag mono">Rings</span></div>
-      <div class="cover cv-check tone-rose r43"><span class="cv-tag mono">Check</span></div>
+    <h2 class="mono rule" style="padding:14px 0 20px">07 · Typographic covers (posts carry no images)</h2>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px">
+      <div class="imx-cover" data-tone="mint" data-kind="stack" style="aspect-ratio:4 / 3;border:2px solid var(--ink);border-radius:14px;box-shadow:var(--hard)" aria-hidden="true"><div class="imx-cover-in"><span class="imx-cover-line" data-s="0" style="--w:35.200;--h:22.67">Chunk</span><span class="imx-cover-line" data-s="1" style="--w:35.200;--h:22.67">embed</span><span class="imx-cover-line" data-s="2" style="--w:35.200;--h:22.67">write</span></div></div>
+      <div class="imx-cover" data-tone="sky" data-kind="word" style="aspect-ratio:4 / 3;border:2px solid var(--ink);border-radius:14px;box-shadow:var(--hard)" aria-hidden="true"><div class="imx-cover-in"><span class="imx-cover-line" data-s="0" style="--w:44.000;--h:68.00">2 ms</span></div></div>
+      <div class="imx-cover" data-tone="lilac" data-kind="stack" style="aspect-ratio:4 / 3;border:2px solid var(--ink);border-radius:14px;box-shadow:var(--hard)" aria-hidden="true"><div class="imx-cover-in"><span class="imx-cover-line" data-s="0" style="--w:14.667;--h:22.67">Retrieval is</span><span class="imx-cover-line" data-s="1" style="--w:19.556;--h:22.67">a ranking</span><span class="imx-cover-line" data-s="2" style="--w:25.143;--h:22.67">problem</span></div></div>
+      <div class="imx-cover" data-tone="rose" data-kind="word" style="aspect-ratio:4 / 3;border:2px solid var(--ink);border-radius:14px;box-shadow:var(--hard)" aria-hidden="true"><div class="imx-cover-in"><span class="imx-cover-line" data-s="0" style="--w:44.000;--h:68.00">Raft</span></div></div>
     </div>
-    <p class="hint" style="margin-top:12px">Pattern and tone are picked from the post's series, so every series keeps the same look.</p>
+    <p class="hint" style="margin-top:12px">Each post gets a stack, word, stat or quote cover set in Fraunces and Archivo, in its series tone. Same component on the home lead, article hero and share images.</p>
   </section>
 
   <!-- 8 feedback -->

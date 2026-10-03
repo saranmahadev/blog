@@ -1,0 +1,11 @@
+---
+import '@/styles/imaxt.css';
+import type { ImaxtTone } from './types';
+
+interface Props { tone?: ImaxtTone; align?: 'left' | 'center'; wide?: boolean; bleed?: boolean }
+const { tone, align = 'left', wide, bleed } = Astro.props;
+---
+
+<div class:list={['imx', wide && 'imx-wide', bleed && 'imx-bleed']}>
+  <div class:list={['imx-statement', tone && 'imx-slab']} data-tone={tone} data-align={align}><slot /></div>
+</div>

@@ -1,0 +1,20 @@
+---
+import '@/styles/imaxt.css';
+import type { ImaxtTone } from './types';
+
+interface Props { items: { label: string; value: number }[]; max?: number; unit?: string; tone?: ImaxtTone }
+const { items, unit = '', tone } = Astro.props;
+const max = Astro.props.max ?? Math.max(...items.map((i) => i.value), 1);
+---
+
+<div class="imx">
+  <ul class="imx-bars" data-tone={tone}>
+    {items.map((i) => (
+      <li class="imx-bar">
+        <span class="imx-bar-l">{i.label}</span>
+        <span class="imx-bar-track" aria-hidden="true"><span class="imx-bar-fill" style={`--w:${Math.max(2, Math.min(100, (i.value / max) * 100))}%`}></span></span>
+        <span class="imx-bar-v">{i.value}{unit}</span>
+      </li>
+    ))}
+  </ul>
+</div>

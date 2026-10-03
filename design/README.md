@@ -5,9 +5,9 @@ The visual design for **Drafted** (by Dev). The live site implements this in `sr
 | Path | What it is |
 | --- | --- |
 | `preview/*.html` | Static pages, open in a browser (light theme). Start with `Main.html` |
-| `screenshots/*.jpg` | Full-page renders: all pages in light, Home and Article in dark |
 | `mock/` | Source of the Design canvas (`*.dc.html`, `mock.css`, `canvas.json`), including the palette pickers |
 | `tools/build-previews.py` | Regenerates `preview/` from `mock/` |
+| `tools/build-imaxt-mock.mjs` | Regenerates the four Imaxt boards (`Imaxt*.dc.html`, desktop and mobile) plus `mock/site.css` and `imaxt-cover.css` from the real site CSS and the built `/imaxt/` page. Run `pnpm build` first |
 
 ## Principles
 
@@ -50,6 +50,10 @@ The accent is for actions, links and highlights; it never carries body text.
 - Home: lead story (about 6.2fr) beside top stories (3.2fr) and a numbered Latest column (2.8fr), then an accent Series band, then a two-column text-first feed.
 - Article: 260px contents and series rail, text column (max 720px), 300px actions rail. Wide blocks may extend 60px into the gutters. Below 1024px the rails collapse.
 - Covers: tone-on-tone patterns only on the lead story, series tiles and article hero. Elsewhere, a flat tone square with the post's initial.
+
+## Imaxt
+
+Imaxt is the blog's signature feature: typography and layout used as the visuals, because posts carry no images. Blocks: Statement, Stat/StatRow, PullQuote, Compare, Steps, Timeline, Bars, Sidenote, CodeWalk, Marquee, plus typographic covers. Display type is Fraunces (optical-size axis) alongside Archivo's width and weight axes; it loads only on pages that use it. Reference: the `/imaxt/` Lab page on the live site. v2 adds Heatmap, CurvedText, Scrolly, TypeLab and Mermaid diagrams (built at build time, themed for light and dark). The canvas has four Imaxt boards (blocks 1, blocks 2 with code, data and diagrams; each at 1440 and 390, with a light/dark tweak). They are generated from the shipped CSS and markup, so they cannot drift; home, article and kit covers use the same typographic cover component.
 
 ## The accent in code
 

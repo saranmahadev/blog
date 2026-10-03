@@ -1,0 +1,206 @@
+---
+// Imaxt Lab: every block with its MDX source. Hidden from navigation, the sitemap and search engines.
+import { Code } from 'astro:components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { imaxt, ImaxtCover } from '@/components/imaxt';
+
+const { Statement, Stat, StatRow, PullQuote, Compare, Side, Steps, Step, Timeline, Event, Bars, Sidenote, CodeWalk, Marquee, Heatmap, CurvedText, Scrolly, Beat, TypeLab } = imaxt;
+
+const src = {
+  statement: `<Statement>Every retrieval project rebuilds the **same plumbing**.</Statement>
+
+<Statement tone="mint" align="center">Boring is *dependable*.</Statement>`,
+  stat: `<StatRow>
+  <Stat value="5" unit="ms" label="p95 query time" tone="mint" />
+  <Stat value="10×" label="fewer calls" tone="sky" />
+  <Stat value="0" label="images in this post" />
+</StatRow>`,
+  quote: `<PullQuote by="Design rule">The best API is the one you can describe in a single paragraph.</PullQuote>`,
+  compare: `<Compare>
+  <Side kind="before" label="Before">Three pipelines, three sets of bugs</Side>
+  <Side label="After">One small API, one set of bugs</Side>
+</Compare>`,
+  steps: `<Steps>
+  <Step title="Chunk">Split each document into pieces.</Step>
+  <Step title="Embed">Turn every chunk into a vector.</Step>
+  <Step title="Write">Store it under a stable id.</Step>
+</Steps>`,
+  timeline: `<Timeline>
+  <Event date="Step 1" title="Propose">A leader suggests a value.</Event>
+  <Event date="Step 2" title="Promise">Machines promise to ignore older proposals.</Event>
+  <Event date="Step 3" title="Accept">A majority accepts it.</Event>
+</Timeline>`,
+  bars: `<Bars unit="%" max={100} tone="accent" items={[
+  { label: "Model A", value: 72 },
+  { label: "Model B", value: 81 },
+  { label: "Model C", value: 64 },
+]} />`,
+  note: `<Sidenote label="Mock data">Numbers here are placeholders.</Sidenote>`,
+  walk: `<CodeWalk steps={[
+  { lines: "1", title: "Stable id", text: "Same chunk, same id." },
+  { lines: "2-3", title: "Upsert", text: "Replaces instead of duplicating." },
+]}>
+
+\`\`\`ts
+const id = \`\${doc.id}:\${chunk.index}\`;
+await index.upsert({ id, vector });
+await checkpoint.save(id);
+\`\`\`
+
+</CodeWalk>`,
+  marquee: `<Marquee words={["Embed", "Filter", "Rank", "Repeat"]} tone="accent" />`,
+  heat: `<Heatmap
+  caption="Common modes, one digit per audience"
+  rows={["600", "640", "644", "755"]}
+  cols={["Owner", "Group", "Others"]}
+  data={[[6, 0, 0], [6, 4, 0], [6, 4, 4], [7, 5, 5]]}
+  min={0}
+  max={7}
+/>`,
+  curved: `<CurvedText text="Drag the sliders" shape="arc" />
+<CurvedText text="Drafted" shape="circle" mark="D" tone="mint" spin decorative />`,
+  scrolly: `<Scrolly tone="sky">
+  <Beat stage="Chunk" sub="step 1">Split each document into pieces.</Beat>
+  <Beat stage="Embed" sub="step 2">Turn every chunk into a vector.</Beat>
+  <Beat stage="Write" sub="step 3">Store it under a stable id.</Beat>
+</Scrolly>`,
+  typelab: `<TypeLab sample="Same letters, different voice" />`,
+  diagram: `\`\`\`mermaid caption="A forward proxy sits between clients and the internet"
+flowchart LR
+  accTitle: Forward proxy
+  accDescr: A client sends a request to the forward proxy, which forwards it to a server.
+  A[Client] -->|request| P[Forward proxy]
+  P -->|forwarded| S[Server]
+\`\`\``,
+  cover: `---
+cover:
+  kind: stack   # word | stat | quote | stack
+  text: "One API for every vector"
+  sub: "Axon, part one"
+---`,
+};
+const walkCode = `const id = \`\${doc.id}:\${chunk.index}\`;\nawait index.upsert({ id, vector });\nawait checkpoint.save(id);`;
+---
+
+<BaseLayout title="Imaxt Lab" description="Typography and layout as the visuals: every Imaxt block with its source." noindex>
+  <section class="wrap" style="padding-top:56px;padding-bottom:24px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Imaxt Lab</div>
+    <h1 class="disp" style="font-size:clamp(72px,12vw,180px)">Imaxt</h1>
+    <p class="serif" style="font-size:26px;line-height:1.4;max-width:44ch;margin-top:18px;color:var(--muted)">Typography and layout as the visuals. Posts here have no images: figures, numbers and diagrams are made of type.</p>
+  </section>
+
+  <div class="wrap" style="padding-bottom:96px">
+    <div class="prose" style="max-width:860px;margin:0">
+
+      <h2>How to use it</h2>
+      <p>Write the post as <code>.mdx</code>. Every block below is available without imports, and a post that uses none of them stays plain Markdown.</p>
+      <Sidenote label="Rule of thumb">At most one loud block per section. Imaxt should punctuate the writing, not replace it.</Sidenote>
+
+      <h2>Statement</h2>
+      <p>A poster-sized sentence. Wrap words in <code>**bold**</code> for the marker highlight and <code>*italic*</code> for the expressive italic.</p>
+      <Statement>Every retrieval project rebuilds the <strong>same plumbing</strong>.</Statement>
+      <Statement tone="mint" align="center">Boring is <em>dependable</em>.</Statement>
+      <Code code={src.statement} lang="mdx" theme="github-dark" />
+
+      <h2>Stat and StatRow</h2>
+      <p>Huge numerals with a label. Numeric values count up once when they scroll into view; the final value is always in the HTML.</p>
+      <StatRow>
+        <Stat value="5" unit="ms" label="p95 query time" tone="mint" />
+        <Stat value="10×" label="fewer calls" tone="sky" />
+        <Stat value="0" label="images in this post" />
+      </StatRow>
+      <Code code={src.stat} lang="mdx" theme="github-dark" />
+
+      <h2>PullQuote</h2>
+      <PullQuote by="Design rule">The best API is the one you can describe in a single paragraph.</PullQuote>
+      <Code code={src.quote} lang="mdx" theme="github-dark" />
+
+      <h2>Compare</h2>
+      <p>Before and after, or option A against option B. Stacks on narrow screens.</p>
+      <Compare>
+        <Side kind="before" label="Before">Three pipelines, three sets of bugs</Side>
+        <Side label="After">One small API, one set of bugs</Side>
+      </Compare>
+      <Code code={src.compare} lang="mdx" theme="github-dark" />
+
+      <h2>Steps</h2>
+      <Steps>
+        <Step title="Chunk">Split each document into pieces.</Step>
+        <Step title="Embed">Turn every chunk into a vector.</Step>
+        <Step title="Write">Store it under a stable id.</Step>
+      </Steps>
+      <Code code={src.steps} lang="mdx" theme="github-dark" />
+
+      <h2>Timeline</h2>
+      <Timeline>
+        <Event date="Step 1" title="Propose">A leader suggests a value.</Event>
+        <Event date="Step 2" title="Promise">Machines promise to ignore older proposals.</Event>
+        <Event date="Step 3" title="Accept">A majority accepts it.</Event>
+      </Timeline>
+      <Code code={src.timeline} lang="mdx" theme="github-dark" />
+
+      <h2>Bars</h2>
+      <p>A ranking or chart built from type. Values are real text, so screen readers and search see them.</p>
+      <Bars unit="%" max={100} tone="accent" items={[{ label: 'Model A', value: 72 }, { label: 'Model B', value: 81 }, { label: 'Model C', value: 64 }]} />
+      <Code code={src.bars} lang="mdx" theme="github-dark" />
+
+      <h2>Sidenote</h2>
+      <Sidenote label="Mock data">Numbers here are placeholders.</Sidenote>
+      <Code code={src.note} lang="mdx" theme="github-dark" />
+
+      <h2>CodeWalk</h2>
+      <p>Code with a step-by-step highlight. Without JavaScript every line stays visible.</p>
+      <CodeWalk steps={[{ lines: '1', title: 'Stable id', text: 'Same chunk, same id.' }, { lines: '2-3', title: 'Upsert', text: 'Replaces instead of duplicating.' }]}>
+        <Code code={walkCode} lang="ts" theme="github-dark" />
+      </CodeWalk>
+      <Code code={src.walk} lang="mdx" theme="github-dark" />
+
+      <h2>Marquee</h2>
+      <p>A scrolling band of words, used as a section break. It is still when the reader prefers reduced motion.</p>
+      <Marquee words={['Embed', 'Filter', 'Rank', 'Repeat']} tone="accent" />
+      <Code code={src.marquee} lang="mdx" theme="github-dark" />
+
+      <h2>Heatmap</h2>
+      <p>A real table whose cells are tinted by value. The number is always printed, so colour is never the only signal.</p>
+      <Heatmap caption="Common modes, one digit per audience" rows={['600', '640', '644', '755']} cols={['Owner', 'Group', 'Others']} data={[[6, 0, 0], [6, 4, 0], [6, 4, 4], [7, 5, 5]]} min={0} max={7} />
+      <Code code={src.heat} lang="mdx" theme="github-dark" />
+
+      <h2>CurvedText</h2>
+      <p>Text on an arc, a wave or a ring. It stays real, selectable text. A ring can carry a mark and spin slowly (still when motion is reduced).</p>
+      <CurvedText text="Drag the sliders" shape="arc" />
+      <CurvedText text="Drafted" shape="circle" mark="D" tone="mint" spin decorative />
+      <Code code={src.curved} lang="mdx" theme="github-dark" />
+
+      <h2>Scrolly</h2>
+      <p>A statement pinned beside the prose that swaps as each beat scrolls into view. Without JavaScript, or on narrow screens, each beat shows its own label inline.</p>
+      <Scrolly tone="sky">
+        <Beat stage="Chunk" sub="step 1">Split each document into pieces that make sense on their own.</Beat>
+        <Beat stage="Embed" sub="step 2">Turn every chunk into a vector.</Beat>
+        <Beat stage="Write" sub="step 3">Store it under a stable id.</Beat>
+      </Scrolly>
+      <Code code={src.scrolly} lang="mdx" theme="github-dark" />
+
+      <h2>TypeLab</h2>
+      <p>An interactive font playground (a React island that loads when scrolled into view). It offers only the axes this site ships.</p>
+      <TypeLab sample="Same letters, different voice" />
+      <Code code={src.typelab} lang="mdx" theme="github-dark" />
+
+      <h2>Diagrams</h2>
+      <p>Write a Mermaid diagram in a <code>mermaid</code> fenced block, in any <code>.md</code> or <code>.mdx</code> post. It is drawn to SVG at build time (flowchart, sequence, state, class, ER, Gantt, timeline, mindmap, pie and more), skinned to the Imaxt look, and switches with the light and dark theme. Every diagram must have <code>accTitle</code> and <code>accDescr</code>; the build fails without them. Add <code>caption="..."</code> or <code>wide</code> after the language. Live examples: <a href="/forward-proxies-explained/">flowchart</a>, <a href="/systems-notes/consensus-without-the-hand-waving/">sequence</a>, <a href="/axon/the-ingestion-pipeline/">state</a>.</p>
+      <Code code={src.diagram} lang="markdown" theme="github-dark" />
+
+      <h2>Typographic covers</h2>
+      <p>Each post can set a cover in its frontmatter. Without one, a stacked cover is made from the title.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px;margin-top:8px">
+      <ImaxtCover cover={{ kind: 'stack', text: 'One API for every vector' }} title="x" tone="mint" ratio="4 / 3" caption="stack" />
+      <ImaxtCover cover={{ kind: 'word', text: 'Restart', sub: 'safely, every time' }} title="x" tone="lilac" ratio="4 / 3" caption="word" />
+      <ImaxtCover cover={{ kind: 'stat', text: '20', sub: 'questions beat a leaderboard' }} title="x" tone="sky" ratio="4 / 3" caption="stat" />
+      <ImaxtCover cover={{ kind: 'quote', text: 'Agreement is expensive, so spend it carefully.' }} title="x" tone="rose" ratio="4 / 3" caption="quote" />
+    </div>
+    <div class="prose" style="max-width:860px;margin:24px 0 0">
+      <Code code={src.cover} lang="yaml" theme="github-dark" />
+    </div>
+  </div>
+</BaseLayout>

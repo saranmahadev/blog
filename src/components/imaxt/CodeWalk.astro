@@ -1,0 +1,45 @@
+---
+import '@/styles/imaxt.css';
+
+interface Props { steps: { lines: string; title: string; text?: string }[]; wide?: boolean }
+const { steps, wide } = Astro.props;
+---
+
+<div class:list={['imx', wide && 'imx-wide']}>
+  <div class="imx-walk imx-slab">
+    <div class="imx-walk-code"><slot /></div>
+    <div class="imx-walk-steps" role="group" aria-label="Walkthrough steps">
+      {steps.map((s) => (
+        <button type="button" class="imx-walk-step" data-lines={s.lines} aria-pressed="false">
+          <div class="imx-walk-st">{s.title}</div>
+          {s.text && <div class="imx-walk-sb">{s.text}</div>}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  // Highlight the lines a step talks about. Without JavaScript every line stays fully visible.
+  document.querySelectorAll<HTMLElement>('.imx-walk').forEach((walk) => {
+    const lines = [...walk.querySelectorAll<HTMLElement>('.imx-walk-code .line')];
+    const steps = [...walk.querySelectorAll<HTMLButtonElement>('.imx-walk-step')];
+    if (!lines.length || !steps.length) return;
+    walk.dataset.js = '';
+    const parse = (spec: string) => {
+      const out = new Set<number>();
+      spec.split(',').forEach((part) => {
+        const [a, b] = part.split('-').map(Number);
+        for (let n = a; n <= (b || a); n++) out.add(n);
+      });
+      return out;
+    };
+    const activate = (i: number) => {
+      const on = parse(steps[i].dataset.lines ?? '');
+      lines.forEach((l, idx) => l.classList.toggle('dim', !on.has(idx + 1)));
+      steps.forEach((s, j) => s.setAttribute('aria-pressed', String(i === j)));
+    };
+    steps.forEach((s, i) => s.addEventListener('click', () => activate(i)));
+    activate(0);
+  });
+</script>

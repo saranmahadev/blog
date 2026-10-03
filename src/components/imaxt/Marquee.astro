@@ -1,0 +1,21 @@
+---
+import '@/styles/imaxt.css';
+import type { ImaxtTone } from './types';
+
+interface Props { words: string[]; tone?: ImaxtTone; bleed?: boolean; seconds?: number }
+const { words, tone, bleed, seconds = 34 } = Astro.props;
+// Each set must be wider than the screen so the loop has no gap.
+const run = Array.from({ length: 4 }, () => words).flat();
+---
+
+<div class:list={['imx', bleed && 'imx-bleed']} data-tone={tone}>
+  <div class="imx-marquee" role="img" aria-label={words.join(', ')} style={`--dur:${seconds}s`}>
+    <div class="imx-marquee-track">
+      {[0, 1].map((k) => (
+        <div class:list={['imx-marquee-set', k === 1 && 'dup']} aria-hidden="true">
+          {run.map((w, i) => (<><span class="imx-marquee-w" data-v={i % 2}>{w}</span><span class="imx-marquee-w imx-marquee-s">—</span></>))}
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

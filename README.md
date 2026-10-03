@@ -2,7 +2,7 @@
 
 **Drafted**, by Dev. A static-first technical blog: Astro + Markdown/MDX + React islands + Tailwind, deployed to Firebase Hosting.
 
-The visual design lives in [`design/`](design/README.md) (static previews, screenshots and the design system). The site implements it in `src/styles/` (tokens and components) and `src/components/`.
+The visual design lives in [`design/`](design/README.md) (static previews and the design system). The site implements it in `src/styles/` (tokens and components) and `src/components/`.
 
 ## Develop
 
@@ -28,6 +28,27 @@ pnpm build      # outputs dist/
 - Posts can be featured (`featured: true`): the newest featured post is the Home lead story.
 - Use `.mdx` and `import` a component from `src/components/interactive/` to embed React; add `client:visible`/`client:load` to hydrate it.
 
+## Imaxt: typography as the visuals
+
+Posts use no images. Imaxt blocks (Statement, Stat, PullQuote, Compare, Steps, Timeline, Bars, Sidenote, CodeWalk, Marquee) turn type and layout into figures. Write the post as `.mdx` and use them directly, with no imports. Every block and its source is on the hidden `/imaxt/` Lab page; the code is in `src/components/imaxt/` and `src/styles/imaxt.css`.
+
+A post can set a typographic cover in its frontmatter (`kind`: `word`, `stat`, `quote` or `stack`); without one, a stacked cover is made from the title:
+
+```yaml
+cover:
+  kind: stack
+  text: "One API for every vector"
+  sub: "Axon, part one"
+```
+
+Imaxt v2 adds Heatmap, CurvedText, Scrolly/Beat and TypeLab (an interactive font playground, a React island that loads only when scrolled into view).
+
+### Diagrams
+
+Write a Mermaid diagram in a `mermaid` fenced block in any `.md` or `.mdx` post. It is rendered to SVG at build time (no client JavaScript), skinned to the Imaxt look, and rendered once per theme so it is correct in light and dark. Every diagram needs `accTitle` and `accDescr` (the build fails without them); add `caption="..."` or `wide` after the language. Rendering uses headless Chrome: set `CHROME_PATH` if it is not at a standard location (CI uses `/usr/bin/google-chrome`).
+
+Numbers in the sample posts are mock data, labelled as such.
+
 ## Changing the colours
 
 All colours are tokens in `src/styles/tokens.css`. The accent is `--accent` (with `--on-accent` for text on it and `--accent-lt` for dark surfaces); the dark theme overrides them in the `[data-theme='dark']` block.
@@ -38,9 +59,9 @@ Search, tag and archive pages, RSS, sign-in, bookmarks, likes and comments (see 
 
 ## Deploy
 
-CI (`.github/workflows/deploy.yml`) builds on every push/PR. Deploys run once these are set in GitHub:
+CI (`.github/workflows/deploy.yml`) builds on demand and deploys from `main`. Deploys run once these are set in GitHub:
 
 - Variables: `FIREBASE_PROJECT_ID`, `SITE_URL`
 - Secrets: `WORKLOAD_IDENTITY_PROVIDER`, `FIREBASE_DEPLOY_SERVICE_ACCOUNT`
 
-Pull requests get a Firebase preview channel; pushes to `main` deploy to production. The Firebase project is set in `.firebaserc`.
+The workflow runs on commits to `main` (build + deploy), when the `build` label is added to a pull request (build and checks only), when `deploy-preview` is added (build plus a temporary preview URL that expires in 7 days), or by hand from the Actions tab. Ordinary PR commits do not run it; to re-check a PR, re-add the label. The Firebase project is set in `.firebaserc`.

@@ -1,26 +1,33 @@
 name: Build and deploy
 
+# Never runs on every commit. It runs when:
+#   - a commit lands on main (build + deploy to production)
+#   - the "build" label is added to a pull request (build and checks only)
+#   - the "deploy-preview" label is added to a pull request (build, then a temporary preview URL)
+#   - someone starts it by hand from the Actions tab (build only; deploys only if run on main)
+# To re-run for a PR after new commits, remove and re-add the label, or run it by hand.
 on:
   push:
     branches: [main]
   pull_request:
+    types: [labeled]
   workflow_dispatch:
 
-# One deploy per ref; never cancel a production deploy mid-flight.
+# One deploy at a time; never cancel one that is already running.
 concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  group: deploy-main
+  cancel-in-progress: false
 
 permissions:
   contents: read
   id-token: write # Workload Identity Federation (no long-lived keys)
-  pull-requests: write # preview URL comment
 
 env:
   FIREBASE_PROJECT: ${{ vars.FIREBASE_PROJECT_ID }}
 
 jobs:
   build:
+    if: github.event_name != 'pull_request' || contains(fromJSON('["build","deploy-preview"]'), github.event.label.name)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,10 +37,13 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Check Chrome (renders Mermaid diagrams at build time)
+        run: google-chrome --version
       - run: pnpm check
       - run: pnpm build
         env:
           SITE_URL: ${{ vars.SITE_URL }}
+          CHROME_PATH: /usr/bin/google-chrome
       - uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -42,8 +52,8 @@ jobs:
 
   deploy:
     needs: build
-    # Skip until the repo variables/secrets below are configured, and for fork PRs.
-    if: vars.FIREBASE_PROJECT_ID != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    # Only from main, and skipped until the repository variable below is configured.
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.FIREBASE_PROJECT_ID != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,9 +65,22 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
-      - name: Deploy preview (pull requests)
-        if: github.event_name == 'pull_request'
-        run: npx --yes firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.number }}" --project "$FIREBASE_PROJECT" --expires 7d
-      - name: Deploy production
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      - name: Deploy to Firebase Hosting
         run: npx --yes firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT"
+
+  preview:
+    needs: build
+    if: github.event_name == 'pull_request' && github.event.label.name == 'deploy-preview' && vars.FIREBASE_PROJECT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
+      - name: Deploy preview channel (expires in 7 days)
+        run: npx --yes firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.pull_request.number }}" --expires 7d --project "$FIREBASE_PROJECT"

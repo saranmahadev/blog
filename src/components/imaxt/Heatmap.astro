@@ -1,0 +1,42 @@
+---
+import '@/styles/imaxt.css';
+
+interface Props {
+  rows: string[];
+  cols: string[];
+  data: number[][];
+  caption: string;
+  unit?: string;
+  /** Value mapped to the lightest and darkest cell. Defaults to the data range. */
+  min?: number;
+  max?: number;
+  wide?: boolean;
+}
+const { rows, cols, data, caption, unit = '', wide } = Astro.props;
+const flat = data.flat();
+const min = Astro.props.min ?? Math.min(...flat);
+const max = Astro.props.max ?? Math.max(...flat);
+// Cell colour is the accent mixed into the surface colour. The mix is capped at 55% so the
+// normal text colour keeps at least AA contrast in both themes; the number is always printed too.
+const pct = (v: number) => 6 + 49 * (max === min ? 0 : (v - min) / (max - min));
+---
+
+<div class:list={['imx', wide && 'imx-wide']}>
+  <div class="imx-heat-wrap" role="region" aria-label={caption} tabindex="0">
+    <table class="imx-heat">
+      <caption class="imx-label">{caption}</caption>
+      <thead>
+        <tr><td></td>{cols.map((c) => <th scope="col">{c}</th>)}</tr>
+      </thead>
+      <tbody>
+        {rows.map((r, i) => (
+          <tr>
+            <th scope="row">{r}</th>
+            {data[i].map((v) => <td style={`--p:${pct(v).toFixed(1)}%`}>{v}{unit}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <div class="imx-heat-legend" aria-hidden="true"><span class="imx-label">{min}{unit}</span><span class="imx-heat-ramp"></span><span class="imx-label">{max}{unit}</span></div>
+</div>

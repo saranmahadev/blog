@@ -1,0 +1,13 @@
+---
+import '@/styles/imaxt.css';
+
+interface Props { by?: string; wide?: boolean }
+const { by, wide } = Astro.props;
+---
+
+<div class:list={['imx', wide && 'imx-wide']}>
+  <figure class="imx-quote">
+    <blockquote class="imx-quote-t"><slot /></blockquote>
+    {by && <figcaption class="imx-label imx-quote-by">— {by}</figcaption>}
+  </figure>
+</div>
