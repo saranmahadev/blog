@@ -10,5 +10,3 @@ dist/
 .lighthouseci
 functions/node_modules/
 functions/lib/
-functions/.env.local
-functions/.secret.local
