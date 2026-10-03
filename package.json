@@ -16,7 +16,9 @@
     "check:links": "node scripts/check-links.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
     "check:lighthouse": "lhci autorun",
-    "check:dist": "pnpm check:links && pnpm check:a11y && pnpm check:lighthouse"
+    "check:dist": "pnpm check:links && pnpm check:a11y && pnpm check:lighthouse",
+    "emulators": "firebase emulators:start --project demo-drafted --only auth,firestore,functions",
+    "test:rules": "firebase emulators:exec --project demo-drafted --only firestore \"vitest run --config vitest.config.ts\""
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.2",
@@ -27,6 +29,7 @@
     "@fontsource-variable/source-serif-4": "^5.3.0",
     "@fontsource/space-mono": "^5.3.0",
     "astro": "^7.3.5",
+    "firebase": "^12.19.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
@@ -34,10 +37,12 @@
     "@astrojs/check": "^0.9.10",
     "@astrojs/markdown-remark": "^7.3.1",
     "@axe-core/playwright": "^4.13.0",
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@lhci/cli": "^0.15.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "firebase-tools": "^15.32.1",
     "hast-util-from-html-isomorphic": "^2.0.0",
     "hast-util-to-string": "^3.0.1",
     "mermaid-isomorphic": "^3.1.0",
@@ -47,6 +52,7 @@
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
-    "unist-util-visit": "^5.1.0"
+    "unist-util-visit": "^5.1.0",
+    "vitest": "^5.0.3"
   }
 }

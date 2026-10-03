@@ -50,6 +50,27 @@ jobs:
           path: dist
           retention-days: 7
 
+  # Firestore security rules and Cloud Functions compile. Rules run against the local emulator.
+  backend:
+    if: github.event_name != 'pull_request' || contains(fromJSON('["build","deploy-preview"]'), github.event.label.name)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: pnpm install --frozen-lockfile
+      - name: Firestore rules tests
+        run: pnpm test:rules
+      - name: Cloud Functions compile
+        run: cd functions && npm ci --no-audit --no-fund && npx tsc --noEmit
+
   # Quality gates run on the built site. A failure here blocks both deploy and preview.
   gates:
     needs: build
@@ -84,7 +105,7 @@ jobs:
           retention-days: 7
 
   deploy:
-    needs: [build, gates]
+    needs: [build, gates, backend]
     # Only from main, and skipped until the repository variable below is configured.
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.FIREBASE_PROJECT_ID != ''
     runs-on: ubuntu-latest
@@ -102,7 +123,7 @@ jobs:
         run: npx --yes firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT"
 
   preview:
-    needs: [build, gates]
+    needs: [build, gates, backend]
     if: github.event_name == 'pull_request' && github.event.label.name == 'deploy-preview' && vars.FIREBASE_PROJECT_ID != ''
     runs-on: ubuntu-latest
     steps:
