@@ -19,20 +19,38 @@ const idx = series ? series.posts.findIndex((p) => p.key === post.key) : -1;
 const prev = series?.posts[idx - 1];
 const next = series?.posts[idx + 1];
 
+const ogImage = isImageCover(data.cover) ? data.cover.image : `/og/${post.key}.png`;
+const abs = (path: string) => new URL(path, Astro.site).href;
+const crumbs = [
+  { name: 'Home', url: '/' },
+  ...(series ? [{ name: series.entry.data.title, url: series.url }] : []),
+  { name: data.title, url: post.url },
+];
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: data.title,
-  description: data.description,
-  author: { '@type': 'Person', name: data.author },
-  datePublished: data.date.toISOString(),
-  dateModified: (data.updated ?? data.date).toISOString(),
-  ...(isImageCover(data.cover) && { image: new URL(data.cover.image, Astro.site).href }),
+  '@graph': [
+    {
+      '@type': 'Article',
+      headline: data.title,
+      description: data.description,
+      author: { '@type': 'Person', name: data.author },
+      datePublished: data.date.toISOString(),
+      dateModified: (data.updated ?? data.date).toISOString(),
+      image: abs(ogImage),
+      mainEntityOfPage: abs(post.url),
+      keywords: data.tags.join(', '),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: abs(c.url) })),
+    },
+  ],
 };
 ---
 
-<BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={isImageCover(data.cover) ? data.cover.image : undefined} type="article">
+<BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={ogImage} type="article">
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  {series && <link slot="head" rel="alternate" type="application/rss+xml" title={`${series.entry.data.title} (series)`} href={`${series.url}rss.xml`} />}
 
   <div class="readbar" aria-hidden="true"><i id="readbar" style="width:0"></i></div>
 
