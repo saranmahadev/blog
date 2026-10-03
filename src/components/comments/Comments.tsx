@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { initialOf, useAuth, useRole } from '@/lib/auth';
 import { firebaseConfigured, getDb, getFunctionsClient } from '@/lib/firebase';
 
@@ -29,16 +29,21 @@ const callMessage = (err: unknown) => {
   return 'Could not send your message. Try again.';
 };
 
+// The connection dropped or timed out: the request may or may not have reached the server.
+const isNetworkError = (err: unknown) => /internal|unavailable|deadline-exceeded|unknown/.test((err as { code?: string })?.code ?? '');
+
 export default function Comments({ postKey }: { postKey: string }) {
   const { status, user } = useAuth();
   const role = useRole(user);
   const isAuthor = role === 'admin';
+  const seq = useRef(0);
   const [items, setItems] = useState<Comment[] | null>(null);
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!user) { setItems([]); return; }
+    if (!user || role === null) return; // wait until we know whether this is the author
+    const mine = ++seq.current;
     try {
       const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
       const col = m.collection(db, 'comments');
@@ -47,12 +52,13 @@ export default function Comments({ postKey }: { postKey: string }) {
         ? m.query(col, m.where('postKey', '==', postKey), m.orderBy('createdAt', 'desc'))
         : m.query(col, m.where('postKey', '==', postKey), m.where('threadOwnerId', '==', user.uid), m.orderBy('createdAt', 'desc'));
       const snap = await m.getDocs(q);
+      if (mine !== seq.current) return; // a newer load started; ignore this answer
       setItems(snap.docs.map((d) => {
         const x = d.data();
         return { id: d.id, parentId: x.parentId ?? null, replyToId: x.replyToId ?? null, threadOwnerId: x.threadOwnerId, authorId: x.authorId, authorName: x.authorName, authorRole: x.authorRole ?? 'user', body: x.body, createdAt: x.createdAt?.toDate?.() ?? null };
       }));
-    } catch { setItems([]); }
-  }, [postKey, user, isAuthor]);
+    } catch { if (mine === seq.current) setItems([]); }
+  }, [postKey, user, role, isAuthor]);
 
   useEffect(() => { if (status === 'out') setItems([]); else if (status === 'in') load(); }, [status, load]);
 
@@ -124,13 +130,26 @@ function Composer({ postKey, parentId, replyToId, name, email, compact, onDone }
     e.preventDefault();
     if (!body.trim()) return setErr('Write something first.');
     setBusy(true); setErr('');
+    // One id per send: if the connection drops, retrying with the same id cannot create a duplicate.
+    const clientId = crypto.randomUUID().replace(/-/g, '');
+    const send = async () => {
+      const [fns, m] = await Promise.all([getFunctionsClient(), import('firebase/functions')]);
+      await m.httpsCallable(fns, 'postComment')({ postKey, body, parentId: parentId ?? null, replyToId: replyToId ?? null, clientId });
+    };
     try {
       await user?.getIdToken(true); // the server checks the verified-email claim in the token
-      const [fns, m] = await Promise.all([getFunctionsClient(), import('firebase/functions')]);
-      await m.httpsCallable(fns, 'postComment')({ postKey, body, parentId: parentId ?? null, replyToId: replyToId ?? null });
+      try { await send(); }
+      catch (e1) {
+        if (!isNetworkError(e1)) throw e1;
+        await new Promise((r) => setTimeout(r, 1500));
+        await send(); // same clientId
+      }
       setBody('');
       onDone(parentId ? 'Sent.' : 'Sent. Only you and the author can see this.');
-    } catch (e2) { setErr(callMessage(e2)); }
+    } catch (e2) {
+      if (isNetworkError(e2)) { onDone('We could not confirm that your message was sent. It may have gone through: check the list below before sending again.'); }
+      else setErr(callMessage(e2));
+    }
     setBusy(false);
   }
 

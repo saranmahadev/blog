@@ -48,6 +48,11 @@ export const postComment = functions.region('asia-south1').https.onCall(async (d
   const uid = context.auth.uid;
   const isAuthor = context.auth.token.role === 'admin';
 
+  // A retry after a dropped connection sends the same clientId and gets the original answer instead of a duplicate.
+  const clientId = typeof data?.clientId === 'string' && /^[A-Za-z0-9_-]{8,40}$/.test(data.clientId) ? data.clientId : null;
+  const docRef = clientId ? getFirestore().doc(`comments/${uid}_${clientId}`) : null;
+  if (docRef && (await docRef.get()).exists) return { id: docRef.id, duplicate: true };
+
   const postKey = typeof data?.postKey === 'string' ? data.postKey : '';
   if (!/^[a-z0-9-]+(\/[a-z0-9-]+)?$/.test(postKey) || postKey.length > 120) throw new fail('invalid-argument', 'Unknown post.');
   const body = typeof data?.body === 'string' ? data.body.trim() : '';
@@ -94,11 +99,16 @@ export const postComment = functions.region('asia-south1').https.onCall(async (d
   const profile = await db.doc(`users/${uid}`).get();
   const authorName = String(profile.get('displayName') || context.auth.token.name || 'Reader').slice(0, 40);
 
-  const ref = await db.collection('comments').add({
+  const doc = {
     postKey, parentId: threadId, replyToId, threadOwnerId, authorId: uid, authorName,
     authorRole: isAuthor ? 'admin' : 'user',
     body,
     createdAt: FieldValue.serverTimestamp(),
-  });
+  };
+  if (docRef) {
+    try { await docRef.create(doc); } catch (err) { if ((err as { code?: number }).code !== 6) throw err; } // 6 = already created by a parallel retry
+    return { id: docRef.id };
+  }
+  const ref = await db.collection('comments').add(doc);
   return { id: ref.id };
 });
