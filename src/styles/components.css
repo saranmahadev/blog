@@ -346,3 +346,13 @@ button.srch { cursor: pointer; font: inherit; font-size: 14px; text-align: left;
   button.srch { width: 46px; padding: 0; justify-content: center; }
   .srch-t, .srch-k { display: none; }
 }
+
+/* Accounts */
+.acct { position: relative; }
+.acct-btn { padding: 4px 14px 4px 4px; border-radius: 999px; gap: 10px; cursor: pointer; color: var(--text); }
+.acct-name { font-size: 14px; max-width: 12ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acct-menu { position: absolute; right: 0; top: calc(100% + 10px); width: 280px; padding: 12px; z-index: 60; }
+.acct-item { width: 100%; padding: 11px 10px; border-top: 1px solid var(--hair); cursor: pointer; font: inherit; text-align: left; color: var(--text); }
+.acct-item:hover, .acct-item:focus-visible { background: var(--paper2); }
+.prof .inp[disabled] { opacity: 0.6; }
+@media (max-width: 760px) { .acct-name { display: none; } .acct-btn { padding-right: 10px; } .acct-menu { width: min(280px, calc(100vw - 32px)); } }

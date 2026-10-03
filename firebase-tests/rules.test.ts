@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { assertFails, assertSucceeds, initializeTestEnvironment, type RulesTestEnvironment } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
 let env: RulesTestEnvironment;
@@ -39,10 +39,19 @@ describe('users', () => {
     await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { displayName: 'x'.repeat(41) }));
     await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { bio: 'x'.repeat(281) }));
   });
-  it("blocks other people's edits, client creates and client deletes", async () => {
-    await assertFails(updateDoc(doc(as('tom'), 'users/rin'), { displayName: 'Hax' }));
-    await assertFails(setDoc(doc(as('tom'), 'users/tom'), profile));
+  it("blocks other people's edits and client deletes", async () => {
+    await assertFails(updateDoc(doc(as('rin2'), 'users/rin'), { displayName: 'Hax' }));
     await assertFails(deleteDoc(doc(as('rin'), 'users/rin')));
+  });
+  it('lets a reader create only their own plain profile', async () => {
+    const mine = { displayName: 'Tom', email: 'tom@example.com', role: 'user', bio: '', preferences: {}, createdAt: serverTimestamp() };
+    const tom = (extra = {}) => as('tom', { email: 'tom@example.com', ...extra });
+    await assertSucceeds(setDoc(doc(tom(), 'users/tom'), mine));
+    await assertFails(setDoc(doc(as('tom', { email: 'tom@example.com' }), 'users/rin2'), mine)); // someone else's id
+    await assertFails(setDoc(doc(tom(), 'users/tom'), { ...mine, role: 'admin' }));
+    await assertFails(setDoc(doc(tom(), 'users/tom'), { ...mine, email: 'other@example.com' }));
+    await assertFails(setDoc(doc(tom(), 'users/tom'), { ...mine, extra: 1 }));
+    await assertFails(setDoc(doc(tom(), 'users/tom'), { ...mine, createdAt: new Date('2020-01-01') }));
   });
 });
 

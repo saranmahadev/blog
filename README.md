@@ -89,8 +89,9 @@ Run them locally after `pnpm build` with `pnpm check:dist` (set `CHROME_PATH` if
 
 Phase 3 adds accounts. The site stays static; sign-in, profiles and later comments load as small client-side islands.
 
-- `firestore.rules`: default deny. A reader can read and edit only their own profile (`displayName`, `bio`, `preferences`). `role`, `email` and `createdAt` are written only by the server. Roles are custom claims (`user`, `author`, `moderator`, `admin`).
-- `functions/` (region `asia-south1`): `onUserCreated` sets the default role claim and creates `users/{uid}`; `onUserDeleted` removes it.
+- `firestore.rules`: default deny. A reader can read and edit only their own profile (`displayName`, `bio`, `preferences`). After creation `role`, `email` and `createdAt` cannot be changed by a client. Roles are custom claims (`user`, `author`, `moderator`, `admin`).
+- `functions/` (region `asia-south1`): `onUserCreated` sets the default role claim and creates `users/{uid}` if the client has not; `onUserDeleted` removes it.
+- Accounts (email and password only): `/login/`, `/register/`, `/reset/`, `/profile/` (noindex, outside search and sitemap) and the header account menu. A reader creates their own plain `user` profile at sign-up; the authoritative role is the custom claim, which only the server sets. Commenting will require a verified email (Phase 4).
 - `src/lib/firebase.ts`: lazy client for Auth and Firestore. Without the `PUBLIC_FIREBASE_*` variables (see `.env.example`) it is inert and the site works as before.
 - Local work: `pnpm emulators` starts Auth, Firestore and Functions. Set `PUBLIC_USE_EMULATORS=true` to point the site at them. `pnpm test:rules` runs the rules tests against the Firestore emulator (needs Java).
 - CI: the `backend` job runs the rules tests and compiles the functions; it must pass before preview or deploy.

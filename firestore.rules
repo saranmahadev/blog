@@ -10,11 +10,21 @@ service cloud.firestore {
     function hasRole(r) { return signedIn() && request.auth.token.role == r; }
     function isStaff() { return hasRole('admin') || hasRole('moderator'); }
 
-    // users/{uid}: the profile a reader edits. role, createdAt and email are set by the server and cannot be written here.
+    // users/{uid}: the profile a reader edits. After creation, role, createdAt and email are immutable from clients.
     match /users/{uid} {
       allow get: if isOwner(uid) || isStaff();
       allow list: if isStaff();
-      allow create, delete: if false;
+      // A reader may create only their own, plain-"user" profile. The authoritative role is the custom claim set by the server.
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['displayName', 'email', 'role', 'bio', 'preferences', 'createdAt'])
+        && request.resource.data.role == 'user'
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() >= 1 && request.resource.data.displayName.size() <= 40
+        && request.resource.data.bio is string && request.resource.data.bio.size() <= 280
+        && request.resource.data.preferences is map;
+      allow delete: if false;
       allow update: if isOwner(uid)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'bio', 'preferences'])
         && request.resource.data.displayName is string
