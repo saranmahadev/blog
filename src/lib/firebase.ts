@@ -2,6 +2,7 @@
 import type { FirebaseApp } from 'firebase/app';
 import type { Auth } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
+import type { Functions } from 'firebase/functions';
 
 const env = import.meta.env;
 
@@ -11,6 +12,7 @@ const useEmulators = env.PUBLIC_USE_EMULATORS === 'true';
 let app: Promise<FirebaseApp> | undefined;
 let auth: Promise<Auth> | undefined;
 let db: Promise<Firestore> | undefined;
+let fns: Promise<Functions> | undefined;
 
 function getApp() {
   app ??= import('firebase/app').then(({ initializeApp, getApps }) => {
@@ -41,4 +43,13 @@ export function getDb() {
     return instance;
   });
   return db;
+}
+
+export function getFunctionsClient() {
+  fns ??= Promise.all([getApp(), import('firebase/functions')]).then(([a, m]) => {
+    const instance = m.getFunctions(a, 'asia-south1');
+    if (useEmulators) m.connectFunctionsEmulator(instance, '127.0.0.1', 5001);
+    return instance;
+  });
+  return fns;
 }

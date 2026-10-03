@@ -8,6 +8,7 @@ service cloud.firestore {
     function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
     // Roles are custom claims set by a Cloud Function, never by a client.
     function hasRole(r) { return signedIn() && request.auth.token.role == r; }
+    function verified() { return signedIn() && request.auth.token.email_verified == true; }
     function isStaff() { return hasRole('admin') || hasRole('moderator'); }
 
     // users/{uid}: the profile a reader edits. After creation, role, createdAt and email are immutable from clients.
@@ -31,6 +32,36 @@ service cloud.firestore {
         && request.resource.data.displayName.size() >= 1 && request.resource.data.displayName.size() <= 40
         && (!('bio' in request.resource.data) || (request.resource.data.bio is string && request.resource.data.bio.size() <= 280))
         && (!('preferences' in request.resource.data) || request.resource.data.preferences is map);
+    }
+
+    // comments/{id}: created only by the postComment function (validation, rate limit, always "pending").
+    // Published comments are public; a reader also sees their own pending ones. Staff manage status (Phase 5 UI).
+    match /comments/{id} {
+      allow get, list: if resource.data.status == 'published' || isOwner(resource.data.authorId) || isStaff();
+      allow create: if false;
+      // An edit sends the comment back to review so a published comment cannot be swapped for something else.
+      allow update: if (isOwner(resource.data.authorId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['body', 'status', 'updatedAt'])
+          && request.resource.data.status == 'pending'
+          && request.resource.data.body is string
+          && request.resource.data.body.size() >= 1 && request.resource.data.body.size() <= 2000
+          && request.resource.data.updatedAt == request.time)
+        || (isStaff()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'moderatedBy', 'moderatedAt'])
+          && request.resource.data.status in ['pending', 'published', 'hidden']);
+      allow delete: if isOwner(resource.data.authorId) || isStaff();
+    }
+
+    // reports/{commentId}_{uid}: one report per reader per comment; only staff can read them.
+    match /reports/{id} {
+      allow read: if isStaff();
+      allow create: if verified()
+        && id == request.resource.data.commentId + '_' + request.auth.uid
+        && request.resource.data.keys().hasOnly(['commentId', 'reporterId', 'reason', 'createdAt'])
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.reason is string && request.resource.data.reason.size() <= 200
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
     }
 
     match /{document=**} {

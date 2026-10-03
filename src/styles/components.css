@@ -356,3 +356,15 @@ button.srch { cursor: pointer; font: inherit; font-size: 14px; text-align: left;
 .acct-item:hover, .acct-item:focus-visible { background: var(--paper2); }
 .prof .inp[disabled] { opacity: 0.6; }
 @media (max-width: 760px) { .acct-name { display: none; } .acct-btn { padding-right: 10px; } .acct-menu { width: min(280px, calc(100vw - 32px)); } }
+
+/* Comments */
+.cm { margin-top: 72px; max-width: 720px; margin-inline: auto; }
+.cm-head { border-bottom: 1px solid var(--hair); padding-bottom: 14px; flex-wrap: wrap; }
+.cm-cta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 24px; padding: 22px; }
+.cm-form { display: flex; align-items: flex-start; gap: 14px; margin-top: 24px; }
+.cm-reply { margin-left: 54px; }
+.cm-reply .cm-form { margin-top: 8px; }
+.cm-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 760px) { .cm { margin-top: 48px; } .cm-reply { margin-left: 24px; } .cm-form .av { display: none; } }
+.cm-note { margin-top: 14px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--t-mint); color: var(--ink); font-size: 15px; }
+.cm-note.err { background: var(--t-rose); }

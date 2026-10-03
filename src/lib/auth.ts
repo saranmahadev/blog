@@ -15,7 +15,15 @@ export function useAuth(): AuthState {
     (async () => {
       const [auth, m] = await Promise.all([getAuthClient(), import('firebase/auth')]);
       if (stopped) return;
-      off = m.onAuthStateChanged(auth, (user) => setState({ status: user ? 'in' : 'out', user }));
+      off = m.onAuthStateChanged(auth, (user) => {
+        setState({ status: user ? 'in' : 'out', user });
+        // Someone who verified in another tab: pick that up (and a fresh token for the rules) without a manual step.
+        if (user && !user.emailVerified) {
+          user.reload().then(async () => {
+            if (user.emailVerified && !stopped) { await user.getIdToken(true); setState({ status: 'in', user }); }
+          }).catch(() => {});
+        }
+      });
     })();
     return () => { stopped = true; off(); };
   }, []);
