@@ -190,6 +190,17 @@ The first element of the body is a `Sidenote` carrying the label and one plain s
 
 Also add the same words as a **tag** in the front matter (`True story` or `Constructed story`) so the Topics pages group articles by mode.
 
+### Pieces that are not stories
+
+A welcome page, an announcement or a plan is not a story, and should not pretend to be one. Label it honestly instead:
+
+| Piece | Label | The one sentence says |
+| --- | --- | --- |
+| Welcome page, announcement, explainer with no narrative | `Note` | what the piece is ("This is a welcome note, not a story.") |
+| A map of something not built yet (like the Dev Universe overview) | `Plan` | that it is a plan and which parts are only ideas ("Much of it is still an idea, and I say so where that is the case.") |
+
+Use the same word as the tag (`Note` or `Plan`). Everything else in this guide still applies: facts must be true, and nothing is dressed up as finished that is not.
+
 ### Honesty rules for both modes
 
 1. No invented statistics. If a number is a placeholder, label it **Mock data** (`<Sidenote label="Mock data">…</Sidenote>`).
@@ -722,7 +733,7 @@ CI scans every key page with axe (WCAG 2.1 A and AA) in light and dark, and fail
 
 1. **Headings.** The post title is the page's only `h1`. Use `##` for sections, `###` for sub-parts, and never skip a level. Sections show in the **Contents** rail, so write them to make sense alone.
 2. **Diagrams** need `accTitle` and `accDescr` (section 10).
-3. **Links** have meaningful text ("the Firebase docs", not "click here"). Internal links are relative (`/axon/the-ingestion-pipeline/`).
+3. **Links** have meaningful text ("the Firebase docs", not "click here"). Internal links are relative (`/building-drafted/rss-is-enough/`).
 4. **Colour** is never the only carrier of meaning. Tones are tested for contrast; do not hard-code colours.
 5. **Motion** respects reduced-motion settings. Do not describe a block only by its animation.
 6. **Tables** (and `Heatmap`) have a caption.
@@ -969,7 +980,7 @@ Tick every box. Claude: say which you could not verify.
 - [ ] Read it aloud; every hard-to-say sentence is rewritten.
 
 **Format**
-- [ ] The **mode label** `Sidenote` is the first body element, and the mode tag is in the front matter.
+- [ ] The **mode label** `Sidenote` (`True story`, `Constructed story`, `Note` or `Plan`) is the first body element, and the same word is a tag in the front matter.
 - [ ] Four to seven beats; at most five fact moments; none back to back.
 - [ ] Each fact moment answers a question the story just raised, in the story's words first.
 - [ ] No more than two new terms per beat, each defined where it first appears.

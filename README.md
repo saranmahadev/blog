@@ -48,7 +48,7 @@ Imaxt v2 adds Heatmap, CurvedText, Scrolly/Beat and TypeLab (an interactive font
 
 Write a Mermaid diagram in a `mermaid` fenced block in any `.md` or `.mdx` post. It is rendered to SVG at build time (no client JavaScript), skinned to the Imaxt look, and rendered once per theme so it is correct in light and dark. Every diagram needs `accTitle` and `accDescr` (the build fails without them); add `caption="..."` or `wide` after the language. Rendering uses headless Chrome: set `CHROME_PATH` if it is not at a standard location (CI uses `/usr/bin/google-chrome`).
 
-Numbers in the sample posts are mock data, labelled as such.
+A number that is only a placeholder must be labelled **Mock data** (see `ARTICLE_GUIDE.md`).
 
 ## Changing the colours
 

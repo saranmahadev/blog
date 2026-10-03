@@ -1,0 +1,54 @@
+---
+title: "A blog that is just files"
+description: "Why Drafted is built once and served as plain pages, and why the build only runs when I ask it to."
+date: 2026-10-03
+order: 2
+tags: [Drafted, Engineering, True story]
+cover:
+  kind: word
+  text: "Files"
+  sub: "built once, served fast"
+---
+
+<Sidenote label="True story">These are decisions I really made while building this site. I have put them in a tidier order than they happened.</Sidenote>
+
+The second decision was about what a page actually is. I wanted a page on Drafted to be a file, and nothing more.
+
+## Build Once, Serve Many Times
+
+A lot of websites assemble each page on a server at the moment you ask for it. For a blog that is wasted effort, because a post does not change between one reader and the next.
+
+<Compare>
+  <Side kind="before" label="Assembled per visit">A server runs code, fetches data and builds the page every time someone arrives. More moving parts, more to break.</Side>
+  <Side label="Built once">The page is written out as a file before anyone visits. Serving it is just handing over the file.</Side>
+</Compare>
+
+So Drafted is static. Posts are Markdown and MDX files, turned into pages by Astro, with small interactive pieces (search, sign-in, bookmarks, messages) added only where they are needed. The pages sit on Firebase Hosting under blog.saranmahadev.in.
+
+The only parts that are not files are the ones that must know who you are. The database and the small server functions behind them live in Mumbai, and nothing in a post depends on them.
+
+## I Did Not Want a Build on Every Commit
+
+Automatic checks are good. A check that runs on every tiny commit is noisy, and it makes every change feel heavier than it is.
+
+So the rule I set was that the build runs only when it needs to. It runs when something lands on the main branch, when I add one of two labels to a pull request (`build` or `deploy-preview`), or when I start it by hand. That is all.
+
+I created those two labels myself. The machine does the work, but only when I say so.
+
+## What Happens When It Does Run
+
+<Steps>
+  <Step title="Build">The whole site is built from the files, and the share images and search index are made.</Step>
+  <Step title="Check">Every link must resolve. Every page must pass an accessibility scan in light and dark. Speed, accessibility and search scores must stay above a floor. Feeds and the security policy are checked too.</Step>
+  <Step title="Deploy">Only if every check passes, and only from the main branch, the pages go live.</Step>
+</Steps>
+
+A broken link or an unreadable colour cannot reach the live site, because the checks stand in front of the deploy.
+
+## And Not One Terminal Command
+
+For a while, deploying the database rules and server functions meant opening Google's Cloud Shell and typing commands. I did not want that to be part of my routine.
+
+So the deploy does it too. When something is merged, GitHub signs in to Google with a short-lived token, so there is no password or key file stored anywhere, then publishes the database rules, the functions and the pages, in that order. I merge, and I watch it run.
+
+**The site is just files, and the machine that publishes them only works when I ask.**

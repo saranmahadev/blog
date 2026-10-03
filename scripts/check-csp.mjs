@@ -3,7 +3,7 @@
 import { chromium } from 'playwright';
 import { serve, chromePath } from './serve.mjs';
 
-const PAGES = ['/', '/archive/', '/topics/ai/', '/axon/', '/axon/the-ingestion-pipeline/', '/variable-fonts-played-with/', '/forward-proxies-explained/', '/linux-file-permissions-finally/', '/imaxt/', '/about/', '/login/', '/register/', '/reset/', '/profile/', '/inbox/', '/404.html'];
+const PAGES = ['/', '/archive/', '/topics/drafted/', '/welcome-to-drafted/', '/building-drafted/', '/building-drafted/rss-is-enough/', '/building-dev-universe/dev-universe/', '/imaxt/', '/about/', '/login/', '/register/', '/reset/', '/profile/', '/inbox/', '/404.html'];
 const { base, close } = await serve();
 const browser = await chromium.launch({ executablePath: chromePath() });
 const page = await browser.newPage();
@@ -19,10 +19,10 @@ for (const url of PAGES) {
   await page.waitForTimeout(300);
   if (url === '/') { // search: Pagefind needs WebAssembly
     await page.click('button.srch');
-    await page.fill('#site-search', 'vector');
+    await page.fill('#site-search', 'sync');
     await page.waitForSelector('.sres', { timeout: 5000 }).catch(() => problems.push('/: search returned no results'));
   }
-  if (url === '/variable-fonts-played-with/') { // a hydrated island
+  if (url === '/imaxt/') { // a hydrated island
     await page.waitForSelector('.imx-typelab button', { timeout: 4000 }).catch(() => problems.push(`${url}: the type lab did not load`));
     await page.click('.imx-tl-fam button:nth-child(1)').catch(() => {});
   }

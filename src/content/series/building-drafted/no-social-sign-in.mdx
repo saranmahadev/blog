@@ -1,0 +1,52 @@
+---
+title: "No Google sign-in, no admin password"
+description: "Accounts on Drafted use an email and a password, nothing else. And the author is whoever owns one verified mailbox."
+date: 2026-10-03
+order: 5
+tags: [Drafted, Privacy, True story]
+cover:
+  kind: word
+  text: "Email"
+  sub: "and nothing else"
+---
+
+<Sidenote label="True story">These are decisions I really made while building this site. I have put them in a tidier order than they happened.</Sidenote>
+
+Most sites put a row of buttons on the sign-in page: continue with this company, continue with that one. I decided Drafted would not have them.
+
+## Why No Social Sign-In
+
+Accounts here exist for two small reasons: to keep your bookmarks on every device, and to let you write privately to me. Neither needs to know who you are on another platform.
+
+So there is one way in: an email address, a name you choose, and a password. No Google button, no other company's popup. It also means fewer outside scripts running on the page, which matters for security, and I will come back to that later in the series.
+
+## Verification Is Your Choice
+
+At first, the site sent a verification email as soon as someone signed up. I changed that. Verification is now opt-in: a small bar at the top of the page offers **Send verification email**, and once you have clicked the link you press **I have verified**.
+
+You can read, bookmark and keep your progress without ever verifying. You only need a verified address to send me a message, which is where it matters.
+
+## Who Is the Author?
+
+The usual answer is a role: a flag on an account saying this person is the admin. Setting one meant running a command by hand in a terminal, which I did not want to keep doing.
+
+I wanted something simpler: one admin, no roles, no extra admins, nothing to configure.
+
+<Compare>
+  <Side kind="before" label="A role someone sets">A flag stored on an account and changed by a script. Another thing to look after, and another thing to leak.</Side>
+  <Side label="A mailbox someone owns">The author is whoever has a verified sign-in for one particular address. Nothing to configure and nothing to hand out.</Side>
+</Compare>
+
+Firebase marks an address as verified only after the owner of the mailbox opens the link. And if the address on an account is changed, the verified mark resets. So the check is simple: signed in, verified, and that exact address.
+
+The rules that protect the database and the server functions check it the same way, so there is no second list to keep in sync.
+
+## What I Gave Up
+
+One honest trade-off: the mailbox is now the key. Whoever controls it controls the author account, so that mailbox needs a long unique password and two-step verification. One thing to guard well is easier than five things to remember.
+
+## And If You Leave
+
+If you delete your account, the name and the sign-in go with it, and so does everything you wrote to me and every thread you started. Nothing is kept for later.
+
+**The author is whoever owns the mailbox. There is no admin password to leak.**
