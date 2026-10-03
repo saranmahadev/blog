@@ -1,0 +1,195 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Admin.dc.html": {
+      "expand": "fill",
+      "h": 2160,
+      "title": "Admin dashboard",
+      "w": 1440,
+      "x": 1520,
+      "y": 12608
+    },
+    "Archive.dc.html": {
+      "expand": "fill",
+      "h": 1782,
+      "title": "Archive and tag pages",
+      "w": 1440,
+      "x": 1520,
+      "y": 8846
+    },
+    "Article.dc.html": {
+      "expand": "fill",
+      "h": 4239,
+      "is_interactive": true,
+      "title": "Article (desktop)",
+      "w": 1440,
+      "x": 0,
+      "y": 4247
+    },
+    "ArticleMobile.dc.html": {
+      "h": 2499,
+      "title": "Article (mobile)",
+      "w": 390,
+      "x": 1520,
+      "y": 4247
+    },
+    "Auth.dc.html": {
+      "expand": "fill",
+      "h": 1260,
+      "title": "Sign in, register, account menu",
+      "w": 1440,
+      "x": 1520,
+      "y": 10988
+    },
+    "HomeMobile.dc.html": {
+      "h": 3887,
+      "title": "Home (mobile)",
+      "w": 390,
+      "x": 1520,
+      "y": 0
+    },
+    "Kit.dc.html": {
+      "expand": "fill",
+      "h": 4177,
+      "title": "Design system kit",
+      "w": 1440,
+      "x": 0,
+      "y": 15128
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 3064,
+      "title": "Home (desktop)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "NotFound.dc.html": {
+      "expand": "fill",
+      "h": 1303,
+      "title": "404 and empty states",
+      "w": 1440,
+      "x": 1520,
+      "y": 15128
+    },
+    "Profile.dc.html": {
+      "expand": "fill",
+      "h": 1379,
+      "title": "Profile, bookmarks, preferences",
+      "w": 1440,
+      "x": 0,
+      "y": 12608
+    },
+    "Search.dc.html": {
+      "expand": "fill",
+      "h": 1160,
+      "title": "Search overlay",
+      "w": 1440,
+      "x": 0,
+      "y": 10988
+    },
+    "Series.dc.html": {
+      "expand": "fill",
+      "h": 1605,
+      "title": "Series page",
+      "w": 1440,
+      "x": 0,
+      "y": 8846
+    },
+    "Palettes.dc.html": {
+      "x": 2000,
+      "y": 0,
+      "w": 1440,
+      "h": 2700,
+      "title": "Palette options (pick one)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Palettes2.dc.html": {
+      "x": 3520,
+      "y": 0,
+      "w": 1440,
+      "h": 2700,
+      "title": "Palette options 2: greens and blues (pick one)",
+      "expand": "fill",
+      "is_interactive": true
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-03T06:10:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "r1": {
+      "kind": "title1",
+      "maxW": 1910,
+      "text": "1  Home: one lead story, a stack beside it",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "r2": {
+      "kind": "title1",
+      "maxW": 1910,
+      "text": "2  Reading: three-column article, comments",
+      "w": 240,
+      "x": 0,
+      "y": 3947
+    },
+    "r3": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "3  Series and archive pages",
+      "w": 240,
+      "x": 0,
+      "y": 8546
+    },
+    "r4": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "4  Search and accounts (Phases 2 to 3)",
+      "w": 240,
+      "x": 0,
+      "y": 10688
+    },
+    "r5": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "5  Profile and admin (Phases 4 to 5)",
+      "w": 240,
+      "x": 0,
+      "y": 12308
+    },
+    "r6": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "6  Design system: tokens, components, states",
+      "w": 240,
+      "x": 0,
+      "y": 14828
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "HomeMobile.dc.html",
+    "Article.dc.html",
+    "ArticleMobile.dc.html",
+    "Series.dc.html",
+    "Archive.dc.html",
+    "Search.dc.html",
+    "Auth.dc.html",
+    "Profile.dc.html",
+    "Admin.dc.html",
+    "Kit.dc.html",
+    "NotFound.dc.html",
+    "Palettes.dc.html",
+    "Palettes2.dc.html"
+  ],
+  "pages": [],
+  "title": "Drafted Design v2 Mock"
+}

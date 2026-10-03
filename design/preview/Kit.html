@@ -1,0 +1,154 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Design system kit</title><link rel="stylesheet" href="mock.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet"></head><body style="margin:0">
+
+
+
+<style>body{margin:0}</style>
+
+<div class="dm light" style="--accent: #0F7B4D;--accent-lt: #6AAD91;--on-accent: #ffffff">
+
+<header class="hdr"><div class="wrap hdr-in"><a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a><span class="sp"></span><span class="mono muted">Design system · v2</span></div></header>
+
+<main class="wrap" style="padding-top:56px;padding-bottom:96px">
+  <h1 class="disp" style="font-size:clamp(90px,12vw,180px)">The kit</h1>
+  <p class="serif" style="font-size:24px;max-width:46ch;margin-top:18px">Ink is the primary colour and emerald is the accent. Three layers, one rule each. Structure is brutalist, content tiles are slabs, controls are clay. Use the Tweaks panel to compare accent colours (emerald is the default) and to preview dark mode.</p>
+
+  <!-- 1 palette -->
+  <section style="margin-top:72px" aria-label="Palette">
+    <h2 class="mono rule" style="padding:14px 0 20px">01 · Palette</h2>
+    <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:24px">
+      <div class="swatch" style="background:#1c1c1c;color:#f4f1e8"><strong>Ink</strong><span class="mono">#1c1c1c</span><span class="mono">Text, rules, dark bg</span></div>
+      <div class="swatch tone-accent"><strong>Accent</strong><span class="mono">#0F7B4D</span><span class="mono">CTAs, bands, links</span></div>
+      <div class="swatch" style="background:#f6f3ea"><strong>Paper</strong><span class="mono">#f6f3ea</span><span class="mono">Page background</span></div>
+      <div class="swatch tone-signal"><strong>Signal</strong><span class="mono">#3a3dff</span><span class="mono">Focus, topics band</span></div>
+      <div class="swatch" style="background:#ebe6d8"><strong>Paper 2</strong><span class="mono">#ebe6d8</span><span class="mono">Inputs, table heads</span></div>
+      <div class="swatch" style="background:#fffdf6"><strong>Card</strong><span class="mono">#fffdf6</span><span class="mono">Slab surface</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:24px">
+      <div class="swatch tone-mint" style="height:80px"><strong>Mint</strong><span class="mono">#b6f0d3</span></div>
+      <div class="swatch tone-lilac" style="height:80px"><strong>Lilac</strong><span class="mono">#d6cbff</span></div>
+      <div class="swatch tone-sky" style="height:80px"><strong>Sky</strong><span class="mono">#b8dcff</span></div>
+      <div class="swatch tone-rose" style="height:80px"><strong>Rose</strong><span class="mono">#ffc6d6</span></div>
+    </div>
+    <div class="tbl-wrap" style="margin-top:28px"><table class="tbl">
+      <thead><tr><th>Pairing</th><th>Use</th><th>Contrast (approx.)</th><th>Rule</th></tr></thead>
+      <tbody>
+        <tr><td>Ink on paper</td><td>Body text</td><td>15:1</td><td>Always</td></tr>
+        <tr><td>Muted #5c584f on paper</td><td>Meta, captions</td><td>6.4:1</td><td>Never lighter</td></tr>
+        <tr><td>White on emerald #0F7B4D</td><td>Secondary buttons, bands</td><td>5.3:1</td><td>Text colour on the accent is picked automatically</td></tr>
+        <tr><td>Emerald on paper</td><td>Links, underlines, icons</td><td>4.8:1</td><td>Passes AA for text</td></tr>
+        <tr><td>Lightened emerald #6AAD91 on ink</td><td>Dark mode accent, footer wordmark</td><td>6.5:1</td><td>Dark mode uses the lightened accent</td></tr>
+        <tr><td>Signal blue on paper</td><td>Focus ring only</td><td>5.8:1</td><td>Keyboard focus is blue so it never blends with the accent</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- 2 type -->
+  <section style="margin-top:72px" aria-label="Typography">
+    <h2 class="mono rule" style="padding:14px 0 20px">02 · Type</h2>
+    <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:48px">
+      <div class="stack" style="gap:18px">
+        <div><span class="mono muted">Display · Archivo 900, width 72 · 56 to 200px</span><div class="disp" style="font-size:104px">Heavy headlines</div></div>
+        <div><span class="mono muted">Headline · Archivo 800, width 85 · 20 to 40px</span><div class="head" style="font-size:36px">Tight, bold card titles that scan quickly</div></div>
+        <div><span class="mono muted">Reading · Source Serif 4 · 21px / 1.7 · 68 characters</span><p class="serif" style="font-size:21px;line-height:1.7;max-width:60ch">Article text stays calm and serif so long posts are easy on the eyes. The loud type is for headlines and labels, not paragraphs.</p></div>
+        <div><span class="mono muted">Label · Space Mono 12px · uppercase · 0.06em</span><div class="mono" style="font-size:14px">Axon · Part 1 · Oct 3 · 9 min read</div></div>
+        <div><span class="mono muted">UI · Archivo 400 to 700 · 14 to 16px</span><div style="font-size:16px">Buttons, forms and navigation use the regular width.</div></div>
+      </div>
+      <div class="slab tone-accent" style="padding:24px"><div class="mono">Scale</div>
+        <ul class="mono" style="margin-top:12px;line-height:2.1"><li>Display XL · 200 / 0.95</li><li>Display L · 100 / 0.95</li><li>Display M · 56 / 1</li><li>Headline · 24 to 40 / 1.1</li><li>Reading · 21 / 1.7</li><li>UI · 15 / 1.5</li><li>Label · 12 / 1.4</li></ul></div>
+    </div>
+  </section>
+
+  <!-- 3 surfaces -->
+  <section style="margin-top:72px" aria-label="Surfaces">
+    <h2 class="mono rule" style="padding:14px 0 20px">03 · Surfaces: the three layers</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px">
+      <div style="border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:26px 0"><span class="mono">Structure</span><div class="head" style="font-size:26px;margin:8px 0">Rules and grid</div><p class="serif muted" style="font-size:17px">2px ink rules, square corners, no shadow. Dividers, columns, list rows and section headers.</p></div>
+      <div class="slab tone-mint" style="padding:26px"><span class="mono">Slab</span><div class="head" style="font-size:26px;margin:8px 0">Flat, bordered, hard shadow</div><p class="serif" style="font-size:17px">2px border, 14px radius, 5px offset shadow, no blur. Lead tiles, series, callouts. Presses 2px on hover.</p></div>
+      <div class="clay" style="padding:26px;border-radius:24px"><span class="mono">Clay</span><div class="head" style="font-size:26px;margin:8px 0">Soft and tactile</div><p class="serif" style="font-size:17px">Dual soft shadows plus inner highlights. Buttons, pills, switches, avatars. Pressed state goes inset.</p></div>
+    </div>
+  </section>
+
+  <!-- 4 controls -->
+  <section style="margin-top:72px" aria-label="Controls">
+    <h2 class="mono rule" style="padding:14px 0 20px">04 · Controls (clay)</h2>
+    <div class="row" style="flex-wrap:wrap;gap:18px">
+      <button class="btn ink" type="button">Primary</button><button class="btn" type="button">Secondary</button><button class="btn ink" type="button">Ink</button><button class="btn ghost" type="button">Ghost</button><button class="btn danger" type="button">Danger</button><button class="btn pressed" type="button">Pressed</button><button class="btn sm" type="button">Small</button>
+      <button class="ib" type="button" aria-label="Search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+      <button class="ib tone-accent" type="button" aria-label="Bookmark"><svg class="ico" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button>
+    </div>
+    <div class="row" style="flex-wrap:wrap;gap:12px;margin-top:28px">
+      <span class="pill">Default</span><span class="pill on">Active</span><span class="pill tone-mint">Mint</span><span class="pill tone-lilac">Lilac</span><span class="pill tone-sky">Sky</span><span class="pill tone-rose">Rose</span>
+      <span class="badge tone-accent">Admin</span><span class="badge tone-lilac">Moderator</span><span class="badge tone-mint">Author</span><span class="badge">User</span>
+      <span class="av tone-ink">D</span><span class="av tone-sky">R</span><span class="av tone-lilac">M</span>
+      <span class="sw on" role="switch" aria-checked="true" aria-label="On"></span><span class="sw" role="switch" aria-checked="false" aria-label="Off"></span>
+      <div class="seg"><button class="on" type="button">Light</button><button type="button">System</button><button type="button">Dark</button></div>
+    </div>
+  </section>
+
+  <!-- 5 forms -->
+  <section style="margin-top:72px" aria-label="Forms">
+    <h2 class="mono rule" style="padding:14px 0 20px">05 · Forms</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px">
+      <div class="field"><label for="k1">Default</label><input class="inp" id="k1" placeholder="you@example.com"></div>
+      <div class="field"><label for="k2">Focused</label><input class="inp focus" id="k2" value="rin@example.com"><span class="hint">Focus ring uses the signal blue.</span></div>
+      <div class="field"><label for="k3">Error</label><input class="inp" id="k3" value="rin@example"><span class="err">Enter a full address</span></div>
+    </div>
+    <div class="row" style="margin-top:28px;gap:14px"><div class="srch" style="width:420px"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search posts and series<span class="kbd" style="margin-left:auto">/</span></div></div>
+  </section>
+
+  <!-- 6 content blocks -->
+  <section style="margin-top:72px" aria-label="Content blocks">
+    <h2 class="mono rule" style="padding:14px 0 20px">06 · Article blocks</h2>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;align-items:start">
+      <div class="stack" style="gap:24px">
+        <div class="callout slab tone-accent"><strong class="mono" style="font-size:12px;padding-top:4px">Note</strong><span>Accent callout for tips and asides.</span></div>
+        <div class="callout slab tone-sky"><strong class="mono" style="font-size:12px;padding-top:4px">Info</strong><span>Sky for neutral information.</span></div>
+        <div class="callout slab tone-rose"><strong class="mono" style="font-size:12px;padding-top:4px">Careful</strong><span>Rose for warnings and breaking changes.</span></div>
+        <blockquote class="serif" style="border-left:6px solid var(--accent);padding-left:24px;font-size:26px;font-style:italic;line-height:1.4">Pull quotes get an accent rule, not a box.</blockquote>
+      </div>
+      <div class="stack" style="gap:24px">
+        <div class="code"><div class="code-h"><span>example.ts</span><button class="btn sm" type="button" style="color:var(--on-accent);background-color:var(--accent)">Copy</button></div>
+<pre><span class="k">export const</span> greet = (n: <span class="k">string</span>) =&gt;
+  <span class="s">`Hello, ${n}`</span>;</pre></div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Option</th><th>Search</th><th>Cost</th></tr></thead><tbody><tr><td>Static index</td><td>Instant</td><td>None</td></tr><tr><td>Hosted</td><td>Faster at scale</td><td>Monthly</td></tr></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 covers -->
+  <section style="margin-top:72px" aria-label="Generated covers">
+    <h2 class="mono rule" style="padding:14px 0 20px">07 · Generated covers (when a post has no image)</h2>
+    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px">
+      <div class="cover cv-dots tone-mint r43"><span class="cv-tag mono">Dots</span></div>
+      <div class="cover cv-stripes tone-rose r43"><span class="cv-tag mono">Stripes</span></div>
+      <div class="cover cv-grid tone-sky r43"><span class="cv-tag mono">Grid</span></div>
+      <div class="cover cv-rings tone-lilac r43"><span class="cv-tag mono">Rings</span></div>
+      <div class="cover cv-check tone-rose r43"><span class="cv-tag mono">Check</span></div>
+    </div>
+    <p class="hint" style="margin-top:12px">Pattern and tone are picked from the post's series, so every series keeps the same look.</p>
+  </section>
+
+  <!-- 8 feedback -->
+  <section style="margin-top:72px" aria-label="Feedback">
+    <h2 class="mono rule" style="padding:14px 0 20px">08 · Feedback</h2>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;align-items:start">
+      <div class="stack" style="gap:16px">
+        <div class="toast"><span class="badge tone-mint">Saved</span>Added to your bookmarks.<button class="btn sm accent" type="button">Undo</button></div>
+        <div class="toast"><span class="badge tone-rose">Error</span>Couldn't post your comment.</div>
+      </div>
+      <div class="stack" style="gap:18px"><div class="prog"><i style="width:40%"></i></div><div class="prog"><i style="width:75%"></i></div><div class="readbar"><i></i></div></div>
+    </div>
+  </section>
+
+  <!-- 9 layout -->
+  <section style="margin-top:72px" aria-label="Layout and motion">
+    <h2 class="mono rule" style="padding:14px 0 20px">09 · Layout, spacing and motion</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px">
+      <div class="slab" style="padding:24px"><div class="mono">Width</div><ul class="serif" style="font-size:17px;line-height:1.7;margin-top:8px"><li>Content cap 1680px, gutters clamp(16px, 3vw, 48px)</li><li>Bands run edge to edge</li><li>Article: 260 / text / 300 columns, text about 68 characters</li><li>Wide blocks may extend 60px into the gutters</li></ul></div>
+      <div class="slab" style="padding:24px"><div class="mono">Breakpoints</div><ul class="serif" style="font-size:17px;line-height:1.7;margin-top:8px"><li>1280 and up: three-column article, 12-column home</li><li>1024: rails collapse under the text</li><li>768: home stacks, feed to two columns</li><li>Below 640: single column, action dock at bottom</li></ul></div>
+      <div class="slab" style="padding:24px"><div class="mono">Motion and a11y</div><ul class="serif" style="font-size:17px;line-height:1.7;margin-top:8px"><li>Slabs press 2px on hover, 120ms</li><li>Clay buttons go inset on press</li><li>All motion off for reduced-motion users</li><li>Focus ring: 3px signal blue, 2px offset. Targets 44px or more</li></ul></div>
+    </div>
+  </section>
+</main>
+</div>
+</body></html>

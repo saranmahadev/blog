@@ -1,0 +1,139 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Article, desktop</title><link rel="stylesheet" href="mock.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet"></head><body style="margin:0">
+
+
+
+<style>body{margin:0}</style>
+
+<div class="dm light" style="--accent: #0F7B4D;--accent-lt: #6AAD91;--on-accent: #ffffff">
+
+<div class="readbar"><i></i></div>
+<header class="hdr"><div class="wrap hdr-in">
+  <a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a>
+  <nav class="nav" aria-label="Primary"><a href="#">Home</a><a class="on" href="#">Series</a><a href="#">Topics</a><a href="#">Archive</a><a href="#">About</a></nav>
+  <span class="sp"></span>
+  <button class="srch" type="button" aria-label="Search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search <span class="kbd" style="margin-left:auto">/</span></button>
+  <button class="ib" type="button" aria-label="Toggle dark mode"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+  <button class="btn ink" type="button">Sign in</button>
+</div></header>
+
+<main>
+<section class="art-band tone-mint">
+  <div class="wrap" style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:56px;align-items:end">
+    <div>
+      <div class="mono" style="margin-bottom:26px"><a href="#">Home</a> / <a href="#">Axon</a> / Part 1</div>
+      <h1 class="disp art-h">Why I'm building a generic vector database API</h1>
+      <p class="serif" style="font-size:26px;line-height:1.4;max-width:46ch;margin-top:22px">Every retrieval project ends up rebuilding the same plumbing. Here is the case for pulling it out.</p>
+      <div class="row" style="margin-top:30px;gap:14px;flex-wrap:wrap">
+        <span class="av tone-ink">D</span>
+        <div><div style="font-weight:700">Dev</div><div class="meta" style="color:inherit;opacity:.8">Oct 3, 2026 · 9 min read</div></div>
+        <span class="sp"></span>
+        <span class="pill">AI</span><span class="pill">RAG</span><span class="pill">Databases</span>
+      </div>
+    </div>
+    <div class="cover cv-dots r43" style="background-color:var(--card);box-shadow:var(--hard)"><span class="cv-tag mono">Axon / 01</span></div>
+  </div>
+</section>
+
+<div class="wrap">
+<div class="art-grid">
+
+  <aside class="rail" aria-label="Contents and series">
+    <nav aria-label="On this page">
+      <div class="mono" style="margin-bottom:10px">On this page</div>
+      <ul class="toc"><li><a class="on" href="#">The short version</a></li><li><a href="#">The problem</a></li><li class="l2"><a href="#">Three copies of the same code</a></li><li><a href="#">A small API</a></li><li><a href="#">What comes next</a></li></ul>
+    </nav>
+    <nav class="slab tone-mint" style="padding:18px" aria-label="Series">
+      <div class="mono">Part 1 of 4</div>
+      <div class="head" style="font-size:22px;margin:4px 0 12px">Building Axon</div>
+      <ol style="font-size:14px">
+        <li class="row" style="padding:5px 0;gap:8px;font-weight:800"><span class="mono">01</span>Why I'm building it</li>
+        <li class="row" style="padding:5px 0;gap:8px"><span class="mono">02</span><a href="#">The ingestion pipeline</a></li>
+        <li class="row" style="padding:5px 0;gap:8px"><span class="mono">03</span><a href="#">Query and ranking</a></li>
+        <li class="row" style="padding:5px 0;gap:8px"><span class="mono">04</span><a href="#">Going to production</a></li>
+      </ol>
+    </nav>
+  </aside>
+
+  <article class="prose">
+    <p><strong>The short version.</strong> Most retrieval projects need the same four things: a place to put vectors, a way to filter them, a way to update them safely, and an API that doesn't change every month. Axon is my attempt to make that boring.</p>
+    <h2>The problem</h2>
+    <p>I have now built the same ingestion and search plumbing three times. Each version was <a href="#">a little better</a> and a little more tied to its project. None of them could be reused without a rewrite.</p>
+    <h3>Three copies of the same code</h3>
+    <p>The copies differ in details, but the shape is identical:</p>
+    <ul><li>take documents, split them, embed them</li><li>store vectors with metadata</li><li>search with filters, then rank</li></ul>
+    <figure class="wide">
+      <div class="cover cv-grid tone-sky" style="height:340px;border-radius:14px;box-shadow:var(--hard)"><span class="cv-tag mono">Figure 1 · wide block</span></div>
+      <figcaption class="mono muted" style="margin-top:12px;text-align:center">Images, diagrams and code can break out of the text column.</figcaption>
+    </figure>
+    <blockquote>The best API is the one you can describe in a single paragraph.</blockquote>
+    <h2>A small API</h2>
+    <p>Here is the whole surface in one request, which is the test I'd like it to keep passing:</p>
+    <div class="code">
+      <div class="code-h"><span>search.ts</span><button class="btn sm" type="button" style="color:var(--on-accent);background-color:var(--accent)">Copy</button></div>
+<pre><span class="c">// one call: embed, filter, rank</span>
+<span class="k">const</span> hits = <span class="k">await</span> axon.<span class="f">search</span>({
+  index: <span class="s">"docs"</span>,
+  query: <span class="s">"how do I rotate keys?"</span>,
+  filter: { tag: <span class="s">"security"</span> },
+  limit: <span class="k">5</span>,
+});</pre>
+    </div>
+    <div class="callout slab tone-sky"><strong class="mono" style="font-size:12px;padding-top:4px">Note</strong><span>Callouts use a soft tone so the accent stays for actions. The same slab pattern is used for tips, warnings and sidebars.</span></div>
+    <h2>What comes next</h2>
+    <p>Part 2 covers ingestion: chunking, embedding, and writing safely when a job fails halfway. If you want to follow along, the series is on the right.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;font-family:'Archivo',sans-serif;margin-top:56px">
+      <a class="slab hov tone-mint" style="padding:20px;display:block" href="#"><span class="mono">Series · up next</span><div class="head" style="font-size:24px;margin-top:6px">Part 2: the ingestion pipeline →</div></a>
+      <a class="slab hov" style="padding:20px;display:block;opacity:.55"><span class="mono">Previous</span><div class="head" style="font-size:24px;margin-top:6px">This is the first part</div></a>
+    </div>
+
+    <section aria-label="Comments" style="font-family:'Archivo',sans-serif;margin-top:72px">
+      <div class="row" style="border-bottom:1px solid var(--hair);padding-bottom:14px"><h2 class="disp" style="font-size:52px;margin:0">Comments</h2><span class="pill on">3</span><span class="sp"></span><span class="meta">Newest first</span></div>
+
+      
+        <form style="margin-top:24px">
+          <div class="row" style="align-items:flex-start;gap:14px">
+            <span class="av tone-sky">R</span>
+            <div class="field" style="flex:1"><label for="c1">Add a comment</label><textarea class="inp" id="c1" placeholder="Be specific and kind."></textarea>
+              <div class="row"><span class="hint">Comments are checked before they appear.</span><span class="sp"></span><button class="btn accent" type="button">Post comment</button></div></div>
+          </div>
+        </form>
+      
+      
+        <div class="slab tone-lilac row" style="margin-top:24px;padding:22px;gap:16px"><strong class="head" style="font-size:20px">Sign in to join the conversation.</strong><span class="sp"></span><button class="btn" type="button">Create account</button><button class="btn ink" type="button">Sign in</button></div>
+      
+
+      <div class="cmt"><span class="av tone-ink">D</span><div><div class="row" style="gap:8px"><strong>Dev</strong><span class="badge tone-accent">Author</span><span class="meta">2 hours ago</span></div><p>Thanks for reading. Part 2 goes up next week.</p><div class="row" style="margin-top:10px;gap:8px"><button class="btn sm" type="button">Reply</button></div></div></div>
+      <div class="cmt"><span class="av tone-lilac">M</span><div><div class="row" style="gap:8px"><strong>Maya</strong><span class="meta">Yesterday</span></div><p>The single-request test is a nice constraint. How do you handle filters that need joins?</p><div class="row" style="margin-top:10px;gap:8px"><button class="btn sm" type="button">Reply</button><button class="btn sm" type="button">Report</button></div></div></div>
+      <div class="cmt pend"><span class="av tone-sky">R</span><div><div class="row" style="gap:8px"><strong>Rin</strong><span class="badge tone-rose">Awaiting review</span><span class="meta">Just now</span></div><p>Only you can see this until it's approved.</p></div></div>
+    </section>
+  </article>
+
+  <aside class="rail" aria-label="Actions and related">
+    <div class="row clay" role="toolbar" aria-label="Post actions" style="padding:6px;gap:4px;border-radius:999px;align-self:flex-start;position:relative">
+      <button class="ib sm " type="button" aria-label="Like" data-tip="Like" aria-pressed="" onClick="" style="box-shadow:none"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 5.6a5.5 5.5 0 00-7.8 0L12 6.6l-1-1a5.5 5.5 0 00-7.8 7.8l1 1L12 22l7.8-7.6 1-1a5.5 5.5 0 000-7.8z"/></svg></button>
+      <button class="ib sm tip " type="button" aria-label="Bookmark" data-tip="Bookmark" aria-pressed="" onClick="" style="box-shadow:none"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button>
+      <button class="ib sm" type="button" aria-label="Jump to comments" data-tip="Comments" style="box-shadow:none"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L3 21l1.9-5.4A8 8 0 1121 12z"/></svg></button>
+      <button class="ib sm" type="button" aria-label="Copy link" data-tip="Copy link" style="box-shadow:none"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg></button>
+      <button class="ib sm" type="button" aria-label="Share" data-tip="Share" style="box-shadow:none"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v14"/></svg></button>
+    <div class="toast" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);white-space:nowrap;z-index:20" role="status"><span class="badge tone-mint">Saved</span>Added to your bookmarks<button class="btn sm accent" type="button">Undo</button></div>
+    </div>
+    <div>
+      <div class="mono" style="margin-bottom:10px">Related</div>
+      <ul>
+        <li style="padding:12px 0;border-top:1px solid var(--hair)"><a class="head" style="font-size:18px" href="#">Choosing an embedding model without a benchmark</a><div class="meta" style="margin-top:4px">5 min</div></li>
+        <li style="padding:12px 0;border-top:1px solid var(--hair)"><a class="head" style="font-size:18px" href="#">HNSW in fifteen minutes</a><div class="meta" style="margin-top:4px">15 min</div></li>
+        <li style="padding:12px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)"><a class="head" style="font-size:18px" href="#">What a code graph tells you that grep can't</a><div class="meta" style="margin-top:4px">8 min</div></li>
+      </ul>
+    </div>
+  </aside>
+
+</div>
+</div>
+
+<footer class="foot" style="margin-top:96px">
+  <div class="wrap"><div class="row"><div class="logo" style="font-size:24px"><i></i><span>Drafted</span><small class="by mono">By Dev</small></div><span class="sp"></span><span class="mono" style="color:#a8a498">© 2026 Drafted · By Dev</span></div></div>
+</footer>
+</main>
+</div>
+</body></html>

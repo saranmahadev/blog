@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Palette options, greens and blues</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="mock.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.pc{background:#fffdf6;border:1.5px solid #1c1c1c;border-radius:18px;box-shadow:4px 4px 0 #1c1c1c;padding:20px;display:flex;flex-direction:column;gap:16px;color:#1c1c1c;position:relative}
+.pc.sel{box-shadow:8px 8px 0 var(--accent),0 0 0 3px #1c1c1c}
+.sw5{display:grid;grid-template-columns:1.2fr 1.2fr 1fr 1fr .8fr;height:104px;border:1.5px solid #1c1c1c;border-radius:12px;overflow:hidden}
+.sw5>div{padding:8px;font-family:'Space Mono',monospace;font-size:10px;line-height:1.35;display:flex;flex-direction:column;justify-content:flex-end;text-transform:uppercase}
+.sw5>div+div{border-left:1.5px solid #1c1c1c}
+.pv{background:var(--paper);border:1.5px solid #1c1c1c;border-radius:14px;padding:16px;color:#1c1c1c;display:flex;flex-direction:column;gap:12px}
+.tag{display:inline-block;font:700 10px 'Space Mono',monospace;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:999px;border:1px solid rgba(28,28,28,.3)}
+.big{border:1.5px solid #1c1c1c;border-radius:18px;overflow:hidden;background:var(--paper)}
+</style>
+</helmet>
+<div class="dm light" style="--accent:#0F7B4D;--accent-lt:#5FC79A;--on-accent:#ffffff;min-height:2600px">
+
+<header class="hdr"><div class="wrap hdr-in">
+  <a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a><span class="sp"></span><span class="mono muted">Palette options 2 · ink primary, green or blue accent</span>
+</div></header>
+
+<main class="wrap" style="padding-top:48px;padding-bottom:80px">
+  <h1 class="disp" style="font-size:clamp(70px,9vw,140px)">Pick an accent</h1>
+  <p class="serif" style="font-size:24px;max-width:56ch;margin-top:14px">Ink <strong>#1C1C1C</strong> stays primary: text, rules, primary buttons. The accent is secondary: highlights, active states, the Series band, links. Greens and blues are the most widely used reading colours, and all six keep text at AA contrast. Click a card to apply it to the live preview.</p>
+
+  <section style="margin-top:44px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px" aria-label="Palette cards">
+    <sc-for list="{{cards}}" as="c" hint-placeholder-count="6">
+      <article class="pc {{c.cls}}" style="{{c.vars}}">
+        <div class="row" style="gap:10px">
+          <h2 class="head" style="font-size:24px">{{c.name}}</h2>
+          <sc-if value="{{c.rec}}" hint-placeholder-val="{{ false }}"><span class="badge" style="background:#1c1c1c;color:#f4f1e8;border-color:#1c1c1c">Recommended</span></sc-if>
+          <span class="sp"></span>
+          <sc-if value="{{c.selected}}" hint-placeholder-val="{{ false }}"><span class="badge" style="background:var(--accent);color:#1c1c1c">Selected</span></sc-if>
+        </div>
+        <p class="serif" style="font-size:16px;line-height:1.45;color:#4a463e;margin-top:-6px">{{c.vibe}}</p>
+
+        <div class="sw5">
+          <div style="background:#1c1c1c;color:#f4f1e8"><b>Ink</b>#1C1C1C</div>
+          <div style="background:var(--accent);color:var(--on-accent)"><b>Accent</b>{{c.sec}}</div>
+          <div style="background:var(--paper);color:#1c1c1c"><b>Paper</b>{{c.paper}}</div>
+          <div style="background:var(--paper2);color:#1c1c1c"><b>Surface</b>{{c.paper2}}</div>
+          <div style="background:{{c.tint}};color:#1c1c1c"><b>Tint</b>{{c.tint}}</div>
+        </div>
+
+        <div class="pv">
+          <div class="row" style="gap:8px"><span style="width:16px;height:16px;border-radius:5px;background:var(--accent);border:1.5px solid #1c1c1c"></span><span style="font:800 18px 'Archivo',sans-serif;letter-spacing:-.02em">Drafted</span><span class="sp"></span><span class="tag" style="background:var(--accent);color:var(--on-accent)">Series</span><span class="tag">Topics</span></div>
+          <div class="disp" style="font-size:28px">Why I'm building a vector database API</div>
+          <p style="font-family:'Source Serif 4',serif;font-size:14px;line-height:1.5">Plain text on paper with an <span style="text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:3px;text-underline-offset:3px">accent underline</span> for links.</p>
+          <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn ink sm" type="button">Read story</button><button class="btn accent sm" type="button">Subscribe</button><span class="pill on" style="font-size:10px">Active</span></div>
+          <div class="slab" style="padding:12px;background-color:var(--accent);color:var(--on-accent);box-shadow:3px 3px 0 #1c1c1c;border-color:#1c1c1c"><span class="mono" style="font-size:10px">Series band</span><div class="head" style="font-size:16px">Building Axon · 4 parts</div></div>
+        </div>
+
+        <div class="mono" style="font-size:11px;line-height:1.6;color:#4a463e">Button text on accent: {{c.onName}} {{c.ink}}:1 · Accent on paper {{c.onPaper}}:1<br>As link or text colour on paper: {{c.textOk}}</div>
+        <button class="btn block {{c.btnCls}}" type="button" onClick="{{c.pick}}">{{c.btnLabel}}</button>
+      </article>
+    </sc-for>
+  </section>
+
+  <section style="margin-top:72px" aria-label="Live preview">
+    <div class="row" style="margin-bottom:18px"><h2 class="disp" style="font-size:56px">Live preview</h2><span class="pill on lg" style="margin-left:12px">{{selName}} · {{selSec}}</span></div>
+    <div class="big" style="{{pvars}}">
+      <div class="hdr" style="background:var(--paper)"><div class="wrap hdr-in">
+        <a class="logo" href="#"><i style="background:var(--accent)"></i><span>Drafted</span><small class="by mono">By Dev</small></a>
+        <nav class="nav" aria-label="Preview navigation"><a class="on" href="#" style="box-shadow:inset 0 -3px 0 var(--accent)">Home</a><a href="#">Series</a><a href="#">Topics</a><a href="#">Archive</a></nav>
+        <span class="sp"></span>
+        <div class="srch" style="background:var(--paper2)">Search posts and series <span class="kbd" style="margin-left:auto">/</span></div>
+        <button class="btn ink" type="button">Sign in</button>
+      </div></div>
+
+      <div style="padding:36px 36px 0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:40px">
+        <div>
+          <div class="row" style="gap:10px"><span class="pill tone-mint">Axon · Part 1</span><span class="meta">Oct 3, 2026 · 9 min read</span></div>
+          <div class="disp" style="font-size:64px;margin-top:14px">Why I'm building a generic vector database API</div>
+          <p class="serif" style="font-size:20px;color:var(--muted);margin-top:14px;max-width:42ch">Every retrieval project ends up rebuilding the same plumbing. This series pulls it into one small, dependable API.</p>
+          <div class="row" style="margin-top:22px;gap:12px"><button class="btn ink" type="button">Read the story →</button><button class="btn accent" type="button">Subscribe</button></div>
+        </div>
+        <div>
+          <div class="col-h"><span class="mono">Top stories</span></div>
+          <article class="story"><div><span class="pill tone-sky">Code Graphs · 1</span><h3 class="head" style="font-size:20px;margin:8px 0 4px">What a code graph tells you that grep can't</h3><span class="meta">8 min</span></div><div class="thumb tone-sky" style="font-size:26px">G</div></article>
+          <article class="story"><div><span class="pill">Standalone</span><h3 class="head" style="font-size:20px;margin:8px 0 4px">Forward proxies, explained</h3><span class="meta">6 min</span></div><div class="thumb" style="background-color:var(--paper2);font-size:26px">F</div></article>
+        </div>
+      </div>
+
+      <div style="margin-top:36px;padding:40px 36px;background:var(--accent);border-top:1.5px solid #1c1c1c;border-bottom:1.5px solid #1c1c1c;color:var(--on-accent)">
+        <div class="row" style="margin-bottom:22px"><h3 class="disp" style="font-size:48px">Series</h3><span class="sp"></span><button class="btn" type="button" style="color:#1c1c1c">All series →</button></div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px">
+          <div class="slab tone-mint" style="padding:16px;box-shadow:4px 4px 0 #1c1c1c;border-color:#1c1c1c"><span class="mono" style="font-size:10px">Series</span><div class="head" style="font-size:22px">Building Axon</div><div class="head" style="font-size:18px;margin-top:18px">4 parts</div></div>
+          <div class="slab tone-lilac" style="padding:16px;box-shadow:4px 4px 0 #1c1c1c;border-color:#1c1c1c"><span class="mono" style="font-size:10px">Series</span><div class="head" style="font-size:22px">Systems Notes</div><div class="head" style="font-size:18px;margin-top:18px">6 parts</div></div>
+          <div class="slab tone-sky" style="padding:16px;box-shadow:4px 4px 0 #1c1c1c;border-color:#1c1c1c"><span class="mono" style="font-size:10px">Series</span><div class="head" style="font-size:22px">Code Graphs</div><div class="head" style="font-size:18px;margin-top:18px">3 parts</div></div>
+          <div class="slab tone-rose" style="padding:16px;box-shadow:4px 4px 0 #1c1c1c;border-color:#1c1c1c"><span class="mono" style="font-size:10px">Series</span><div class="head" style="font-size:22px">Career Notes</div><div class="head" style="font-size:18px;margin-top:18px">2 parts</div></div>
+        </div>
+      </div>
+
+      <div style="padding:30px 36px 36px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px">
+        <article class="card" style="display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:16px;padding:18px 0;border-top:1px solid var(--hair)"><div><div class="row" style="gap:10px"><span class="pill tone-mint">Axon</span><span class="meta">Oct 1 · 7 min</span></div><h3 class="head" style="font-size:20px;margin:8px 0 4px">Part 2: the ingestion pipeline</h3><p style="font-size:14px">Chunking, embedding and writing, without losing your place.</p></div><div class="thumb tone-mint" style="font-size:28px">A</div></article>
+        <article class="card" style="display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:16px;padding:18px 0;border-top:1px solid var(--hair)"><div><div class="row" style="gap:10px"><span class="pill">Standalone</span><span class="meta">Sep 30 · 5 min</span></div><h3 class="head" style="font-size:20px;margin:8px 0 4px">Choosing an embedding model without a benchmark</h3><p style="font-size:14px">A short checklist for the days you have no evaluation set.</p></div><div class="thumb" style="background-color:var(--paper2);font-size:28px">E</div></article>
+      </div>
+
+      <div style="background:#1c1c1c;color:#f4f1e8;padding:26px 36px" class="row"><span class="logo" style="font-size:22px"><i style="background:var(--accent)"></i><span>Drafted</span></span><span class="sp"></span><span class="disp" style="font-size:44px;color:var(--accent-lt)">Drafted</span></div>
+    </div>
+  </section>
+
+  <section style="margin-top:56px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px" aria-label="Roles">
+    <div class="slab" style="padding:24px"><div class="mono">Ink · primary</div><ul class="serif" style="font-size:17px;line-height:1.7;margin-top:8px"><li>Body text and headlines</li><li>Rules, borders, hard shadows</li><li>Primary buttons (cream text)</li><li>Footer and code blocks</li></ul></div>
+    <div class="slab" style="padding:24px"><div class="mono">Accent · secondary</div><ul class="serif" style="font-size:17px;line-height:1.7;margin-top:8px"><li>Series band and highlights</li><li>Active nav underline, active chips</li><li>Link underlines and focus accents</li><li>Secondary buttons (text colour picked for contrast)</li></ul></div>
+    <div class="slab" style="padding:24px"><div class="mono">Paper and tones</div><ul class="serif" style="font-size:17px;line-height:1.7;margin-top:8px"><li>Paper and surface: page and inputs</li><li>Mint, lilac, sky, rose: series colours</li><li>Tones stay the same in every option</li><li>Dark mode inverts paper and ink</li></ul></div>
+  </section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+  state = { sel: 1 };
+  renderVals() {
+    const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+    const lum = (h) => { const c = rgb(h).map((v) => v / 255).map((v) => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+    const cr = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+    const mix = (h, t) => '#' + rgb(h).map((v) => Math.round(v * (1 - t) + 255 * t).toString(16).padStart(2, '0')).join('').toUpperCase();
+    const P = [
+      { name: 'Reading green', sec: '#1A8917', paper: '#F6F3EA', paper2: '#EBE6D8', card: '#FFFDF6', vibe: 'The calm reading green people know from Medium. Fresh and familiar; the brightest of the greens.' },
+      { name: 'Emerald', sec: '#0F7B4D', paper: '#F6F3EA', paper2: '#EBE6D8', card: '#FFFDF6', vibe: 'Deeper and more refined than the classic green. Strong contrast, still calm. Rare among developer blogs.', rec: true },
+      { name: 'Deep teal', sec: '#0B7A75', paper: '#F4F3EC', paper2: '#E8E7DD', card: '#FFFEF8', vibe: 'Modern and technical, quieter than blue. A green-blue that reads as thoughtful.' },
+      { name: 'Spring green', sec: '#22C55E', paper: '#F6F3EA', paper2: '#EBE6D8', card: '#FFFDF6', vibe: 'Bright and energetic with ink text on top. Lively, but too light to use as a link colour.' },
+      { name: 'Indigo', sec: '#3B49DF', paper: '#F5F3EE', paper2: '#E9E7E0', card: '#FFFEFA', vibe: 'The developer-blog classic (dev.to territory). Familiar and trustworthy; the least distinctive.' },
+      { name: 'Ultramarine', sec: '#3B4BFF', paper: '#F6F3EA', paper2: '#EBE6D8', card: '#FFFDF6', vibe: 'The blue you saw earlier. Vivid and confident, a blueprint feel.' },
+    ];
+    const sel = this.state.sel;
+    const info = (p) => { const white = cr(p.sec, '#ffffff'), ink = cr(p.sec, '#1c1c1c'); const useWhite = white >= ink; const lt = lum(p.sec) < 0.25 ? mix(p.sec, 0.38) : p.sec; return { on: useWhite ? '#ffffff' : '#1c1c1c', onName: useWhite ? 'white' : 'ink', ratio: Math.max(white, ink), lt }; };
+    const vars = (p) => { const i = info(p); return '--accent:' + p.sec + ';--accent-lt:' + i.lt + ';--on-accent:' + i.on + ';--paper:' + p.paper + ';--paper2:' + p.paper2 + ';--card:' + p.card; };
+    const cards = P.map((p, i) => {
+      const inf = info(p), onPaper = cr(p.sec, p.paper);
+      return {
+        name: p.name, sec: p.sec, paper: p.paper, paper2: p.paper2, vibe: p.vibe, rec: !!p.rec,
+        tint: mix(p.sec, 0.75), vars: vars(p), cls: i === sel ? 'sel' : '', selected: i === sel,
+        ink: inf.ratio.toFixed(1), onName: inf.onName, onPaper: onPaper.toFixed(1), textOk: onPaper >= 4.5 ? 'passes AA' : 'too light, use as a fill only',
+        btnCls: i === sel ? 'ink' : '', btnLabel: i === sel ? 'Selected' : 'Pick this palette',
+        pick: () => this.setState({ sel: i }),
+      };
+    });
+    return { cards, pvars: vars(P[sel]), selName: P[sel].name, selSec: P[sel].sec };
+  }
+}
+</script>
+</body>
+</html>
