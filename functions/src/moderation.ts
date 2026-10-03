@@ -28,7 +28,13 @@ const QUESTION = {
   },
 };
 
-export async function askJev(text: string, apiKey: string, url = process.env.JEV_URL || 'https://api.typesafe.ai/v1/systemone'): Promise<Judgement> {
+export const TYPESAFE_URL = 'https://api.typesafe.ai/v1/systemone';
+export const OPENROUTER_URL = 'https://openrouter.ai/api/v1/systemone';
+
+/** A key from OpenRouter ("sk-or-...") goes to OpenRouter's System One endpoint; a TypeSafe key goes direct. JEV_URL overrides both. */
+export const endpointFor = (apiKey: string) => process.env.JEV_URL || (apiKey.startsWith('sk-or-') ? OPENROUTER_URL : TYPESAFE_URL);
+
+export async function askJev(text: string, apiKey: string, url = endpointFor(apiKey)): Promise<Judgement> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 10_000);
   try {

@@ -1,6 +1,6 @@
 import http from 'node:http';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { askJev, bodyHash, decide } from '../functions/src/moderation';
+import { askJev, bodyHash, decide, endpointFor, OPENROUTER_URL, TYPESAFE_URL } from '../functions/src/moderation';
 
 describe('decide', () => {
   it('publishes only when clearly fine', () => {
@@ -14,6 +14,14 @@ describe('decide', () => {
   it('leaves unclear answers for the author', () => {
     expect(decide({})).toBe('review');
     expect(decide({ approve: 0.5, reject: 0.5 })).toBe('review');
+  });
+});
+
+describe('endpointFor', () => {
+  it('routes OpenRouter keys to OpenRouter and everything else to TypeSafe', () => {
+    delete process.env.JEV_URL;
+    expect(endpointFor('sk-or-v1-abc')).toBe(OPENROUTER_URL);
+    expect(endpointFor('ts_abc')).toBe(TYPESAFE_URL);
   });
 });
 
