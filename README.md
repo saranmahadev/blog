@@ -84,3 +84,14 @@ Run them locally after `pnpm build` with `pnpm check:dist` (set `CHROME_PATH` if
 - Share images: `pnpm build` renders each post's Imaxt cover to `/og/<slug>.png` (1200x630) with headless Chrome, then discards the card pages. They exist only in `dist/`; nothing is committed. Posts with an image cover use that image.
 - Posts emit `Article` and `BreadcrumbList` JSON-LD.
 
+
+## Backend (Firebase Auth, Firestore, Functions)
+
+Phase 3 adds accounts. The site stays static; sign-in, profiles and later comments load as small client-side islands.
+
+- `firestore.rules`: default deny. A reader can read and edit only their own profile (`displayName`, `bio`, `preferences`). `role`, `email` and `createdAt` are written only by the server. Roles are custom claims (`user`, `author`, `moderator`, `admin`).
+- `functions/` (region `asia-south1`): `onUserCreated` sets the default role claim and creates `users/{uid}`; `onUserDeleted` removes it.
+- `src/lib/firebase.ts`: lazy client for Auth and Firestore. Without the `PUBLIC_FIREBASE_*` variables (see `.env.example`) it is inert and the site works as before.
+- Local work: `pnpm emulators` starts Auth, Firestore and Functions. Set `PUBLIC_USE_EMULATORS=true` to point the site at them. `pnpm test:rules` runs the rules tests against the Firestore emulator (needs Java).
+- CI: the `backend` job runs the rules tests and compiles the functions; it must pass before preview or deploy.
+- Deploying rules and functions is separate from hosting: `firebase deploy --only firestore:rules,functions --project <id>`. The CI service account currently has Hosting access only; granting it more is a deliberate step.
