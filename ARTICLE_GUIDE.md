@@ -651,6 +651,7 @@ flowchart LR
 - **Reserved slugs** cannot be used: `about`, `imaxt`, `projects`, `blog`, `series`, `tags`, `search`, `login`, `register`, `reset`, `profile`, `inbox`, `admin`, `security`, `privacy`, `api`, `archive`, `topics`, `rss`, `rss.xml`, `atom.xml`, `feed.json`, `feed.xsl`, `sitemap`, `404`, `_astro`, `images`, `fonts`, `icons`, `favicon.svg`, `robots.txt`.
 - Use `.mdx` when a post uses any Imaxt block; use `.md` for plain prose and code.
 - A series post whose series `index.md` is missing or a draft is **not published**.
+- The live series show every pattern in this guide: *Building Drafted* (decisions as True stories, features as Notes), *Building Dev Universe* (a Plan) and *Curious to Coder* (a Constructed story). Read one before drafting a similar post.
 
 ## 14. Front matter
 
@@ -704,7 +705,7 @@ draft: false
 ---
 ```
 
-- **The opener's job:** make the promise and name the series idea. It is usually a story that proves the idea. (Dev's essay is the opener of *Curious to Coder*: it ends "Welcome to **Curious to Coder**".)
+- **The opener's job:** make the promise and name the series idea. It is usually a story that proves the idea. (In *Curious to Coder*, the first post, *The Software You Stopped Noticing*, opens the world; the second, *Symptoms That You Should Pursue Coding*, ends "Welcome to **Curious to Coder**" and names the series idea.)
 - **Each middle post:** one story, one idea. Do not rely on readers having read the previous post; add a one-sentence recap.
 - **The finale's job:** close the loop. Return to the opener's image or question, and say what the reader can now do.
 - **Order** with `order: 1, 2, 3…`. The site adds *Previous* and *Up next* cards and a progress bar; do not write your own link list.
@@ -951,7 +952,7 @@ cover:
 
 ## 23. Worked example
 
-Dev's essay *Symptoms That You Should Pursue Coding* is a **True story** and the opener of *Curious to Coder*. Here is how it maps onto the format, beat by beat. Dev's own words are kept; the table shows where facts naturally arrive and which block carries them. It is a demonstration of the method, not a rewrite.
+Dev's essay *Symptoms That You Should Pursue Coding* is a **True story** and the second post of *Curious to Coder*. Here is how it maps onto the format, beat by beat. Dev's own words are kept; the table shows where facts naturally arrive and which block carries them. It is a demonstration of the method, not a rewrite.
 
 | Beat (heading) | Story layer | Fact moment | Block | Note |
 | --- | --- | --- | --- | --- |

@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import { serve, chromePath } from './serve.mjs';
 
-const PAGES = ['/', '/archive/', '/topics/', '/topics/drafted/', '/series/', '/welcome-to-drafted/', '/building-drafted/', '/building-drafted/why-drafted-has-no-images/', '/building-drafted/locking-it-down-before-writing/', '/building-dev-universe/dev-universe/', '/imaxt/', '/about/', '/login/', '/register/', '/reset/', '/inbox/', '/404.html'];
+const PAGES = ['/', '/archive/', '/topics/', '/topics/drafted/', '/series/', '/welcome-to-drafted/', '/building-drafted/', '/building-drafted/why-drafted-has-no-images/', '/building-drafted/locking-it-down-before-writing/', '/building-dev-universe/dev-universe/', '/curious-to-coder/the-software-you-stopped-noticing/', '/building-drafted/light-dark-and-readable/', '/imaxt/', '/about/', '/login/', '/register/', '/reset/', '/inbox/', '/404.html'];
 const { base, close } = await serve();
 const browser = await chromium.launch({ executablePath: chromePath() });
 let failures = 0;
