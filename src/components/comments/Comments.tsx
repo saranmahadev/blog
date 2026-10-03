@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { initialOf, useAuth } from '@/lib/auth';
+import { initialOf, useAuth, useRole } from '@/lib/auth';
 import { firebaseConfigured, getDb, getFunctionsClient } from '@/lib/firebase';
 
 type Comment = {
-  id: string; parentId: string | null; authorId: string; authorName: string;
+  id: string; parentId: string | null; replyToId: string | null; authorId: string; authorName: string; authorRole: string;
   body: string; status: 'pending' | 'published' | 'hidden'; createdAt: Date | null;
 };
 
@@ -30,7 +30,10 @@ const callMessage = (err: unknown) => {
 export default function Comments({ postKey }: { postKey: string }) {
   const { status, user } = useAuth();
   const [items, setItems] = useState<Comment[] | null>(null);
+  const role = useRole(user);
+  const isAuthor = role === 'admin';
   const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [polls, setPolls] = useState(0);
   const [note, setNote] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
 
   const load = useCallback(async () => {
@@ -43,7 +46,7 @@ export default function Comments({ postKey }: { postKey: string }) {
       for (const snap of await Promise.all(queries)) {
         for (const d of snap.docs) {
           const x = d.data();
-          seen.set(d.id, { id: d.id, parentId: x.parentId ?? null, authorId: x.authorId, authorName: x.authorName, body: x.body, status: x.status, createdAt: x.createdAt?.toDate?.() ?? null });
+          seen.set(d.id, { id: d.id, parentId: x.parentId ?? null, replyToId: x.replyToId ?? null, authorRole: x.authorRole ?? 'user', authorId: x.authorId, authorName: x.authorName, body: x.body, status: x.status, createdAt: x.createdAt?.toDate?.() ?? null });
         }
       }
       setItems([...seen.values()].sort((a, b) => (b.createdAt?.getTime() ?? Date.now()) - (a.createdAt?.getTime() ?? Date.now())));
@@ -52,12 +55,23 @@ export default function Comments({ postKey }: { postKey: string }) {
 
   useEffect(() => { if (status !== 'loading') load(); }, [status, load]);
 
+  // A comment is checked automatically within seconds: keep looking until our pending ones resolve.
+  const waiting = (items ?? []).some((c) => c.status === 'pending' && c.authorId === user?.uid);
+  useEffect(() => {
+    if (!waiting || polls >= 8) return;
+    const t = setTimeout(() => { setPolls(polls + 1); load(); }, 3000);
+    return () => clearTimeout(t);
+  }, [waiting, polls, load]);
+
   if (!firebaseConfigured) return null;
 
   const top = (items ?? []).filter((c) => !c.parentId);
   const repliesOf = (id: string) => (items ?? []).filter((c) => c.parentId === id).sort((a, b) => (a.createdAt?.getTime() ?? Infinity) - (b.createdAt?.getTime() ?? Infinity));
   const publishedCount = (items ?? []).filter((c) => c.status === 'published').length;
   const canPost = status === 'in' && user?.emailVerified;
+  // Only the author replies. A reader may answer the author's replies, and only in the thread they started.
+  const canReplyTo = (c: Comment, thread: Comment) =>
+    !!canPost && c.status === 'published' && (isAuthor || (user?.uid === thread.authorId && c.authorRole === 'admin' && c.id !== thread.id));
   const here = typeof location === 'undefined' ? '/' : location.pathname;
 
   return (
@@ -67,6 +81,7 @@ export default function Comments({ postKey }: { postKey: string }) {
         <span className="pill on">{publishedCount}</span>
         <span className="sp" /><span className="meta">Newest first</span>
       </div>
+      <p className="hint" style={{ marginTop: 10 }}>Comments are checked automatically. Only the author replies, and you can answer back in your own thread.</p>
 
       {status === 'out' && (
         <div className="slab tone-lilac cm-cta">
@@ -83,7 +98,7 @@ export default function Comments({ postKey }: { postKey: string }) {
           <a className="btn ink" href="/profile/">Go to your profile</a>
         </div>
       )}
-      {canPost && <Composer postKey={postKey} name={user?.displayName ?? ''} email={user?.email ?? ''} onDone={(t) => { setNote({ kind: 'ok', text: t }); load(); }} />}
+      {canPost && <Composer postKey={postKey} name={user?.displayName ?? ''} email={user?.email ?? ''} onDone={(t) => { setNote({ kind: 'ok', text: t }); setPolls(0); load(); }} />}
 
       <div role="status" aria-live="polite">{note && <p className={`cm-note ${note.kind}`}>{note.text}</p>}</div>
 
@@ -91,12 +106,17 @@ export default function Comments({ postKey }: { postKey: string }) {
       {items !== null && top.length === 0 && <p className="serif muted" style={{ marginTop: 24 }}>No comments yet. Be the first.</p>}
       {top.map((c) => (
         <div key={c.id}>
-          <Item c={c} me={user?.uid} canReply={!!canPost && c.status === 'published'} onReply={() => setReplyTo(replyTo === c.id ? null : c.id)} onChanged={load} setNote={setNote} canReport={!!canPost} />
+          <Item c={c} me={user?.uid} canReply={canReplyTo(c, c)} onReply={() => setReplyTo(replyTo === c.id ? null : c.id)} onChanged={load} setNote={setNote} canReport={!!canPost} />
           {replyTo === c.id && canPost && (
-            <div className="cm-reply"><Composer postKey={postKey} parentId={c.id} name={user?.displayName ?? ''} email={user?.email ?? ''} compact onDone={(t) => { setReplyTo(null); setNote({ kind: 'ok', text: t }); load(); }} /></div>
+            <div className="cm-reply"><Composer postKey={postKey} parentId={c.id} replyToId={null} name={user?.displayName ?? ''} email={user?.email ?? ''} compact onDone={(t) => { setReplyTo(null); setNote({ kind: 'ok', text: t }); setPolls(0); load(); }} /></div>
           )}
           {repliesOf(c.id).map((r) => (
-            <div className="cm-reply" key={r.id}><Item c={r} me={user?.uid} canReply={false} onReply={() => {}} onChanged={load} setNote={setNote} canReport={!!canPost} /></div>
+            <div key={r.id}>
+              <div className="cm-reply"><Item c={r} me={user?.uid} canReply={canReplyTo(r, c)} onReply={() => setReplyTo(replyTo === r.id ? null : r.id)} onChanged={load} setNote={setNote} canReport={!!canPost} /></div>
+              {replyTo === r.id && canPost && (
+                <div className="cm-reply"><Composer postKey={postKey} parentId={c.id} replyToId={r.id} name={user?.displayName ?? ''} email={user?.email ?? ''} compact onDone={(t) => { setReplyTo(null); setNote({ kind: 'ok', text: t }); setPolls(0); load(); }} /></div>
+              )}
+            </div>
           ))}
         </div>
       ))}
@@ -104,12 +124,13 @@ export default function Comments({ postKey }: { postKey: string }) {
   );
 }
 
-function Composer({ postKey, parentId, name, email, compact, onDone }: { postKey: string; parentId?: string; name: string; email: string; compact?: boolean; onDone: (msg: string) => void }) {
+function Composer({ postKey, parentId, replyToId, name, email, compact, onDone }: { postKey: string; parentId?: string; replyToId?: string | null; name: string; email: string; compact?: boolean; onDone: (msg: string) => void }) {
   const [body, setBody] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const id = `cm-${parentId ?? 'new'}`;
+  const id = `cm-${replyToId ?? parentId ?? 'new'}`;
   const { user } = useAuth();
+  const isAuthorNow = useRole(user) === 'admin';
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -119,9 +140,9 @@ function Composer({ postKey, parentId, name, email, compact, onDone }: { postKey
       // The server checks the verified-email claim in the token, so make sure the token is current.
       await user?.getIdToken(true);
       const [fns, m] = await Promise.all([getFunctionsClient(), import('firebase/functions')]);
-      await m.httpsCallable(fns, 'postComment')({ postKey, body, parentId: parentId ?? null });
+      await m.httpsCallable(fns, 'postComment')({ postKey, body, parentId: parentId ?? null, replyToId: replyToId ?? null });
       setBody('');
-      onDone('Thanks. Your comment is awaiting review; only you can see it until it is approved.');
+      onDone(isAuthorNow ? 'Posted.' : 'Thanks. Your comment is being checked and usually appears within a few seconds.');
     } catch (e2) { setErr(callMessage(e2)); }
     setBusy(false);
   }
@@ -133,7 +154,7 @@ function Composer({ postKey, parentId, name, email, compact, onDone }: { postKey
         <label htmlFor={id}>{parentId ? 'Reply' : 'Add a comment'}</label>
         <textarea className="inp" id={id} maxLength={2000} placeholder="Be specific and kind." value={body} onChange={(e) => setBody(e.target.value)} aria-describedby={`${id}-h`} style={compact ? { minHeight: 80 } : undefined} />
         <div className="row" style={{ flexWrap: 'wrap' }}>
-          <span className="hint" id={`${id}-h`}>Comments are checked before they appear. {body.length} / 2000</span>
+          <span className="hint" id={`${id}-h`}>{body.length} / 2000</span>
           <span className="sp" />
           <button className="btn accent" type="submit" disabled={busy}>{busy ? 'Posting…' : parentId ? 'Post reply' : 'Post comment'}</button>
         </div>
@@ -160,7 +181,7 @@ function Item({ c, me, canReply, canReport, onReply, onChanged, setNote }: {
       const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
       await m.updateDoc(m.doc(db, 'comments', c.id), { body: t, status: 'pending', updatedAt: m.serverTimestamp() });
       setEditing(false);
-      setNote({ kind: 'ok', text: 'Saved. Your edited comment is awaiting review again.' });
+      setNote({ kind: 'ok', text: 'Saved. Your edited comment is being checked again.' });
       onChanged();
     } catch { setNote({ kind: 'err', text: 'Could not save your edit.' }); }
     setBusy(false);
@@ -189,7 +210,9 @@ function Item({ c, me, canReply, canReport, onReply, onChanged, setNote }: {
       <div>
         <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
           <strong>{c.authorName}</strong>
-          {c.status === 'pending' && <span className="badge tone-rose">Awaiting review</span>}
+          {c.authorRole === 'admin' && <span className="badge tone-accent">Author</span>}
+          {c.status === 'pending' && <span className="badge tone-rose">Being checked</span>}
+          {c.status === 'hidden' && <span className="badge tone-rose">Not published</span>}
           <span className="meta">{ago(c.createdAt)}</span>
         </div>
         {editing ? (
@@ -201,7 +224,8 @@ function Item({ c, me, canReply, canReport, onReply, onChanged, setNote }: {
         ) : (
           <p className="cm-body">{c.body}</p>
         )}
-        {c.status === 'pending' && mine && !editing && <p className="hint" style={{ marginTop: 4 }}>Only you can see this until it is approved.</p>}
+        {c.status === 'pending' && mine && !editing && <p className="hint" style={{ marginTop: 4 }}>Only you can see this until it has been checked.</p>}
+        {c.status === 'hidden' && mine && !editing && <p className="hint" style={{ marginTop: 4 }}>This comment was not published because it looks like spam or breaks the guidelines. You can edit it and it will be checked again.</p>}
         {!editing && (
           <div className="row" style={{ marginTop: 10, gap: 8, flexWrap: 'wrap' }}>
             {canReply && <button className="btn sm" type="button" onClick={onReply}>Reply</button>}

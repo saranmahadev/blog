@@ -23,7 +23,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
 
   useEffect(() => { setNext(safeNext(new URLSearchParams(location.search).get('next'))); }, []);
   // Already signed in: nothing to do here (except on the register screen while we show "verify").
-  useEffect(() => { if (auth.status === 'in' && !done) location.replace(next); }, [auth.status, done, next]);
+  useEffect(() => { if (auth.status === 'in' && !done && !busy) location.replace(next); }, [auth.status, done, busy, next]);
 
   if (!firebaseConfigured) {
     return <div className="dlg"><h1 className="disp" style={{ fontSize: 44 }}>Accounts are not set up yet</h1><p className="serif muted" style={{ marginTop: 12 }}>Sign-in will appear here once the site is connected to its backend.</p></div>;
@@ -130,10 +130,19 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   );
 }
 
-/** Create the profile document the rules allow a reader to create for themselves. Safe to call twice. */
+/**
+ * Make sure users/{uid} exists with the chosen username. The server creates a document at sign-up too (with a
+ * name made from the email), so whichever arrives first, end up with the username the reader picked.
+ */
 export async function ensureProfile(uid: string, email: string | null, displayName: string) {
   const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
   const ref = m.doc(db, 'users', uid);
-  if ((await m.getDoc(ref)).exists()) return;
-  await m.setDoc(ref, { displayName: displayName.slice(0, 40), email, role: 'user', bio: '', preferences: {}, createdAt: m.serverTimestamp() });
+  const name = displayName.slice(0, 40);
+  const rename = () => m.updateDoc(ref, { displayName: name });
+  if ((await m.getDoc(ref)).exists()) return rename();
+  try {
+    await m.setDoc(ref, { displayName: name, email, role: 'user', bio: '', preferences: {}, createdAt: m.serverTimestamp() });
+  } catch {
+    await rename(); // the server created it between our check and our write
+  }
 }

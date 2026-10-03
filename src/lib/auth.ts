@@ -30,6 +30,18 @@ export function useAuth(): AuthState {
   return state;
 }
 
+/** The signed-in user's role claim ("admin" is the blog author). Empty until the token has been read. */
+export function useRole(user: User | null): string {
+  const [role, setRole] = useState('');
+  useEffect(() => {
+    let live = true;
+    setRole('');
+    user?.getIdTokenResult().then((r) => { if (live) setRole(String(r.claims.role ?? '')); }).catch(() => {});
+    return () => { live = false; };
+  }, [user, user?.emailVerified]);
+  return role;
+}
+
 /** Plain-language messages for Firebase auth errors. Never reveals whether an email is registered. */
 export function authMessage(err: unknown): string {
   const code = (err as { code?: string })?.code ?? '';
