@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "blog-saranmahadev",
     "public": "dist",
     "cleanUrls": true,
     "trailingSlash": true,
