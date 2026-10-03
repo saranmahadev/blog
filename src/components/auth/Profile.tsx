@@ -32,7 +32,7 @@ export default function Profile({ posts }: { posts: PostInfo[] }) {
             <a className="btn" href="/register/?next=%2Fprofile%2F">Create account</a>
           </div>
         )}
-        <section id="bookmarks" aria-label="Bookmarks"><Library posts={posts} showStatus={false} /></section>
+        <section aria-label="Bookmarks"><Library posts={posts} showStatus={false} /></section>
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function Profile({ posts }: { posts: PostInfo[] }) {
 
       <p className="mono" style={{ marginTop: 10 }}>{user.emailVerified ? 'Email verified' : 'Email not verified: use the bar at the top of the page to send a verification email.'}</p>
 
-      <section id="bookmarks" aria-label="Bookmarks" style={{ marginTop: 32 }}>
+      <section aria-label="Bookmarks" style={{ marginTop: 32 }}>
         <h2 className="mono rule" style={{ paddingTop: 12 }}>Bookmarks</h2>
         <Library posts={posts} showStatus={false} />
       </section>

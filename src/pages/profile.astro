@@ -10,6 +10,7 @@ const info = posts.map((p) => ({ slug: p.key, title: p.data.title, url: p.url, d
 
 <BaseLayout title="Your profile" noindex>
   <div class="wrap" data-pagefind-ignore style="padding-top:56px;padding-bottom:96px">
+    <div id="bookmarks" aria-hidden="true"></div>
     <Profile client:load posts={info} />
   </div>
 </BaseLayout>
