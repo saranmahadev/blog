@@ -1,0 +1,51 @@
+---
+import '@/styles/imaxt.css';
+import type { ImaxtTone } from './types';
+
+interface Props { tone?: ImaxtTone }
+const { tone = 'sky' } = Astro.props;
+---
+
+<div class="imx imx-scrolly-wrap">
+  <div class="imx-scrolly" data-tone={tone}>
+    <div class="imx-scrolly-stage imx-slab" aria-hidden="true"><div class="imx-scrolly-slides"></div></div>
+    <div class="imx-scrolly-beats"><slot /></div>
+  </div>
+</div>
+
+<script>
+  // Pins a big statement next to the prose and swaps it as each beat scrolls into view.
+  // Without JavaScript (or on narrow screens) every beat shows its own heading inline instead.
+  document.querySelectorAll<HTMLElement>('.imx-scrolly').forEach((root) => {
+    const beats = [...root.querySelectorAll<HTMLElement>('.imx-beat')];
+    const holder = root.querySelector<HTMLElement>('.imx-scrolly-slides');
+    if (!holder || !beats.length) return;
+    const slides = beats.map((b) => {
+      const s = document.createElement('div');
+      s.className = 'imx-slide';
+      const big = document.createElement('div');
+      big.className = 'imx-slide-big';
+      big.textContent = b.dataset.stage ?? '';
+      s.append(big);
+      if (b.dataset.sub) {
+        const sub = document.createElement('div');
+        sub.className = 'imx-slide-sub imx-label';
+        sub.textContent = b.dataset.sub;
+        s.append(sub);
+      }
+      holder.append(s);
+      return s;
+    });
+    root.dataset.js = '';
+    const show = (i: number) => {
+      slides.forEach((s, j) => s.classList.toggle('on', i === j));
+      beats.forEach((b, j) => b.classList.toggle('on', i === j));
+    };
+    show(0);
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && show(beats.indexOf(e.target as HTMLElement))),
+      { rootMargin: '-42% 0px -42% 0px' },
+    );
+    beats.forEach((b) => io.observe(b));
+  });
+</script>

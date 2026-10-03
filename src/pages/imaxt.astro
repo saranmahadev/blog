@@ -4,7 +4,7 @@ import { Code } from 'astro:components';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { imaxt, ImaxtCover } from '@/components/imaxt';
 
-const { Statement, Stat, StatRow, PullQuote, Compare, Side, Steps, Step, Timeline, Event, Bars, Sidenote, CodeWalk, Marquee } = imaxt;
+const { Statement, Stat, StatRow, PullQuote, Compare, Side, Steps, Step, Timeline, Event, Bars, Sidenote, CodeWalk, Marquee, Heatmap, CurvedText, Scrolly, Beat, TypeLab } = imaxt;
 
 const src = {
   statement: `<Statement>Every retrieval project rebuilds the **same plumbing**.</Statement>
@@ -49,6 +49,29 @@ await checkpoint.save(id);
 
 </CodeWalk>`,
   marquee: `<Marquee words={["Embed", "Filter", "Rank", "Repeat"]} tone="accent" />`,
+  heat: `<Heatmap
+  caption="Common modes, one digit per audience"
+  rows={["600", "640", "644", "755"]}
+  cols={["Owner", "Group", "Others"]}
+  data={[[6, 0, 0], [6, 4, 0], [6, 4, 4], [7, 5, 5]]}
+  min={0}
+  max={7}
+/>`,
+  curved: `<CurvedText text="Drag the sliders" shape="arc" />
+<CurvedText text="Drafted" shape="circle" mark="D" tone="mint" spin decorative />`,
+  scrolly: `<Scrolly tone="sky">
+  <Beat stage="Chunk" sub="step 1">Split each document into pieces.</Beat>
+  <Beat stage="Embed" sub="step 2">Turn every chunk into a vector.</Beat>
+  <Beat stage="Write" sub="step 3">Store it under a stable id.</Beat>
+</Scrolly>`,
+  typelab: `<TypeLab sample="Same letters, different voice" />`,
+  diagram: `\`\`\`mermaid caption="A forward proxy sits between clients and the internet"
+flowchart LR
+  accTitle: Forward proxy
+  accDescr: A client sends a request to the forward proxy, which forwards it to a server.
+  A[Client] -->|request| P[Forward proxy]
+  P -->|forwarded| S[Server]
+\`\`\``,
   cover: `---
 cover:
   kind: stack   # word | stat | quote | stack
@@ -136,6 +159,35 @@ const walkCode = `const id = \`\${doc.id}:\${chunk.index}\`;\nawait index.upsert
       <p>A scrolling band of words, used as a section break. It is still when the reader prefers reduced motion.</p>
       <Marquee words={['Embed', 'Filter', 'Rank', 'Repeat']} tone="accent" />
       <Code code={src.marquee} lang="mdx" theme="github-dark" />
+
+      <h2>Heatmap</h2>
+      <p>A real table whose cells are tinted by value. The number is always printed, so colour is never the only signal.</p>
+      <Heatmap caption="Common modes, one digit per audience" rows={['600', '640', '644', '755']} cols={['Owner', 'Group', 'Others']} data={[[6, 0, 0], [6, 4, 0], [6, 4, 4], [7, 5, 5]]} min={0} max={7} />
+      <Code code={src.heat} lang="mdx" theme="github-dark" />
+
+      <h2>CurvedText</h2>
+      <p>Text on an arc, a wave or a ring. It stays real, selectable text. A ring can carry a mark and spin slowly (still when motion is reduced).</p>
+      <CurvedText text="Drag the sliders" shape="arc" />
+      <CurvedText text="Drafted" shape="circle" mark="D" tone="mint" spin decorative />
+      <Code code={src.curved} lang="mdx" theme="github-dark" />
+
+      <h2>Scrolly</h2>
+      <p>A statement pinned beside the prose that swaps as each beat scrolls into view. Without JavaScript, or on narrow screens, each beat shows its own label inline.</p>
+      <Scrolly tone="sky">
+        <Beat stage="Chunk" sub="step 1">Split each document into pieces that make sense on their own.</Beat>
+        <Beat stage="Embed" sub="step 2">Turn every chunk into a vector.</Beat>
+        <Beat stage="Write" sub="step 3">Store it under a stable id.</Beat>
+      </Scrolly>
+      <Code code={src.scrolly} lang="mdx" theme="github-dark" />
+
+      <h2>TypeLab</h2>
+      <p>An interactive font playground (a React island that loads when scrolled into view). It offers only the axes this site ships.</p>
+      <TypeLab sample="Same letters, different voice" />
+      <Code code={src.typelab} lang="mdx" theme="github-dark" />
+
+      <h2>Diagrams</h2>
+      <p>Write a Mermaid diagram in a <code>mermaid</code> fenced block, in any <code>.md</code> or <code>.mdx</code> post. It is drawn to SVG at build time (flowchart, sequence, state, class, ER, Gantt, timeline, mindmap, pie and more), skinned to the Imaxt look, and switches with the light and dark theme. Every diagram must have <code>accTitle</code> and <code>accDescr</code>; the build fails without them. Add <code>caption="..."</code> or <code>wide</code> after the language. Live examples: <a href="/forward-proxies-explained/">flowchart</a>, <a href="/systems-notes/consensus-without-the-hand-waving/">sequence</a>, <a href="/axon/the-ingestion-pipeline/">state</a>.</p>
+      <Code code={src.diagram} lang="markdown" theme="github-dark" />
 
       <h2>Typographic covers</h2>
       <p>Each post can set a cover in its frontmatter. Without one, a stacked cover is made from the title.</p>

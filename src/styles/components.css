@@ -278,3 +278,22 @@ main { flex: 1; }
 @media (max-width: 760px) { .part { grid-template-columns: 56px minmax(0, 1fr); gap: 14px; padding: 18px; } .part-n { font-size: 44px; } }
 [hidden] { display: none !important; }
 @media (max-width: 1100px) { .art-hero { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+
+/* ---------- Diagrams (Mermaid, rendered at build time by rehype-imaxt-diagram) ---------- */
+.diagram { margin: 2.4rem 0; padding: 22px; background: var(--card); color: var(--text); border: 1.5px solid var(--line); border-radius: 14px; box-shadow: var(--hard); font-family: var(--font-sans); }
+.diagram-wide { margin-left: -60px; margin-right: -60px; }
+.diagram-body { display: flex; justify-content: center; }
+.diagram-body[data-variant='dark'] { display: none; }
+:root[data-theme='dark'] .diagram-body[data-variant='light'] { display: none; }
+:root[data-theme='dark'] .diagram-body[data-variant='dark'] { display: flex; }
+.diagram svg { max-width: 100%; height: auto; }
+.diagram-cap { margin-top: 14px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; color: var(--muted); text-align: center; }
+/* Skin: shapes and lines only. Never filter text, or it renders soft. */
+.diagram svg :is(g.node rect, rect.actor, .statediagram-state rect, .classGroup rect, rect.er.entityBox) { stroke-width: 1.5px; rx: 10px; ry: 10px; filter: drop-shadow(3px 3px 0 var(--line)); }
+.diagram svg :is(.flowchart-link, .messageLine0, .messageLine1, .actor-line, .transition, path.relation) { stroke-width: 1.5px; }
+.diagram svg :is(.edgeLabel, .edgeLabel text, .messageText) { font-family: var(--font-mono); font-size: 12px; }
+.diagram svg .edgeLabel rect { opacity: 1; }
+/* A halo in the card colour keeps lines from running through labels, without filtering the text. */
+.diagram svg :is(.edgeLabel text, text.messageText, .edgeLabel span) { paint-order: stroke; stroke: var(--card); stroke-width: 5px; stroke-linejoin: round; }
+@media (max-width: 1100px) { .diagram-wide { margin-left: 0; margin-right: 0; } }
+@media (max-width: 760px) { .diagram { padding: 14px; } }

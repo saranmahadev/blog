@@ -28,10 +28,13 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Check Chrome (renders Mermaid diagrams at build time)
+        run: google-chrome --version
       - run: pnpm check
       - run: pnpm build
         env:
           SITE_URL: ${{ vars.SITE_URL }}
+          CHROME_PATH: /usr/bin/google-chrome
       - uses: actions/upload-artifact@v4
         with:
           name: dist

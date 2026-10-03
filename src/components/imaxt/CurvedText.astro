@@ -1,0 +1,38 @@
+---
+import '@/styles/imaxt.css';
+import type { ImaxtTone } from './types';
+
+interface Props {
+  text: string;
+  shape?: 'arc' | 'wave' | 'circle';
+  /** Short glyph in the middle of a circle stamp. */
+  mark?: string;
+  tone?: ImaxtTone;
+  /** Slowly rotate a circle stamp (off for reduced motion). */
+  spin?: boolean;
+  /** Hide from screen readers when the text repeats nearby content. */
+  decorative?: boolean;
+}
+const { text, shape = 'arc', mark, tone, spin, decorative } = Astro.props;
+const id = 'ct' + [...(text + shape)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7).toString(36);
+const circle = shape === 'circle';
+const path = {
+  arc: 'M 20 150 Q 200 -30 380 150',
+  wave: 'M 10 90 C 80 10, 140 170, 200 90 S 320 10, 390 90',
+  circle: 'M 100 100 m -66 0 a 66 66 0 1 1 132 0 a 66 66 0 1 1 -132 0',
+}[shape];
+const view = circle ? '0 0 200 200' : shape === 'arc' ? '0 25 400 115' : '0 0 400 180';
+// A circle repeats its text around the ring so the whole circumference is filled.
+const ring = circle ? Array.from({ length: Math.max(1, Math.round(420 / (text.length * 11 + 22))) }, () => text).join('  ·  ') + '  ·  ' : text;
+---
+
+<div class:list={['imx', 'imx-curved']} data-shape={shape}>
+  <svg viewBox={view} role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : text} aria-hidden={decorative ? 'true' : undefined} data-tone={tone} class:list={[circle && spin && 'imx-spin']}>
+    {circle && <circle cx="100" cy="100" r="96" class="imx-curved-disc" />}
+    <defs><path id={id} d={path} fill="none" /></defs>
+    <text class="imx-curved-t" aria-hidden="true">
+      <textPath href={`#${id}`} startOffset={circle ? '0' : '50%'} text-anchor={circle ? 'start' : 'middle'} textLength={circle ? 410 : undefined} lengthAdjust={circle ? 'spacing' : undefined}>{ring}</textPath>
+    </text>
+    {circle && mark && <text x="100" y="100" class="imx-curved-mark" text-anchor="middle" dominant-baseline="central" aria-hidden="true">{mark}</text>}
+  </svg>
+</div>

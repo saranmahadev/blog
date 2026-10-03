@@ -53,7 +53,7 @@ The accent is for actions, links and highlights; it never carries body text.
 
 ## Imaxt
 
-Imaxt is the blog's signature feature: typography and layout used as the visuals, because posts carry no images. Blocks: Statement, Stat/StatRow, PullQuote, Compare, Steps, Timeline, Bars, Sidenote, CodeWalk, Marquee, plus typographic covers. Display type is Fraunces (optical-size axis) alongside Archivo's width and weight axes; it loads only on pages that use it. Reference: the `/imaxt/` Lab page on the live site. The design canvas for Imaxt is added in a later step.
+Imaxt is the blog's signature feature: typography and layout used as the visuals, because posts carry no images. Blocks: Statement, Stat/StatRow, PullQuote, Compare, Steps, Timeline, Bars, Sidenote, CodeWalk, Marquee, plus typographic covers. Display type is Fraunces (optical-size axis) alongside Archivo's width and weight axes; it loads only on pages that use it. Reference: the `/imaxt/` Lab page on the live site. v2 adds Heatmap, CurvedText, Scrolly, TypeLab and Mermaid diagrams (built at build time, themed for light and dark). The design canvas for Imaxt is added in a later step.
 
 ## The accent in code
 

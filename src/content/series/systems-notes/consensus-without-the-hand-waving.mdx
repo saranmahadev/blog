@@ -23,6 +23,26 @@ Consensus is the problem of getting several machines to agree on one value, even
   <Event date="Step 4" title="Learn">Everyone else is told what was decided.</Event>
 </Timeline>
 
+
+```mermaid caption="A leader gets a value accepted by a majority"
+sequenceDiagram
+  accTitle: One round of consensus
+  accDescr: A leader proposes a value to two followers. Both promise, the leader asks them to accept, both accept, and the leader announces the decision.
+  participant L as Leader
+  participant A as Follower A
+  participant B as Follower B
+  L->>A: propose
+  L->>B: propose
+  A-->>L: promise
+  B-->>L: promise
+  L->>A: accept?
+  L->>B: accept?
+  A-->>L: accepted
+  B-->>L: accepted
+  L->>A: decided
+  L->>B: decided
+```
+
 ## Why a majority
 
 Any two majorities overlap by at least one machine. That overlap is how a new leader learns what the old one decided.

@@ -1,0 +1,11 @@
+---
+import '@/styles/imaxt.css';
+
+interface Props { stage: string; sub?: string }
+const { stage, sub } = Astro.props;
+---
+
+<section class="imx-beat" data-stage={stage} data-sub={sub}>
+  <div class="imx-beat-inline imx-label">{stage}{sub ? ` · ${sub}` : ''}</div>
+  <div class="imx-beat-body"><slot /></div>
+</section>

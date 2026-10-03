@@ -123,3 +123,83 @@ html { overflow-x: clip; }
 .imx-cover[data-kind='stat'] .imx-cover-line { font-family: var(--font-display); font-variation-settings: 'wdth' 70; font-weight: 800; }
 .imx-cover-sub { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; font-size: clamp(9px, 2.6cqmin, 14px); }
 .imx-cover[data-kind='quote'] .imx-cover-q { font-family: var(--font-fraunces); font-variation-settings: 'opsz' 144; font-style: italic; font-weight: 500; line-height: 1.04; letter-spacing: -0.02em; font-size: min(9.2cqw, 17cqh); text-wrap: balance; }
+
+/* ---------- Heatmap ---------- */
+.imx-heat-wrap { overflow-x: auto; border: 1.5px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: var(--hard); }
+.imx-heat { width: 100%; border-collapse: collapse; font-family: var(--font-sans); font-size: 15px; }
+.imx-heat caption { text-align: left; padding: 12px 14px; color: var(--muted); caption-side: top; }
+.imx-heat th { font-family: var(--font-mono); font-weight: 400; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; white-space: nowrap; }
+.imx-heat thead th { text-align: center; border-bottom: 1.5px solid var(--line); }
+.imx-heat tbody th { border-right: 1.5px solid var(--line); background: var(--paper2); }
+.imx-heat td { text-align: center; padding: 14px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text); background: color-mix(in srgb, var(--accent) var(--p, 6%), var(--paper2)); border: 1px solid color-mix(in srgb, var(--line) 30%, transparent); }
+.imx-heat tbody tr:first-child td { border-top: 0; }
+.imx-heat thead td { background: var(--paper2); border: 0; border-bottom: 1.5px solid var(--line); padding: 0; }
+.imx-heat-wrap:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+.imx-heat-legend { display: flex; align-items: center; gap: 10px; margin-top: 12px; color: var(--muted); }
+.imx-heat-ramp { flex: 0 0 140px; height: 12px; border-radius: 999px; border: 1.5px solid var(--line); background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 6%, var(--paper2)), color-mix(in srgb, var(--accent) 55%, var(--paper2))); }
+
+/* ---------- CurvedText ---------- */
+.imx-curved { display: flex; justify-content: center; }
+.imx-curved svg { width: 100%; max-width: 520px; height: auto; overflow: visible; }
+.imx-curved[data-shape='circle'] svg { max-width: 220px; }
+.imx-curved-t { font-family: var(--font-fraunces); font-variation-settings: 'opsz' 72; font-style: italic; font-weight: 600; font-size: 34px; fill: var(--text); letter-spacing: -0.01em; }
+.imx-curved[data-shape='circle'] .imx-curved-t { font-family: var(--font-display); font-style: normal; font-variation-settings: 'wdth' 85; font-weight: 800; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; fill: var(--imx-on); }
+.imx-curved-disc { fill: var(--imx-tone); stroke: var(--line); stroke-width: 1.5px; }
+.imx-curved svg[data-tone] { color: var(--imx-on); }
+.imx-curved-mark { font-family: var(--font-fraunces); font-variation-settings: 'opsz' 144; font-style: italic; font-weight: 700; font-size: 64px; fill: var(--imx-on); }
+@keyframes imx-rotate { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: no-preference) { .imx-spin { animation: imx-rotate 36s linear infinite; transform-origin: 50% 50%; } }
+
+/* ---------- Scrolly ---------- */
+.imx-scrolly-wrap { margin-left: -40px; margin-right: -40px; }
+@media (max-width: 1100px) { .imx-scrolly-wrap { margin-left: 0; margin-right: 0; } }
+.imx-scrolly { display: block; }
+.imx-scrolly-stage { display: none; }
+.imx-beat { padding: 18px 0 18px 0; }
+.imx-beat-inline { margin-bottom: 6px; color: var(--muted); }
+.imx-beat-body { font-family: var(--font-serif); font-size: 1.1rem; line-height: 1.65; }
+.imx-beat-body > * + * { margin-top: 1em; }
+@container (min-width: 700px) {
+  .imx-scrolly[data-js] { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .imx-scrolly[data-js] .imx-beat-inline { display: none; }
+  .imx-scrolly[data-js] .imx-scrolly-stage { display: block; position: sticky; top: 18vh; height: min(54vh, 420px); overflow: hidden; }
+  .imx-scrolly[data-js] .imx-beat { min-height: 62vh; display: flex; align-items: center; opacity: 0.35; transition: opacity 0.25s; }
+  .imx-scrolly[data-js] .imx-beat.on { opacity: 1; }
+  .imx-scrolly[data-js] .imx-beat-body { max-width: 34ch; }
+}
+.imx-scrolly-slides { position: relative; width: 100%; height: 100%; }
+.imx-slide { position: absolute; inset: 0; padding: clamp(18px, 4cqi, 32px); display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; }
+.imx-slide.on { opacity: 1; transform: none; }
+.imx-slide-big { font-family: var(--font-display); font-variation-settings: 'wdth' 76; font-weight: 800; font-size: clamp(36px, 7.4cqi, 84px); overflow-wrap: anywhere; line-height: 0.92; letter-spacing: -0.03em; }
+@media (prefers-reduced-motion: reduce) { .imx-slide, .imx-beat { transition: none; transform: none; } }
+
+/* ---------- Scroll-driven polish (only where the browser supports it) ---------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .imx-statement { animation: imx-rise linear both; animation-timeline: view(); animation-range: entry 5% entry 70%; }
+    @keyframes imx-rise { from { opacity: 0.2; font-weight: 300; letter-spacing: 0.02em; } to { opacity: 1; } }
+  }
+}
+
+/* ---------- TypeLab ---------- */
+.imx-typelab { padding: 0; overflow: hidden; --imx-tone: var(--card); }
+.imx-tl-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1.5px solid var(--line); flex-wrap: wrap; }
+.imx-tl-fam { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--clay-bg); box-shadow: var(--clay-in); flex-wrap: wrap; }
+.imx-tl-fam button { padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: 13px; }
+.imx-tl-fam button[aria-pressed='true'] { background: var(--accent); color: var(--on-accent); box-shadow: var(--clay-sh-sm); }
+.imx-tl-reset { font-family: var(--font-mono); text-transform: uppercase; font-size: 12px; letter-spacing: 0.06em; text-decoration: underline; text-underline-offset: 3px; }
+.imx-tl-stage { padding: clamp(16px, 4cqi, 32px); min-height: 220px; display: flex; align-items: center; background: var(--paper); border-bottom: 1.5px solid var(--line); overflow: hidden; }
+.imx-tl-preview { width: 100%; overflow-wrap: anywhere; color: var(--text); }
+.imx-tl-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px 22px; padding: 18px 16px; }
+.imx-tl-ctl { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; }
+.imx-tl-ctl label { grid-column: 1; }
+.imx-tl-ctl input[type='range'] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); min-height: 24px; }
+.imx-tl-val { font-family: var(--font-mono); font-size: 12px; grid-column: 2; grid-row: 1; font-variant-numeric: tabular-nums; }
+.imx-tl-text { grid-column: 1 / -1; }
+.imx-tl-text input { height: 44px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--paper2); color: var(--text); font: inherit; grid-column: 1 / -1; width: 100%; }
+.imx-tl-check { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+.imx-tl-out { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; padding: 14px 16px; border-top: 1.5px solid var(--line); background: #1c1c1c; color: #f4f1e8; }
+.imx-tl-out pre { margin: 0; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; flex: 1; min-width: 0; }
+.imx-tl-out code { background: none; border: 0; padding: 0; font-size: inherit; color: inherit; }
+.imx-tl-out .btn { color: #1c1c1c; background-color: var(--accent-lt); }
+.imx-typelab:not([data-ready]) .imx-tl-controls, .imx-typelab:not([data-ready]) .imx-tl-head { opacity: 0.6; }
