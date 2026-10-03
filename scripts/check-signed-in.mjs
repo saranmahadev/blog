@@ -53,6 +53,9 @@ for (const theme of ['light', 'dark']) {
     await ctx.addInitScript((t) => { try { localStorage.setItem('theme', t); } catch {} }, theme);
     const page = await ctx.newPage();
     page.on('console', (m) => { if (/content security policy|refused to/i.test(m.text())) note(`[${theme}] ${label}: ${m.text().slice(0, 200)}`); });
+    // Signed-in pages must only talk to this site and the local emulators. A request to Google's hosts here means the
+    // Firebase client started loading something (like its popup helper) that the Content-Security-Policy would block live.
+    page.on('request', (r) => { const h = new URL(r.url()).hostname; if (!['127.0.0.1', 'localhost'].includes(h) && !r.url().startsWith('data:') && !r.url().startsWith('https://www.google.com/images/cleardot.gif')) note(`[${theme}] ${label}: unexpected request to ${r.url().slice(0, 120)}`); });
     page.on('pageerror', (e) => note(`[${theme}] ${label}: script error ${e.message.slice(0, 200)}`));
 
     await page.goto(`${base}/login/`, { waitUntil: 'networkidle' });
