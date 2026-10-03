@@ -15,7 +15,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [errField, setErrField] = useState<'email' | 'password' | 'username' | ''>('');
-  const [done, setDone] = useState<'reset' | 'verify' | ''>('');
+  const [done, setDone] = useState<'reset' | ''>('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -46,9 +46,8 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       } else if (mode === 'register') {
         const cred = await m.createUserWithEmailAndPassword(client, email.trim(), password);
         await m.updateProfile(cred.user, { displayName: username.trim() });
-        await m.sendEmailVerification(cred.user);
         await ensureProfile(cred.user.uid, cred.user.email, username.trim()).catch(() => {});
-        setDone('verify'); setBusy(false);
+        location.assign(next); // no email is sent automatically; the banner at the top offers to send one
       } else {
         // Same message whether or not the address exists, so this cannot be used to probe for accounts.
         try { await m.sendPasswordResetEmail(client, email.trim()); } catch (err) { if ((err as { code?: string }).code === 'auth/invalid-email') throw err; }
@@ -59,29 +58,6 @@ export default function AuthForm({ mode }: { mode: Mode }) {
     }
   }
 
-  async function resend() {
-    setBusy(true); setError('');
-    try {
-      const [client, m] = await Promise.all([getAuthClient(), import('firebase/auth')]);
-      if (client.currentUser) await m.sendEmailVerification(client.currentUser);
-    } catch (err) { setError(authMessage(err)); }
-    setBusy(false);
-  }
-
-  if (done === 'verify') {
-    return (
-      <section className="dlg tone-mint" aria-label="Verify email">
-        <div className="mono">Check your inbox</div>
-        <h1 className="disp" style={{ fontSize: 48, margin: '8px 0 12px' }}>Verify your email</h1>
-        <p className="serif" style={{ fontSize: 18 }}>We sent a link to {email.trim()}. Open it to finish setting up, then you can comment.</p>
-        {error && <p className="err" role="alert" style={{ marginTop: 12 }}>{error}</p>}
-        <div className="row" style={{ marginTop: 18, gap: 10, flexWrap: 'wrap' }}>
-          <button className="btn" type="button" onClick={resend} disabled={busy}>Resend email</button>
-          <a className="btn ghost" href="/profile/">Continue to your profile</a>
-        </div>
-      </section>
-    );
-  }
   if (done === 'reset') {
     return (
       <section className="dlg tone-mint" aria-label="Reset link sent">

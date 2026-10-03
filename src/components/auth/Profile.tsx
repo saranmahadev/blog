@@ -52,20 +52,6 @@ export default function Profile() {
     setBusy(false);
   }
 
-  async function verify() {
-    if (!user) return;
-    try { const a = await import('firebase/auth'); await a.sendEmailVerification(user); setMsg({ kind: 'ok', text: `Verification email sent to ${user.email}.` }); }
-    catch (err) { setMsg({ kind: 'err', text: authMessage(err) }); }
-  }
-
-  async function refresh() {
-    if (!user) return;
-    await user.reload();
-    setMsg({ kind: user.emailVerified ? 'ok' : 'err', text: user.emailVerified ? 'Your email is verified.' : 'Not verified yet. Open the link in the email first.' });
-    // Pull a fresh token so the verified flag reaches the security rules.
-    await user.getIdToken(true);
-  }
-
   async function signOut() {
     const [client, m] = await Promise.all([getAuthClient(), import('firebase/auth')]);
     setLeaving(true);
@@ -96,16 +82,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {!user.emailVerified && (
-        <section className="slab tone-sky" style={{ padding: 20, marginTop: 28 }} aria-label="Verify your email">
-          <div className="head" style={{ fontSize: 22 }}>Verify your email to comment</div>
-          <p className="serif" style={{ margin: '6px 0 14px' }}>We sent a link to {user.email}. Open it, then check again here.</p>
-          <div className="row" style={{ gap: 10, flexWrap: 'wrap' }}>
-            <button className="btn" type="button" onClick={refresh}>I have verified</button>
-            <button className="btn ghost" type="button" onClick={verify}>Resend email</button>
-          </div>
-        </section>
-      )}
+      <p className="mono" style={{ marginTop: 10 }}>{user.emailVerified ? 'Email verified' : 'Email not verified: use the bar at the top of the page to send a verification email.'}</p>
 
       <form className="stack" style={{ gap: 16, marginTop: 32, maxWidth: 520 }} onSubmit={save}>
         <h2 className="mono rule" style={{ paddingTop: 12 }}>Public profile</h2>

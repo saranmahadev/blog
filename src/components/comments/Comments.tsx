@@ -88,7 +88,7 @@ export default function Comments({ postKey }: { postKey: string }) {
         <div className="slab tone-sky cm-cta">
           <strong className="head" style={{ fontSize: 20 }}>Verify your email to comment.</strong>
           <span className="sp" />
-          <a className="btn ink" href="/profile/">Go to your profile</a>
+          <a className="btn ink" href="#verify-banner">Send verification email</a>
         </div>
       )}
       {canPost && !isAuthor && <Composer postKey={postKey} name={user?.displayName ?? ''} email={user?.email ?? ''} onDone={done} />}

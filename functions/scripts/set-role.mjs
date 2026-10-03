@@ -11,7 +11,10 @@ if (!email || !['user', 'author', 'moderator', 'admin'].includes(role)) {
   console.error('Usage: node scripts/set-role.mjs <email> [user|author|moderator|admin]');
   process.exit(1);
 }
-initializeApp({ projectId: process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT || 'stride-11129' });
+const projectId = process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT || 'stride-11129';
+// In Cloud Shell the default credentials bill API calls to Cloud Shell's own project unless told otherwise.
+process.env.GOOGLE_CLOUD_QUOTA_PROJECT ||= projectId;
+initializeApp({ projectId });
 const user = await getAuth().getUserByEmail(email);
 await getAuth().setCustomUserClaims(user.uid, { ...(user.customClaims ?? {}), role });
 await getFirestore().doc(`users/${user.uid}`).set({ role }, { merge: true });
