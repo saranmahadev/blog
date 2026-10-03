@@ -355,7 +355,7 @@ button.srch { cursor: pointer; font: inherit; font-size: 14px; text-align: left;
 .acct-item { width: 100%; padding: 11px 10px; border-top: 1px solid var(--hair); cursor: pointer; font: inherit; text-align: left; color: var(--text); }
 .acct-item:hover, .acct-item:focus-visible { background: var(--paper2); }
 .prof .inp[disabled] { opacity: 0.6; }
-@media (max-width: 760px) { .acct-name { display: none; } .acct-btn { padding-right: 10px; } .acct-menu { width: min(280px, calc(100vw - 32px)); } }
+@media (max-width: 760px) { .acct-name { display: none; } .acct-btn { padding-right: 10px; } .acct-menu { position: fixed; top: 68px; right: 12px; width: min(280px, calc(100vw - 24px)); } }
 
 /* Comments */
 .cm { margin-top: 72px; max-width: 720px; margin-inline: auto; }
@@ -374,3 +374,25 @@ button.srch { cursor: pointer; font: inherit; font-size: 14px; text-align: left;
 .vbar-in { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding-block: 10px; }
 .vbar-t { font-size: 14px; line-height: 1.5; margin: 0; flex: 1 1 320px; }
 .vbar .btn.ghost { color: var(--ink); border-color: var(--ink); }
+
+/* Inbox */
+.inb { padding: 18px 20px 6px; margin-top: 24px; }
+.inb-new { box-shadow: 4px 4px 0 var(--accent); }
+.inb-head { gap: 10px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 1px solid var(--hair); }
+.inb .cmt:last-child { border-bottom: 0; }
+.acct-btn { position: relative; }
+.acct-dot { position: absolute; top: 2px; right: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--paper); }
+
+/* Narrow phones: keep logo, search, theme and account on one row (the byline stays in the page title and footer). */
+@media (max-width: 480px) {
+  .hdr-in { gap: 8px 8px; }
+  .logo .by { display: none; }
+  .acct-btn { padding: 4px; gap: 0; }
+  .acct-btn > span[aria-hidden='true']:not(.av):not(.acct-dot) { display: none; }
+}
+@media (max-width: 360px) {
+  .hdr-in { gap: 6px 6px; }
+  .hdr-in .ib, .hdr-in button.srch { width: 40px; min-width: 40px; height: 40px; }
+  .hdr-in .logo span:not(.by) { font-size: 28px; }
+  .acct-btn { padding: 2px; }
+}

@@ -24,9 +24,23 @@ export const onUserCreated = functions.region('asia-south1').auth.user().onCreat
   }).catch((err: { code?: number }) => { if (err.code !== 6) throw err; }); // 6 = ALREADY_EXISTS
 });
 
-/** Profile cleanup when an account is deleted (the data-deletion promise). */
+/**
+ * Deleting an account deletes its data: the profile, every message the person wrote, and every thread they
+ * started (including the author's replies inside those threads, which exist only for that conversation).
+ */
 export const onUserDeleted = functions.region('asia-south1').auth.user().onDelete(async (user) => {
-  await getFirestore().doc(`users/${user.uid}`).delete();
+  const db = getFirestore();
+  const [written, owned] = await Promise.all([
+    db.collection('comments').where('authorId', '==', user.uid).get(),
+    db.collection('comments').where('threadOwnerId', '==', user.uid).get(),
+  ]);
+  const writer = db.bulkWriter();
+  const seen = new Set<string>();
+  for (const d of [...written.docs, ...owned.docs]) {
+    if (!seen.has(d.ref.path)) { seen.add(d.ref.path); void writer.delete(d.ref); }
+  }
+  void writer.delete(db.doc(`users/${user.uid}`));
+  await writer.close();
 });
 
 const COMMENT_MAX = 2000;

@@ -34,6 +34,11 @@ describe('users', () => {
     await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { role: 'admin' }));
     await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { email: 'x@example.com' }));
   });
+  it('lets a reader record when they last read their inbox, but only as the server time', async () => {
+    await assertSucceeds(updateDoc(doc(as('rin'), 'users/rin'), { inboxSeenAt: serverTimestamp() }));
+    await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { inboxSeenAt: new Date('2030-01-01') }));
+    await assertFails(updateDoc(doc(as('tom'), 'users/rin'), { inboxSeenAt: serverTimestamp() }));
+  });
   it('validates field shapes', async () => {
     await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { displayName: '' }));
     await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { displayName: 'x'.repeat(41) }));

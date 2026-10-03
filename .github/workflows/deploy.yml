@@ -24,6 +24,7 @@ permissions:
 
 env:
   FIREBASE_PROJECT: ${{ vars.FIREBASE_PROJECT_ID }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # silences the Node 20 deprecation notice for the actions below
 
 jobs:
   build:
@@ -123,6 +124,19 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
+      # Backend first, so the site never goes live calling a function or rule that is not there yet.
+      # Opt in with the repository variable DEPLOY_BACKEND=true (after granting the deploy account its roles; see README).
+      - uses: actions/setup-node@v4
+        if: vars.DEPLOY_BACKEND == 'true'
+        with:
+          node-version-file: .nvmrc
+      - name: Deploy Firestore rules, indexes and Cloud Functions
+        if: vars.DEPLOY_BACKEND == 'true'
+        run: |
+          # Only the functions defined in this repo are deployed (never the rest of a shared project).
+          FUNCS=$(grep -oP '^export const \K\w+' functions/src/index.ts | sed 's/^/functions:/' | paste -sd, -)
+          echo "Deploying: firestore:rules,firestore:indexes,$FUNCS"
+          npx --yes firebase-tools@latest deploy --only "firestore:rules,firestore:indexes,$FUNCS" --project "$FIREBASE_PROJECT" --non-interactive
       - name: Deploy to Firebase Hosting
         run: npx --yes firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT"
 

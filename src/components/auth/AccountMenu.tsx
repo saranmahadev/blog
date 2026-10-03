@@ -1,11 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { initialOf, useAuth } from '@/lib/auth';
+import { initialOf, useAuth, useRole } from '@/lib/auth';
+import { countUnread } from '@/lib/inbox';
 import { firebaseConfigured, getAuthClient } from '@/lib/firebase';
 
 export default function AccountMenu() {
   const { status, user } = useAuth();
+  const role = useRole(user);
   const [open, setOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
   const root = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!user || role === null) return;
+    countUnread(user, role === 'admin').then(setUnread).catch(() => setUnread(0));
+  }, [user, role]);
 
   useEffect(() => {
     if (!open) return;
@@ -31,9 +39,10 @@ export default function AccountMenu() {
   }
   return (
     <div className="acct" ref={root}>
-      <button className="row clay acct-btn" type="button" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}>
+      <button className="row clay acct-btn" type="button" aria-label={`Account menu for ${name}${unread > 0 ? `, ${unread} new in your inbox` : ''}`} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}>
         <span className="av tone-sky" style={{ boxShadow: 'none' }} aria-hidden="true">{initialOf(user?.displayName, user?.email)}</span>
         <strong className="acct-name">{name}</strong><span aria-hidden="true">▾</span>
+        {unread > 0 && <span className="acct-dot" aria-hidden="true" />}
       </button>
       {open && (
         <div className="slab acct-menu" role="menu" aria-label="Account menu">
@@ -41,6 +50,7 @@ export default function AccountMenu() {
             <span className="av tone-sky" aria-hidden="true">{initialOf(user?.displayName, user?.email)}</span>
             <div style={{ minWidth: 0 }}><strong>{name}</strong><div className="mono muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.emailVerified ? 'Verified' : 'Email not verified'}</div></div>
           </div>
+          <a className="row acct-item" role="menuitem" href="/inbox/">Inbox {unread > 0 && <span className="badge tone-accent" style={{ marginLeft: 'auto' }}>{unread} new</span>}</a>
           <a className="row acct-item" role="menuitem" href="/profile/">Profile</a>
           <button className="row acct-item" role="menuitem" type="button" onClick={signOut}>Sign out</button>
         </div>

@@ -3,7 +3,7 @@ import { patternFor, toneFor, type Pattern, type Tone } from './site';
 
 /** Top-level paths owned by fixed pages/assets; content may not use them. */
 export const RESERVED_SLUGS = new Set([
-  'about', 'imaxt', 'projects', 'blog', 'series', 'tags', 'search', 'login', 'register', 'reset', 'profile', 'admin',
+  'about', 'imaxt', 'projects', 'blog', 'series', 'tags', 'search', 'login', 'register', 'reset', 'profile', 'inbox', 'admin',
   'api', 'archive', 'topics', 'rss', 'rss.xml', 'sitemap', '404', '_astro', 'images', 'fonts', 'icons',
   'favicon.svg', 'robots.txt',
 ]);

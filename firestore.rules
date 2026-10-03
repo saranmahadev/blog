@@ -26,7 +26,9 @@ service cloud.firestore {
         && request.resource.data.preferences is map;
       allow delete: if false;
       allow update: if isOwner(uid)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'bio', 'preferences'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'bio', 'preferences', 'inboxSeenAt'])
+        // "I have read my inbox up to now": only ever set to the server time.
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['inboxSeenAt']) || request.resource.data.inboxSeenAt == request.time)
         && request.resource.data.displayName is string
         && request.resource.data.displayName.size() >= 1 && request.resource.data.displayName.size() <= 40
         && (!('bio' in request.resource.data) || (request.resource.data.bio is string && request.resource.data.bio.size() <= 280))
