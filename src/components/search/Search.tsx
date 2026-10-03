@@ -100,7 +100,7 @@ export default function Search() {
   };
 
   useEffect(() => {
-    dlg.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
+    dlg.current?.querySelector('[aria-current="true"]')?.scrollIntoView({ block: 'nearest' });
   }, [active]);
 
   return (
@@ -125,7 +125,7 @@ export default function Search() {
             <input
               id="site-search" ref={input} className="sdlg-input" type="search" autoComplete="off" spellCheck={false}
               placeholder="Search posts and series" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onInputKey}
-              role="combobox" aria-expanded={hits.length > 0} aria-controls="search-results" aria-activedescendant={hits[active] ? `sr-${active}` : undefined}
+             
             />
             <button type="button" className="kbd sdlg-esc" onClick={close} aria-label="Close search">esc</button>
           </div>
@@ -147,10 +147,10 @@ export default function Search() {
             {state !== 'unavailable' && !searched && <p className="sdlg-empty">Type at least two letters.</p>}
             {searched && hits.length === 0 && <p className="sdlg-empty">Nothing found for “{q.trim()}”. Try a shorter word, or <a href="/topics/">browse topics</a>.</p>}
             {hits.length > 0 && (
-              <ul id="search-results" role="listbox" aria-label="Results">
+              <ul aria-label="Results">
                 {hits.map((h, i) => (
-                  <li key={h.url} id={`sr-${i}`} role="option" aria-selected={i === active} className={`sres${i === active ? ' on' : ''}`}>
-                    <a href={h.url} onMouseMove={() => setActive(i)}>
+                  <li key={h.url} className={`sres${i === active ? ' on' : ''}`}>
+                    <a href={h.url} aria-current={i === active ? 'true' : undefined} onMouseMove={() => setActive(i)}>
                       <span className="mono muted">{h.kind === 'Series' ? 'Series' : h.series ?? 'Post'}</span>
                       <span className="head sres-t">{h.title}</span>
                       <span className="serif sres-x" dangerouslySetInnerHTML={{ __html: h.excerpt }} />

@@ -49,7 +49,7 @@ html { overflow-x: clip; }
 /* ---------- Compare ---------- */
 .imx-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; position: relative; align-items: stretch; }
 .imx-side { padding: 22px 24px; }
-.imx-side-l { margin-bottom: 10px; display: block; opacity: 0.8; }
+.imx-side-l { margin-bottom: 10px; display: block; }
 .imx-side-b { font-family: var(--font-fraunces); font-variation-settings: 'opsz' 72; font-weight: 600; font-size: clamp(22px, 4.4cqi, 32px); line-height: 1.15; letter-spacing: -0.01em; }
 .imx-side[data-kind='before'] { background-color: var(--paper2); color: var(--text); box-shadow: none; border-style: dashed; }
 .imx-vs { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: var(--paper); color: var(--text); border: 1.5px solid var(--line); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; }
@@ -98,7 +98,9 @@ html { overflow-x: clip; }
 .imx-walk-st { font-family: var(--font-fraunces); font-variation-settings: 'opsz' 48; font-weight: 700; font-size: 19px; line-height: 1.15; }
 .imx-walk-sb { margin-top: 4px; font-size: 14.5px; line-height: 1.5; color: var(--muted); }
 .imx-walk[data-js] .line { transition: opacity 0.15s; }
-.imx-walk[data-js] .line.dim { opacity: 0.32; }
+.imx-walk[data-js] .line.dim { opacity: 0.8; }
+/* github-dark comment grey (#6A737D) is 3.7:1 on the code background; lift it to pass AA, including when dimmed */
+.astro-code span[style*="#6A737D"] { color: #a0a9b3 !important; }
 @container (max-width: 700px) { .imx-walk { grid-template-columns: minmax(0, 1fr); } .imx-walk-steps { border-left: 0; border-top: 1.5px solid var(--line); } }
 
 /* ---------- Marquee ---------- */
@@ -163,7 +165,7 @@ html { overflow-x: clip; }
   .imx-scrolly[data-js] { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: 28px; align-items: start; }
   .imx-scrolly[data-js] .imx-beat-inline { display: none; }
   .imx-scrolly[data-js] .imx-scrolly-stage { display: block; position: sticky; top: 18vh; height: min(54vh, 420px); overflow: hidden; }
-  .imx-scrolly[data-js] .imx-beat { min-height: 62vh; display: flex; align-items: center; opacity: 0.35; transition: opacity 0.25s; }
+  .imx-scrolly[data-js] .imx-beat { min-height: 62vh; display: flex; align-items: center; opacity: 0.7; transition: opacity 0.25s; }
   .imx-scrolly[data-js] .imx-beat.on { opacity: 1; }
   .imx-scrolly[data-js] .imx-beat-body { max-width: 34ch; }
 }
@@ -185,7 +187,7 @@ html { overflow-x: clip; }
 .imx-typelab { padding: 0; overflow: hidden; --imx-tone: var(--card); }
 .imx-tl-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1.5px solid var(--line); flex-wrap: wrap; }
 .imx-tl-fam { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--clay-bg); box-shadow: var(--clay-in); flex-wrap: wrap; }
-.imx-tl-fam button { padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: 13px; }
+.imx-tl-fam button { color: var(--text); padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: 13px; }
 .imx-tl-fam button[aria-pressed='true'] { background: var(--accent); color: var(--on-accent); box-shadow: var(--clay-sh-sm); }
 .imx-tl-reset { font-family: var(--font-mono); text-transform: uppercase; font-size: 12px; letter-spacing: 0.06em; text-decoration: underline; text-underline-offset: 3px; }
 .imx-tl-stage { padding: clamp(16px, 4cqi, 32px); min-height: 220px; display: flex; align-items: center; background: var(--paper); border-bottom: 1.5px solid var(--line); overflow: hidden; }
@@ -202,4 +204,4 @@ html { overflow-x: clip; }
 .imx-tl-out pre { margin: 0; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; flex: 1; min-width: 0; }
 .imx-tl-out code { background: none; border: 0; padding: 0; font-size: inherit; color: inherit; }
 .imx-tl-out .btn { color: #1c1c1c; background-color: var(--accent-lt); }
-.imx-typelab:not([data-ready]) .imx-tl-controls, .imx-typelab:not([data-ready]) .imx-tl-head { opacity: 0.6; }
+.imx-typelab:not([data-ready]) .imx-tl-controls, .imx-typelab:not([data-ready]) .imx-tl-head { pointer-events: none; }
