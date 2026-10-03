@@ -4,6 +4,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getContent, getRelated, slugifyTag, type Post, type Series } from '@/lib/content';
 import { formatDate, readingTime } from '@/lib/site';
 import Pill from './Pill.astro';
+import Comments from '@/components/comments/Comments.tsx';
 import { imaxt, ImaxtCover } from '@/components/imaxt';
 import { isImageCover } from '@/lib/cover';
 
@@ -124,6 +125,8 @@ const jsonLd = {
             {next ? <a href={next.url} class:list={['slab', 'hov', `tone-${series.tone}`]} style="padding:20px;display:block"><span class="mono">Up next</span><div class="head" style="font-size:22px;margin-top:6px">{next.data.title} →</div></a> : <span />}
           </nav>
         )}
+
+        <Comments client:visible postKey={post.key} />
       </div>
 
       <aside class="rail rail-r" aria-label="Actions and related">

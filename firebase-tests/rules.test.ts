@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { assertFails, assertSucceeds, initializeTestEnvironment, type RulesTestEnvironment } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
 let env: RulesTestEnvironment;
@@ -55,9 +55,61 @@ describe('users', () => {
   });
 });
 
+const comment = (over = {}) => ({ postKey: 'axon/the-ingestion-pipeline', parentId: null, replyToId: null, threadOwnerId: 'rin', authorId: 'rin', authorName: 'Rin', authorRole: 'user', body: 'Nice post', createdAt: new Date(), ...over });
+
+describe('comments (private between a reader and the author)', () => {
+  const POST = 'axon/the-ingestion-pipeline';
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore();
+      await setDoc(doc(db, 'comments/rin1'), comment());
+      await setDoc(doc(db, 'comments/dev1'), comment({ parentId: 'rin1', replyToId: 'rin1', authorId: 'dev', authorName: 'Dev', authorRole: 'admin', body: 'Thanks!' }));
+      await setDoc(doc(db, 'comments/tom1'), comment({ threadOwnerId: 'tom', authorId: 'tom', authorName: 'Tom' }));
+    });
+  });
+  const anon = () => env.unauthenticatedContext().firestore();
+  const author = () => as('dev', { role: 'admin' });
+
+  it('shows a thread only to its reader and the author', async () => {
+    await assertSucceeds(getDoc(doc(as('rin'), 'comments/rin1')));
+    await assertSucceeds(getDoc(doc(as('rin'), 'comments/dev1'))); // the author's reply in rin's thread
+    await assertSucceeds(getDoc(doc(author(), 'comments/rin1')));
+    await assertSucceeds(getDoc(doc(author(), 'comments/tom1')));
+    await assertFails(getDoc(doc(as('tom'), 'comments/rin1')));
+    await assertFails(getDoc(doc(anon(), 'comments/rin1')));
+  });
+  it('does not let moderators or other staff read other people\'s threads', async () => {
+    await assertFails(getDoc(doc(as('maya', { role: 'moderator' }), 'comments/rin1')));
+  });
+  it('allows only the queries the page runs', async () => {
+    const col = (db: ReturnType<typeof anon>) => collection(db, 'comments');
+    await assertSucceeds(getDocs(query(col(as('rin')), where('postKey', '==', POST), where('threadOwnerId', '==', 'rin'))));
+    await assertSucceeds(getDocs(query(col(author()), where('postKey', '==', POST))));
+    await assertFails(getDocs(query(col(as('rin')), where('postKey', '==', POST)))); // would include other readers' threads
+    await assertFails(getDocs(query(col(anon()), where('postKey', '==', POST))));
+  });
+  it('cannot be created from a client', async () => {
+    await assertFails(setDoc(doc(as('rin', { email_verified: true }), 'comments/new'), comment()));
+    await assertFails(setDoc(doc(author(), 'comments/new'), comment({ authorId: 'dev', authorRole: 'admin' })));
+  });
+  it('lets a writer edit only their own message body', async () => {
+    await assertFails(updateDoc(doc(as('tom'), 'comments/rin1'), { body: 'Hax', updatedAt: serverTimestamp() }));
+    await assertFails(updateDoc(doc(author(), 'comments/rin1'), { body: 'Rewritten by the author', updatedAt: serverTimestamp() }));
+    await assertFails(updateDoc(doc(as('rin'), 'comments/rin1'), { body: 'x'.repeat(2001), updatedAt: serverTimestamp() }));
+    await assertFails(updateDoc(doc(as('rin'), 'comments/rin1'), { threadOwnerId: 'tom', body: 'x', updatedAt: serverTimestamp() }));
+    await assertSucceeds(updateDoc(doc(as('rin'), 'comments/rin1'), { body: 'Edited', updatedAt: serverTimestamp() }));
+  });
+  it('lets the writer or the author delete', async () => {
+    await assertFails(getDoc(doc(as('tom'), 'comments/rin1')));
+    await assertFails(deleteDoc(doc(as('tom'), 'comments/rin1')));
+    await assertSucceeds(deleteDoc(doc(as('rin'), 'comments/rin1')));
+    await assertSucceeds(deleteDoc(doc(author(), 'comments/tom1')));
+  });
+});
+
 describe('everything else', () => {
   it('is denied by default', async () => {
-    await assertFails(getDoc(doc(as('rin'), 'comments/c1')));
-    await assertFails(setDoc(doc(as('rin'), 'comments/c1'), { body: 'hi' }));
+    await assertFails(getDoc(doc(as('rin'), 'bookmarks/b1')));
+    await assertFails(setDoc(doc(as('rin'), 'bookmarks/b1'), { postKey: 'x' }));
   });
 });

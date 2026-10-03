@@ -33,6 +33,19 @@ service cloud.firestore {
         && (!('preferences' in request.resource.data) || request.resource.data.preferences is map);
     }
 
+    // comments/{id}: private conversations. Created only by the postComment function. A thread is visible to the
+    // reader who started it (threadOwnerId) and to the author (role "admin"), and to nobody else.
+    match /comments/{id} {
+      allow get, list: if signedIn() && (resource.data.threadOwnerId == request.auth.uid || hasRole('admin'));
+      allow create: if false;
+      allow update: if isOwner(resource.data.authorId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['body', 'updatedAt'])
+        && request.resource.data.body is string
+        && request.resource.data.body.size() >= 1 && request.resource.data.body.size() <= 2000
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isOwner(resource.data.authorId) || hasRole('admin');
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
