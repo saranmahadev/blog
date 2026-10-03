@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 // Production origin; override with SITE_URL in CI.
-const site = process.env.SITE_URL ?? 'https://blog.saranmahadev.in';
+const site = process.env.SITE_URL || 'https://blog.saranmahadev.in';
 
 export default defineConfig({
   site,
