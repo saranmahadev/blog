@@ -13,9 +13,10 @@ on:
     types: [labeled]
   workflow_dispatch:
 
-# One deploy at a time; never cancel one that is already running.
+# One deploy at a time; never cancel one that is already running. Pull request runs have their own group so a labelled
+# pull request (including bot update PRs) can never queue behind, or replace, a deploy waiting on main.
 concurrency:
-  group: deploy-main
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'deploy-main' }}
   cancel-in-progress: false
 
 # Least privilege: jobs only read the repository. Only the jobs that publish also get an OIDC token (below).
