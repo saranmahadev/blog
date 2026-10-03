@@ -4,10 +4,11 @@ import { firebaseConfigured, getAuthClient } from '@/lib/firebase';
 import { setTheme } from '@/lib/sync';
 import { useSync } from '@/lib/useSync';
 import SyncStatus from '@/components/sync/SyncStatus';
+import Library, { type PostInfo } from '@/components/library/Library';
 
 const THEME_LABEL = { light: 'Light', system: 'System', dark: 'Dark' } as const;
 
-export default function Profile() {
+export default function Profile({ posts }: { posts: PostInfo[] }) {
   const { status, user } = useAuth();
   const sync = useSync();
   const [name, setName] = useState('');
@@ -17,13 +18,24 @@ export default function Profile() {
   const [pw, setPw] = useState('');
   const [leaving, setLeaving] = useState(false);
 
-  useEffect(() => {
-    if (status === 'out' && firebaseConfigured && !leaving) location.replace(`/login/?next=${encodeURIComponent('/profile/')}`);
-  }, [status, leaving]);
-
   useEffect(() => { if (user) setName(user.displayName ?? ''); }, [user]);
 
-  if (!firebaseConfigured) return <p className="serif muted">Accounts are not set up yet.</p>;
+  // Signed out (or accounts not set up): the bookmarks saved on this device are still here, with a way to sign in.
+  if (!firebaseConfigured || status === 'out') {
+    return (
+      <div className="prof">
+        <h1 className="disp" style={{ fontSize: 'clamp(56px,9vw,120px)' }}>Bookmarks</h1>
+        <p className="serif muted" style={{ fontSize: 20, maxWidth: '46ch', marginTop: 12 }}>Saved on this device.{firebaseConfigured && ' Sign in to keep them on your account and see them on your other devices.'}</p>
+        {firebaseConfigured && !leaving && (
+          <div className="row" style={{ gap: 10, marginTop: 20, flexWrap: 'wrap' }}>
+            <a className="btn ink" href={`/login/?next=${encodeURIComponent('/profile/')}`}>Sign in</a>
+            <a className="btn" href="/register/?next=%2Fprofile%2F">Create account</a>
+          </div>
+        )}
+        <section aria-label="Bookmarks"><Library posts={posts} showStatus={false} /></section>
+      </div>
+    );
+  }
   if (status !== 'in' || !user) return <p className="serif muted" role="status">Loading your profile…</p>;
 
   async function save(e: FormEvent) {
@@ -74,7 +86,12 @@ export default function Profile() {
 
       <p className="mono" style={{ marginTop: 10 }}>{user.emailVerified ? 'Email verified' : 'Email not verified: use the bar at the top of the page to send a verification email.'}</p>
 
-      <form className="stack" style={{ gap: 16, marginTop: 32, maxWidth: 520 }} onSubmit={save}>
+      <section aria-label="Bookmarks" style={{ marginTop: 32 }}>
+        <h2 className="mono rule" style={{ paddingTop: 12 }}>Bookmarks</h2>
+        <Library posts={posts} showStatus={false} />
+      </section>
+
+      <form className="stack" style={{ gap: 16, marginTop: 40, maxWidth: 520 }} onSubmit={save}>
         <h2 className="mono rule" style={{ paddingTop: 12 }}>Name</h2>
         <div className="field"><label htmlFor="p-name">Username</label><input className="inp" id="p-name" maxLength={40} value={name} onChange={(e) => setName(e.target.value)} /><span className="hint">Shown to the author next to your messages. Nobody else can see them.</span></div>
         <div className="row" style={{ gap: 10 }}><button className="btn ink" type="submit" disabled={busy}>Save name</button></div>

@@ -1,10 +1,16 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Profile from '@/components/auth/Profile.tsx';
+import { getContent } from '@/lib/content';
+import { readingTime } from '@/lib/site';
+
+const { posts } = await getContent();
+const info = posts.map((p) => ({ slug: p.key, title: p.data.title, url: p.url, description: p.data.description, series: p.seriesTitle, minutes: readingTime(p.entry.body ?? '') }));
 ---
 
 <BaseLayout title="Your profile" noindex>
   <div class="wrap" data-pagefind-ignore style="padding-top:56px;padding-bottom:96px">
-    <Profile client:load />
+    <div id="bookmarks" aria-hidden="true"></div>
+    <Profile client:load posts={info} />
   </div>
 </BaseLayout>

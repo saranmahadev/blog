@@ -8,7 +8,7 @@
 
 <header class="hdr"><div class="wrap hdr-in">
   <a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a>
-  <nav class="nav" aria-label="Primary"><a href="#">Home</a><a href="#">Series</a><a href="#">Topics</a><a href="#">Archive</a><a href="#">Library</a><a href="#">About</a></nav>
+  <nav class="nav" aria-label="Primary"><a href="#">Home</a><a href="#">Series</a><a href="#">Topics</a><a href="#">Archive</a><a href="#">About</a></nav>
   <span class="sp"></span>
   <button class="srch" type="button" aria-label="Search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search <span class="kbd" style="margin-left:auto">/</span></button>
   <button class="row clay" type="button" style="padding:4px 14px 4px 4px;border-radius:999px;gap:10px"><span class="av tone-sky" style="box-shadow:none">R</span><strong style="font-size:14px">Rin</strong></button>
@@ -18,7 +18,15 @@
 <div class="wrap" style="padding-top:56px;padding-bottom:96px">
   <div class="row" style="gap:20px"><span class="av lg tone-sky">R</span><div><h1 class="disp" style="font-size:72px">Rin</h1><div class="mono muted">rin@example.com</div></div></div>
   <p class="mono" style="margin-top:10px">Email verified</p>
-  <form class="stack" style="gap:16px;margin-top:32px;max-width:520px">
+<section id="bookmarks" aria-label="Bookmarks" style="margin-top:32px;max-width:920px">
+    <h2 class="mono rule" style="padding-top:12px">Bookmarks</h2>
+    <div class="seg" role="tablist" aria-label="Bookmarks and reading" style="margin-top:24px"><button class="on" type="button" role="tab" aria-selected="true">Bookmarks (3)</button><button type="button" role="tab">Continue reading (2)</button><button type="button" role="tab">Finished (4)</button></div>
+    <ol class="lib-list" style="margin-top:24px;display:grid;gap:20px">
+      <li class="slab hov lib-item"><div style="min-width:0"><div class="mono muted">Standalone · 12 min · saved Oct 3</div><h3 class="head" style="font-size:22px;margin-top:4px"><a href="#">Forward proxies, explained with one diagram</a></h3><p class="serif muted" style="font-size:16px;margin-top:4px">What a forward proxy does, with one diagram.</p></div><button class="btn sm ghost" type="button">Remove</button></li>
+      <li class="slab hov lib-item"><div style="min-width:0"><div class="mono muted">Building Axon · 9 min · saved Oct 1</div><h3 class="head" style="font-size:22px;margin-top:4px"><a href="#">The ingestion pipeline</a></h3><p class="serif muted" style="font-size:16px;margin-top:4px">Chunking, embedding and writing, without losing your place on failure.</p></div><button class="btn sm ghost" type="button">Remove</button></li>
+    </ol>
+  </section>
+  <form class="stack" style="gap:16px;margin-top:40px;max-width:520px">
     <h2 class="mono rule" style="padding-top:12px">Name</h2>
     <div class="field"><label for="pn">Username</label><input class="inp" id="pn" value="Rin"><span class="hint">Shown to the author next to your messages. Nobody else can see them.</span></div>
     <div class="row"><button class="btn ink" type="button">Save name</button></div>
@@ -33,6 +41,13 @@
     <h2 class="mono rule" style="padding-top:12px;margin-bottom:14px">Account</h2>
     <div class="row" style="gap:10px;flex-wrap:wrap"><button class="btn" type="button">Sign out</button><button class="btn ghost" type="button">Delete my account</button></div>
     <div class="slab tone-rose" style="padding:20px;margin-top:18px"><div class="head" style="font-size:20px">Delete your account?</div><p class="serif" style="margin:6px 0 14px">This removes your sign-in, your saved bookmarks and progress, and every message you wrote or started. It cannot be undone. Enter your password to confirm.</p><button class="btn danger" type="button" style="background-color:#fffdf6">Delete account</button></div>
+  </section>
+  <section aria-label="Signed out view" style="margin-top:64px;max-width:920px">
+    <div class="mono muted">Signed-out view of the same page: bookmarks saved on this device</div>
+    <h2 class="disp" style="font-size:96px;margin-top:12px">Bookmarks</h2>
+    <p class="serif muted" style="font-size:20px;max-width:46ch;margin-top:8px">Saved on this device. Sign in to keep them on your account and see them on your other devices.</p>
+    <div class="row" style="gap:10px;margin-top:20px;flex-wrap:wrap"><a class="btn ink" href="#">Sign in</a><a class="btn" href="#">Create account</a></div>
+    <ol class="lib-list" style="margin-top:24px;display:grid;gap:20px"><li class="slab hov lib-item"><div style="min-width:0"><div class="mono muted">Standalone · 12 min · saved Oct 3</div><h3 class="head" style="font-size:22px;margin-top:4px"><a href="#">Forward proxies, explained with one diagram</a></h3><p class="serif muted" style="font-size:16px;margin-top:4px">What a forward proxy does, with one diagram.</p></div><button class="btn sm ghost" type="button">Remove</button></li></ol>
   </section>
 </div>
 <footer class="foot"><div class="wrap"><div class="row"><div class="logo" style="font-size:24px"><i></i><span>Drafted</span><small class="by mono">By Dev</small></div><span class="sp"></span><span class="mono" style="color:#a8a498">© 2026 Drafted · By Dev</span></div></div></footer>

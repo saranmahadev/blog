@@ -366,14 +366,14 @@ button.srch { cursor: pointer; font: inherit; font-size: 14px; text-align: left;
 .cm-reply .cm-form { margin-top: 8px; }
 .cm-body { white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 760px) { .cm { margin-top: 48px; } .cm-reply { margin-left: 24px; } .cm-form .av { display: none; } }
-.cm-note { margin-top: 14px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--t-mint); color: var(--ink); font-size: 15px; }
-.cm-note { margin-top: 14px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--t-mint); color: var(--ink); font-size: 15px; }
+.cm-note { margin-top: 14px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--t-mint); color: var(--on-tone); font-size: 15px; }
+.cm-note { margin-top: 14px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--t-mint); color: var(--on-tone); font-size: 15px; }
 
 /* Verify-your-email bar */
-.vbar { background: var(--t-sky); color: var(--ink); border-bottom: 1.5px solid var(--line); }
+.vbar { background: var(--t-sky); color: var(--on-tone); border-bottom: 1.5px solid var(--line); }
 .vbar-in { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding-block: 10px; }
 .vbar-t { font-size: 14px; line-height: 1.5; margin: 0; flex: 1 1 320px; }
-.vbar .btn.ghost { color: var(--ink); border-color: var(--ink); }
+.vbar .btn.ghost { color: var(--on-tone); border-color: var(--on-tone); }
 
 /* Inbox */
 .inb { padding: 18px 20px 6px; margin-top: 24px; }

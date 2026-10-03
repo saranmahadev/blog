@@ -29,23 +29,27 @@ const MAX_LINKS = 2;
 const MIN_GAP_MS = 30_000;
 const HOURLY_LIMIT = 10;
 
-type Claims = { uid: string; email_verified?: boolean; role?: unknown; name?: unknown; email?: unknown };
+/** The author is the verified owner of this mailbox. Keep in sync with AUTHOR_EMAIL in src/lib/site.ts and firestore.rules. */
+const AUTHOR_EMAIL = 'mail@saranmahadev.in';
+type Claims = { uid: string; email_verified?: boolean; name?: unknown; email?: unknown };
 const fail = functions.https.HttpsError;
+const isAuthorClaims = (c: Claims) => c.email_verified === true && String(c.email ?? '').toLowerCase() === AUTHOR_EMAIL;
 
 let authorCache: { uid: string | null; at: number } | null = null;
-/** Who the author is (written by scripts/set-role.mjs), so a new message can raise their unread count. */
+/** The author's uid (to raise their unread count). Looked up from the sign-in records, so nothing needs configuring. */
 async function authorUid(): Promise<string | null> {
-  if (authorCache && Date.now() - authorCache.at < (authorCache.uid ? 10 * 60_000 : 30_000)) return authorCache.uid; // a missing record is re-checked soon, so setting the role takes effect quickly
-  const d = await getFirestore().doc('config/author').get();
-  authorCache = { uid: (d.get('uid') as string | undefined) ?? null, at: Date.now() };
-  return authorCache.uid;
+  if (authorCache && Date.now() - authorCache.at < (authorCache.uid ? 10 * 60_000 : 30_000)) return authorCache.uid;
+  let uid: string | null = null;
+  try { uid = (await getAuth().getUserByEmail(AUTHOR_EMAIL)).uid; } catch { /* the author has not signed up yet */ }
+  authorCache = { uid, at: Date.now() };
+  return uid;
 }
 
 /**
  * Creates one message. Shared by the callable (normal sends) and the beacon (sends while a page is closing).
  * Comments are private conversations between one reader and the author:
  *  - a verified reader starts a thread (a top-level comment);
- *  - only the author (role "admin") replies to a thread, and the reader who started it can answer the author's replies;
+ *  - only the author (the verified owner of the author address) replies to a thread, and the reader who started it can answer the author's replies;
  *  - every message carries `threadOwnerId` (the reader), and the rules show a thread only to that reader and the author.
  * There is nothing to approve: the author sees every thread on a post right away. Obvious spam is refused here.
  * Each message has a one-time `clientId`, so repeating a send (retries, beacon plus normal) never duplicates it.
@@ -53,7 +57,7 @@ async function authorUid(): Promise<string | null> {
 export async function createComment(claims: Claims, data: any): Promise<{ id: string; duplicate?: boolean }> {
   if (!claims.email_verified) throw new fail('failed-precondition', 'Verify your email to comment.');
   const uid = claims.uid;
-  const isAuthor = claims.role === 'admin';
+  const isAuthor = isAuthorClaims(claims);
   const db = getFirestore();
 
   const clientId = typeof data?.clientId === 'string' && /^[A-Za-z0-9_-]{8,40}$/.test(data.clientId) ? data.clientId : null;

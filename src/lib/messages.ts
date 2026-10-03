@@ -75,7 +75,11 @@ export function bindMessages(u: User | null, author: boolean) {
   const id = u?.uid ?? null;
   if (id === uid && author === isAuthor) return;
   const changedUser = id !== uid;
+  const changedRole = !changedUser && author !== isAuthor;
   uid = id; user = u; isAuthor = author;
+  // The author sees everyone's threads and a reader only their own: a cache filled as one is wrong for the other.
+  if (changedRole) { cache = emptyCache(); saveCache(); publish(); }
+  if (changedUser || changedRole) generation += 1; // a load already in flight was for the old identity
   if (changedUser) {
     cache = uid ? parseCache(read(kCache(uid))) : emptyCache();
     out = uid ? parseOut(read(kOut(uid))) : [];
@@ -177,6 +181,7 @@ const toStored = (id: string, x: Record<string, any>): Stored => {
   return { id, postKey: x.postKey, parentId: x.parentId ?? null, replyToId: x.replyToId ?? null, threadOwnerId: x.threadOwnerId, authorId: x.authorId, authorName: x.authorName, authorRole: x.authorRole ?? 'user', body: x.body, createdAt: ms(x.createdAt), updatedAt: ms(x.updatedAt) || ms(x.createdAt) };
 };
 let refreshing: Promise<void> | null = null;
+let generation = 0;
 
 /** Asks the server for messages only when the account document says something happened since the cache was filled. */
 export function ensureFresh(force = false): Promise<void> {
@@ -184,7 +189,8 @@ export function ensureFresh(force = false): Promise<void> {
   refreshing = refresh(force).finally(() => { refreshing = null; });
   return refreshing;
 }
-async function refresh(force: boolean) {
+async function refresh(force: boolean, retried = false): Promise<void> {
+  const gen = generation;
   const s = syncSnap();
   if (!uid || !user || !s.signedIn || !s.pulledAt || getUid() !== uid) return;
   const full = !cache.fullAt || Date.now() - cache.fullAt > FULL_EVERY_MS;
@@ -202,6 +208,7 @@ async function refresh(force: boolean) {
         : m.query(col, m.where('threadOwnerId', '==', mine), m.where('updatedAt', '>', m.Timestamp.fromMillis(Math.max(0, cache.wm - 2_000))), m.orderBy('updatedAt', 'asc'), m.limit(300)));
     const snapDocs = await m.getDocs(q);
     if (mine !== uid) return;
+    if (gen !== generation) { refreshing = null; return ensureFresh(true); }
     const got = snapDocs.docs.map((d) => toStored(d.id, d.data()));
     const byId = new Map((full ? [] : cache.items).map((i) => [i.id, i]));
     for (const g of got) byId.set(g.id, g);
@@ -209,7 +216,13 @@ async function refresh(force: boolean) {
     cache = { v: 1, items, wm: Math.max(full ? 0 : cache.wm, ...got.map((g) => g.updatedAt)), seenM: Math.max(cache.seenM, s.latestMessageAt), fullAt: full ? Date.now() : cache.fullAt };
     saveCache();
     publish({ ready: true, error: '' });
-  } catch (err) { publish({ ready: true, error: 'Could not load your messages. Showing what is saved on this device.' }); }
+  } catch (err) {
+    // Just verified, or just became the author: the saved sign-in token may still say otherwise. Refresh it once and retry.
+    if (!retried && String((err as { code?: string }).code).includes('permission-denied')) {
+      try { await user?.getIdToken(true); return await refresh(force, true); } catch { /* fall through to the message below */ }
+    }
+    publish({ ready: true, error: 'Could not load your messages. Showing what is saved on this device.' });
+  }
 }
 
 // ---- editing and deleting your own messages (applied on screen first, then saved) -------------------------

@@ -6,6 +6,5 @@ Disallow: /register/
 Disallow: /reset/
 Disallow: /profile/
 Disallow: /inbox/
-Disallow: /library/
 
 Sitemap: https://blog.saranmahadev.in/sitemap.xml

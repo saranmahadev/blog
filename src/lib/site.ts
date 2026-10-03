@@ -5,12 +5,18 @@ export const SITE = {
   author: 'Dev',
 } as const;
 
+/**
+ * The author is whoever signs in with this address once it is verified (Firebase only marks an address verified after
+ * the mailbox owner opens the link). The same address is in firestore.rules and functions/src/index.ts, so there is
+ * no role to set up and nothing to run in a console.
+ */
+export const AUTHOR_EMAIL = 'mail@saranmahadev.in';
+
 export const NAV = [
   { href: '/', label: 'Home' },
   { href: '/series/', label: 'Series' },
   { href: '/topics/', label: 'Topics' },
   { href: '/archive/', label: 'Archive' },
-  { href: '/library/', label: 'Library' },
   { href: '/about/', label: 'About' },
 ] as const;
 

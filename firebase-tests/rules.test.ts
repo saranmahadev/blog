@@ -4,6 +4,7 @@ import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, se
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
 let env: RulesTestEnvironment;
+const AUTHOR = { email: 'mail@saranmahadev.in', email_verified: true };
 const state = { b: { 'axon~intro': 1700000000000 }, p: { 'axon~intro': 40 }, s: { t: 'dark' }, n: 0 };
 
 beforeAll(async () => {
@@ -23,8 +24,10 @@ describe('users (one small state document per reader)', () => {
     await assertSucceeds(getDoc(doc(as('rin'), 'users/rin')));
     await assertFails(getDoc(doc(as('tom'), 'users/rin')));
     await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(), 'users/rin')));
-    await assertSucceeds(getDoc(doc(as('dev', { role: 'admin' }), 'users/rin')));
-    await assertFails(getDoc(doc(as('maya', { role: 'moderator' }), 'users/rin')));
+    await assertSucceeds(getDoc(doc(as('dev', AUTHOR), 'users/rin')));
+    await assertFails(getDoc(doc(as('maya', { email: 'maya@example.com', email_verified: true }), 'users/rin')));
+    await assertFails(getDoc(doc(as('imposter', { email: 'mail@saranmahadev.in', email_verified: false }), 'users/rin'))); // the address must be verified
+    await assertFails(getDoc(doc(as('imposter2', { email: 'Mail@saranmahadev.in.evil.com', email_verified: true }), 'users/rin')));
   });
   it('lets a reader change bookmarks, progress and settings, field by field', async () => {
     await assertSucceeds(updateDoc(doc(as('rin'), 'users/rin'), { 'b.newpost': 1, 'p.intro': 80, 's.t': 'light' }));
@@ -57,9 +60,9 @@ describe('users (one small state document per reader)', () => {
     await assertFails(setDoc(doc_('cap3'), { p: many(501) }));
     await assertFails(setDoc(doc_('cap4'), { s: many(9, 'x') }));
   });
-  it('keeps the author record away from everyone', async () => {
+  it('has no other collections: everything else is denied', async () => {
     await assertFails(getDoc(doc(as('rin'), 'config/author')));
-    await assertFails(setDoc(doc(as('rin'), 'config/author'), { uid: 'rin' }));
+    await assertFails(setDoc(doc(as('dev', AUTHOR), 'config/author'), { uid: 'dev' }));
   });
 });
 
@@ -76,7 +79,7 @@ describe('comments (private between a reader and the author)', () => {
     });
   });
   const anon = () => env.unauthenticatedContext().firestore();
-  const author = () => as('dev', { role: 'admin' });
+  const author = () => as('dev', AUTHOR);
 
   it('shows a thread only to its reader and the author', async () => {
     await assertSucceeds(getDoc(doc(as('rin'), 'comments/rin1')));
@@ -87,7 +90,7 @@ describe('comments (private between a reader and the author)', () => {
     await assertFails(getDoc(doc(anon(), 'comments/rin1')));
   });
   it('does not let moderators or other staff read other people\'s threads', async () => {
-    await assertFails(getDoc(doc(as('maya', { role: 'moderator' }), 'comments/rin1')));
+    await assertFails(getDoc(doc(as('maya', { email: 'maya@example.com', email_verified: true }), 'comments/rin1')));
   });
   it('allows only the queries the page runs', async () => {
     const col = (db: ReturnType<typeof anon>) => collection(db, 'comments');

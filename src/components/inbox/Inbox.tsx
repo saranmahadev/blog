@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useAuth, useRole } from '@/lib/auth';
+import { isAuthorUser, useAuth } from '@/lib/auth';
 import { firebaseConfigured } from '@/lib/firebase';
 import { groupThreads, isNew } from '@/lib/inbox';
 import { getSnapshot, markInboxRead } from '@/lib/sync';
@@ -10,8 +10,7 @@ type PostInfo = { key: string; title: string; url: string };
 
 export default function Inbox({ posts }: { posts: PostInfo[] }) {
   const { status, user } = useAuth();
-  const role = useRole(user);
-  const isAuthor = role === 'admin';
+  const isAuthor = isAuthorUser(user);
   const msgs = useMessages();
   const [freshIds, setFreshIds] = useState<Set<string>>(new Set());
   const [tab, setTab] = useState<'new' | 'all'>('new');
@@ -27,7 +26,7 @@ export default function Inbox({ posts }: { posts: PostInfo[] }) {
 
   // On first sight of the messages: remember which conversations were new when you arrived, then count them as read.
   useEffect(() => {
-    if (marked.current || !user || role === null || !msgs.ready) return;
+    if (marked.current || !user || !msgs.ready) return;
     marked.current = true;
     const seen = getSnapshot().local.seenAt; // this device's last visit
     setFreshIds(new Set(threads.filter((x) => isNew(x, isAuthor, seen ? new Date(seen) : null)).map((x) => x.id)));
