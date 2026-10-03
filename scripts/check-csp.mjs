@@ -3,7 +3,7 @@
 import { chromium } from 'playwright';
 import { serve, chromePath } from './serve.mjs';
 
-const PAGES = ['/', '/archive/', '/topics/drafted/', '/welcome-to-drafted/', '/building-drafted/', '/building-drafted/rss-is-enough/', '/building-dev-universe/dev-universe/', '/curious-to-coder/the-software-you-stopped-noticing/', '/imaxt/', '/about/', '/login/', '/register/', '/reset/', '/profile/', '/inbox/', '/404.html'];
+const PAGES = ['/', '/archive/', '/topics/drafted/', '/welcome-to-drafted/', '/building-drafted/', '/building-drafted/rss-is-enough/', '/dev-universe/a-connected-ecosystem/', '/building-dev-universe/how-drafted-started/', '/curious-to-coder/the-software-you-stopped-noticing/', '/imaxt/', '/about/', '/login/', '/register/', '/reset/', '/profile/', '/inbox/', '/404.html'];
 const { base, close } = await serve();
 const browser = await chromium.launch({ executablePath: chromePath() });
 const page = await browser.newPage();

@@ -651,7 +651,7 @@ flowchart LR
 - **Reserved slugs** cannot be used: `about`, `imaxt`, `projects`, `blog`, `series`, `tags`, `search`, `login`, `register`, `reset`, `profile`, `inbox`, `admin`, `security`, `privacy`, `api`, `archive`, `topics`, `rss`, `rss.xml`, `atom.xml`, `feed.json`, `feed.xsl`, `sitemap`, `404`, `_astro`, `images`, `fonts`, `icons`, `favicon.svg`, `robots.txt`.
 - Use `.mdx` when a post uses any Imaxt block; use `.md` for plain prose and code.
 - A series post whose series `index.md` is missing or a draft is **not published**.
-- The live series show every pattern in this guide: *Building Drafted* (decisions as True stories, features as Notes), *Building Dev Universe* (a Plan) and *Curious to Coder* (a Constructed story). Read one before drafting a similar post.
+- The live series show every pattern in this guide: *Building Drafted* (decisions as True stories, features as Notes), *Dev Universe* (the map, a Plan), *Building Dev Universe* (one Plan post per part, plus *How Drafted started* as a True story) and *Curious to Coder* (a Constructed story and a True story). Read one before drafting a similar post.
 
 ## 14. Front matter
 

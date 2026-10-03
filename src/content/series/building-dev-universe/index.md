@@ -1,6 +1,6 @@
 ---
 title: "Building Dev Universe"
-description: "The ecosystem around my work: content, education, community, products and open source, and how the parts connect."
+description: "The parts of Dev Universe one at a time, and how it began with Drafted."
 tone: "lilac"
 pattern: "rings"
 ---
