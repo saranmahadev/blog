@@ -20,11 +20,12 @@ const as = (uid: string, claims: Record<string, unknown> = {}) => env.authentica
 
 describe('users (one small state document per reader)', () => {
   const doc_ = (uid: string, extra = {}) => doc(as(uid, extra), `users/${uid}`);
-  it('lets a reader read only their own document; the author can read any', async () => {
+  it('lets a reader read only their own document; not even the author can read it', async () => {
     await assertSucceeds(getDoc(doc(as('rin'), 'users/rin')));
     await assertFails(getDoc(doc(as('tom'), 'users/rin')));
     await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(), 'users/rin')));
-    await assertSucceeds(getDoc(doc(as('dev', AUTHOR), 'users/rin')));
+    await assertFails(getDoc(doc(as('dev', AUTHOR), 'users/rin'))); // bookmarks and progress are private to the reader
+    await assertSucceeds(getDoc(doc(as('dev', AUTHOR), 'users/dev')));
     await assertFails(getDoc(doc(as('maya', { email: 'maya@example.com', email_verified: true }), 'users/rin')));
     await assertFails(getDoc(doc(as('imposter', { email: 'mail@saranmahadev.in', email_verified: false }), 'users/rin'))); // the address must be verified
     await assertFails(getDoc(doc(as('imposter2', { email: 'Mail@saranmahadev.in.evil.com', email_verified: true }), 'users/rin')));
@@ -49,16 +50,19 @@ describe('users (one small state document per reader)', () => {
   });
   it('blocks other fields, other people and deletion', async () => {
     await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { role: 'admin' }));
+    await assertFails(setDoc(doc(as('rin'), 'users/rin'), { s: { t: 'neon' } }, { merge: true })); // settings are a known value
+    await assertFails(setDoc(doc(as('rin'), 'users/rin'), { s: { junk: 'x'.repeat(5000) } }, { merge: true })); // and a known key
+    await assertFails(getDocs(collection(env.authenticatedContext('dev', AUTHOR).firestore(), 'users'))); // nobody lists readers
     await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { displayName: 'x' }));
     await assertFails(updateDoc(doc(as('tom'), 'users/rin'), { 'b.x': 1 }));
     await assertFails(deleteDoc(doc(as('rin'), 'users/rin')));
   });
-  it('caps how many bookmarks, progress entries and settings one document can hold', async () => {
+  it('caps how many bookmarks and progress entries one document can hold, and what settings it accepts', async () => {
     const many = (n: number, v: unknown = 1) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`k${i}`, v]));
-    await assertSucceeds(setDoc(doc_('cap1'), { b: many(200), p: many(500), s: many(8, 'x') }));
+    await assertSucceeds(setDoc(doc_('cap1'), { b: many(200), p: many(500), s: { t: 'dark' } }));
     await assertFails(setDoc(doc_('cap2'), { b: many(201) }));
     await assertFails(setDoc(doc_('cap3'), { p: many(501) }));
-    await assertFails(setDoc(doc_('cap4'), { s: many(9, 'x') }));
+    await assertFails(setDoc(doc_('cap4'), { s: many(2, 'x') })); // settings: only the theme
   });
   it('has no other collections: everything else is denied', async () => {
     await assertFails(getDoc(doc(as('rin'), 'config/author')));

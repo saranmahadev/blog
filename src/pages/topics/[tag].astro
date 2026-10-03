@@ -11,6 +11,10 @@ const { topic } = Astro.props;
 ---
 
 <BaseLayout title={`${topic.label}`} description={`Posts about ${topic.label}.`}>
+  <link slot="head" rel="alternate" type="application/rss+xml" title={`${topic.label} (RSS)`} href={`/topics/${topic.slug}/rss.xml`} />
+    <link slot="head" rel="alternate" type="application/atom+xml" title={`${topic.label} (Atom)`} href={`/topics/${topic.slug}/atom.xml`} />
+    <link slot="head" rel="alternate" type="application/feed+json" title={`${topic.label} (JSON Feed)`} href={`/topics/${topic.slug}/feed.json`} />
+
   <section class="wrap" style="padding-top:56px;padding-bottom:32px">
     <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / <a href="/topics/">Topics</a> / {topic.label}</div>
     <h1 class="disp" style="font-size:clamp(64px,10vw,150px)">{topic.label}</h1>

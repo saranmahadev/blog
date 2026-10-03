@@ -8,13 +8,10 @@ const env = import.meta.env;
 
 export const firebaseConfigured = Boolean(env.PUBLIC_FIREBASE_API_KEY && env.PUBLIC_FIREBASE_PROJECT_ID);
 const useEmulators = env.PUBLIC_USE_EMULATORS === 'true';
-export const usingEmulators = useEmulators;
-export const projectId: string = env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
+const projectId: string = env.PUBLIC_FIREBASE_PROJECT_ID ?? '';
 
 /** The plain web endpoint used to hand over unsynced data while a page is closing (see sync.ts). */
 export const beaconUrl = () => useEmulators ? `http://127.0.0.1:5001/${projectId}/asia-south1/syncBeacon` : `https://asia-south1-${projectId}.cloudfunctions.net/syncBeacon`;
-
-/** Firestore's REST address (emulator-aware). */
 
 let app: Promise<FirebaseApp> | undefined;
 let auth: Promise<Auth> | undefined;

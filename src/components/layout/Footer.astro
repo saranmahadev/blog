@@ -20,6 +20,15 @@ import { SITE, NAV } from '@/lib/site';
         <div class="mono foot-h">Site</div>
         <ul>
           {NAV.filter((n) => n.href === '/about/').map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          <li><a href="/security/">Security and privacy</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="mono foot-h">Subscribe</div>
+        <ul>
+          <li><a href="/rss.xml">RSS</a></li>
+          <li><a href="/atom.xml">Atom</a></li>
+          <li><a href="/feed.json">JSON Feed</a></li>
         </ul>
       </div>
     </div>

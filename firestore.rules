@@ -6,7 +6,6 @@ service cloud.firestore {
 
     function signedIn() { return request.auth != null; }
     function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
-    //  set by a Cloud Function, never by a client.
     // The author is the verified owner of this mailbox (no role to configure). Keep in sync with AUTHOR_EMAIL in src/lib/site.ts and functions/src/index.ts.
     function isAuthor() { return signedIn() && request.auth.token.email_verified == true && request.auth.token.email == 'mail@saranmahadev.in'; }
 
@@ -16,11 +15,12 @@ service cloud.firestore {
       let d = request.resource.data;
       return (!('b' in d) || (d.b is map && d.b.size() <= 200))
         && (!('p' in d) || (d.p is map && d.p.size() <= 500))
-        && (!('s' in d) || (d.s is map && d.s.size() <= 8));
+        && (!('s' in d) || (d.s is map && d.s.keys().hasOnly(['t']) && (!('t' in d.s) || d.s.t in ['light', 'dark', 'system'])));
     }
     match /users/{uid} {
-      allow get: if isOwner(uid) || isAuthor();
-      allow list: if isAuthor();
+      // Only the reader sees their own record. The author cannot read readers' bookmarks or reading progress.
+      allow get: if isOwner(uid);
+      allow list: if false;
       allow create: if isOwner(uid)
         && request.resource.data.keys().hasOnly(['b', 'p', 's', 'n', 'm'])
         && (!('n' in request.resource.data) || request.resource.data.n == 0)
