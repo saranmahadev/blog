@@ -36,11 +36,16 @@ const jsonLd = {
 
   <div class="readbar" aria-hidden="true"><i id="readbar" style="width:0"></i></div>
 
-  <section class:list={['art-band', post.tone ? `tone-${post.tone}` : 'art-neutral']}>
+  <section data-pagefind-body class:list={['art-band', post.tone ? `tone-${post.tone}` : 'art-neutral']}>
+    <div hidden>
+      <span data-pagefind-filter="kind:Post"></span>
+      {series && <span data-pagefind-filter={`series:${series.entry.data.title}`}></span>}
+      {data.tags.map((t) => <span data-pagefind-filter={`topic:${t}`}></span>)}
+    </div>
     <div class="wrap">
       <div class="art-hero">
         <div>
-          <div class="mono" style="margin-bottom:26px">
+          <div class="mono" data-pagefind-ignore style="margin-bottom:26px">
             <a href="/">Home</a>{' / '}
             {series ? <><a href={series.url}>{series.entry.data.title}</a>{` / Part ${idx + 1}`}</> : 'Post'}
           </div>
@@ -91,7 +96,7 @@ const jsonLd = {
       </aside>
 
       <div class="prose-col">
-        <article class="prose">
+        <article class="prose" data-pagefind-body>
           <Content components={imaxt} />
         </article>
 

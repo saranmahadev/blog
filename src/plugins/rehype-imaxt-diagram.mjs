@@ -150,7 +150,7 @@ export function rehypeImaxtDiagram() {
       f.parent.children[f.index] = {
         type: 'element',
         tagName: 'figure',
-        properties: { className: wide ? ['diagram', 'diagram-wide'] : ['diagram'] },
+        properties: { className: wide ? ['diagram', 'diagram-wide'] : ['diagram'], 'data-pagefind-ignore': '' },
         children,
       };
     });
