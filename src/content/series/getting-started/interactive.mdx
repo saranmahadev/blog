@@ -1,0 +1,15 @@
+---
+title: "Interactive islands"
+description: "Part two. An MDX post that embeds a React component."
+date: 2026-10-02
+order: 2
+tags: [mdx, react]
+---
+
+import Counter from '@/components/interactive/Counter';
+
+Markdown first, JSX when needed. The counter below hydrates on its own; the rest of the page ships no JavaScript.
+
+<Counter client:visible />
+
+Back to plain Markdown.

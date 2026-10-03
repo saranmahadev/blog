@@ -1,0 +1,46 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/blog/PostCard.astro';
+import SeriesCard from '@/components/blog/SeriesCard.astro';
+import TagPill from '@/components/blog/TagPill.astro';
+import { getContent } from '@/lib/content';
+import { SITE } from '@/lib/site';
+
+const { posts, series } = await getContent();
+const seriesTitle = new Map(series.map((s) => [s.slug, s.entry.data.title]));
+const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+---
+
+<BaseLayout>
+  <section class="mx-auto max-w-5xl px-5 pt-14 pb-10">
+    <h1 class="font-serif text-4xl sm:text-6xl font-bold tracking-tight leading-[1.05] max-w-2xl">
+      Ideas worth <span class="clay-sm tone-peach px-4 inline-block -rotate-1">building</span>, written down.
+    </h1>
+    <p class="mt-6 font-serif text-xl text-muted max-w-xl">{SITE.description}</p>
+  </section>
+
+  <div class="mx-auto max-w-5xl px-5 grid lg:grid-cols-[minmax(0,1fr)_300px] gap-14">
+    <section aria-label="Latest posts">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-muted mb-6">Latest</h2>
+      {posts.length === 0 && <p class="text-muted">Nothing published yet.</p>}
+      <div>
+        {posts.map((p) => <PostCard post={p} seriesTitle={p.seriesSlug ? seriesTitle.get(p.seriesSlug) : undefined} />)}
+      </div>
+    </section>
+
+    <aside class="space-y-10 lg:pt-1">
+      {series.length > 0 && (
+        <section aria-label="Series">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-muted mb-4">Series</h2>
+          <div class="space-y-5">{series.map((s) => <SeriesCard series={s} />)}</div>
+        </section>
+      )}
+      {tags.length > 0 && (
+        <section aria-label="Topics">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-muted mb-4">Topics</h2>
+          <ul class="flex flex-wrap gap-2">{tags.map((t) => <li><TagPill label={t} /></li>)}</ul>
+        </section>
+      )}
+    </aside>
+  </div>
+</BaseLayout>

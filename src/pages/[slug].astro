@@ -1,0 +1,38 @@
+---
+// Serves both standalone posts (/<slug>/) and series landing pages (/<series>/).
+import type { GetStaticPaths } from 'astro';
+import { getContent } from '@/lib/content';
+import Article from '@/components/blog/Article.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/blog/PostCard.astro';
+
+export const getStaticPaths = (async () => {
+  const { posts, series } = await getContent();
+  return [
+    ...posts.filter((p) => !p.seriesSlug).map((post) => ({
+      params: { slug: post.slug },
+      props: { post, series: undefined },
+    })),
+    ...series.map((s) => ({
+      params: { slug: s.slug },
+      props: { post: undefined, series: s },
+    })),
+  ];
+}) satisfies GetStaticPaths;
+
+const { post, series } = Astro.props;
+---
+
+{post && <Article post={post} />}
+{series && (
+  <BaseLayout title={series.entry.data.title} description={series.entry.data.description}>
+    <div class="mx-auto max-w-[680px] px-5 pt-12 sm:pt-16">
+      <p class="text-xs uppercase tracking-wider text-muted font-medium">Series</p>
+      <h1 class="mt-2 text-4xl sm:text-[2.75rem] font-bold tracking-tight leading-[1.15]">{series.entry.data.title}</h1>
+      <p class="mt-4 font-serif text-xl text-muted leading-snug">{series.entry.data.description}</p>
+      <div class="mt-12">
+        {series.posts.map((p) => <PostCard post={p} />)}
+      </div>
+    </div>
+  </BaseLayout>
+)}

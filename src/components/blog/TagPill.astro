@@ -1,0 +1,12 @@
+---
+import { toneFor } from '@/lib/site';
+
+interface Props { label: string; href?: string }
+const { label, href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag
+  href={href}
+  class:list={['clay-sm px-3 py-1 text-xs font-medium text-ink inline-block', `tone-${toneFor(label)}`, href && 'clay-press']}
+>{label}</Tag>
