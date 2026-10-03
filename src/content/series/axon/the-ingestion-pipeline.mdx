@@ -1,0 +1,46 @@
+---
+title: "The ingestion pipeline"
+description: "Chunking, embedding and writing, without losing your place on failure."
+date: 2026-10-01
+order: 2
+tags: [AI, RAG]
+featured: false
+cover:
+  kind: word
+  text: "Restart"
+  sub: "safely, every time"
+---
+
+Ingestion is where retrieval systems quietly break. Documents arrive in odd shapes, jobs die halfway, and the same file gets processed twice.
+
+## Three stages, one rule
+
+<Steps>
+  <Step title="Chunk">Split each document into pieces that make sense on their own.</Step>
+  <Step title="Embed">Turn every chunk into a vector. Batch the calls and retry the failures.</Step>
+  <Step title="Write">Store the vector and its metadata under a stable id.</Step>
+  <Step title="Checkpoint">Record how far you got, so a stopped job resumes instead of starting over.</Step>
+</Steps>
+
+## Write idempotently
+
+Give every chunk a stable id derived from its source and position. Writing the same chunk twice then replaces it instead of duplicating it. Click through the steps to see which lines do the work.
+
+<CodeWalk steps={[
+  { lines: "1", title: "Stable id", text: "Source plus position: the same chunk always gets the same id." },
+  { lines: "2", title: "Upsert", text: "Replaces instead of duplicating, so retries are safe." },
+  { lines: "3-4", title: "Checkpoint", text: "Saved after every batch; a restart continues from here." },
+]}>
+
+```ts
+const id = `${doc.id}:${chunk.index}`;
+await index.upsert({ id, vector, metadata });
+await checkpoint.save({ doc: doc.id, next: chunk.index + 1 });
+// a restarted job reads the checkpoint and skips what is done
+```
+
+</CodeWalk>
+
+<Sidenote>Idempotent means doing it twice has the same effect as doing it once.</Sidenote>
+
+Next in the series: query and ranking.

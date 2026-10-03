@@ -1,0 +1,30 @@
+---
+import '@/styles/imaxt.css';
+import { coverPhrase, isImaxtCover, splitLines, type Cover } from '@/lib/cover';
+import type { ImaxtTone } from './types';
+
+interface Props {
+  cover?: Cover;
+  title: string;
+  tone?: ImaxtTone;
+  caption?: string;
+  ratio?: string;
+  style?: string;
+}
+const { cover, title, tone, caption, ratio = '16 / 9', style } = Astro.props;
+// A post with no typographic cover gets one made from its title.
+const c = isImaxtCover(cover) ? cover : { kind: 'stack' as const, text: coverPhrase(title) };
+const lines = c.kind === 'quote' ? [] : c.kind === 'stack' ? splitLines(c.text, 3) : [c.text];
+const h = lines.length ? 68 / lines.length : 68;
+const widthFor = (l: string) => 176 / Math.max(l.length, 2);
+---
+
+<div class="imx-cover" data-tone={tone} data-kind={c.kind} style={`aspect-ratio:${ratio};${style ?? ''}`} aria-hidden="true">
+  {caption && <div class="imx-cover-cap"><span>{caption}</span></div>}
+  <div class="imx-cover-in">
+    {c.kind === 'quote'
+      ? <div class="imx-cover-q">{c.text}</div>
+      : lines.map((l, i) => <span class="imx-cover-line" data-s={c.kind === 'stack' ? i % 3 : 0} style={`--w:${widthFor(l)};--h:${h}`}>{l}</span>)}
+    {c.sub && <span class="imx-cover-sub">{c.sub}</span>}
+  </div>
+</div>

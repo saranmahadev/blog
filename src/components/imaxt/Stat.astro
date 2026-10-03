@@ -1,0 +1,43 @@
+---
+import '@/styles/imaxt.css';
+import type { ImaxtTone } from './types';
+
+interface Props { value: string | number; unit?: string; label: string; note?: string; tone?: ImaxtTone }
+const { value, unit, label, note, tone } = Astro.props;
+const text = String(value);
+const numeric = /^\d+(\.\d+)?$/.test(text);
+---
+
+<div class="imx imx-stat-wrap">
+  <div class="imx-stat imx-slab" data-tone={tone}>
+    <div class="imx-stat-v"><span class="imx-count" data-to={numeric ? text : undefined}>{text}</span>{unit && <span class="imx-stat-u">{unit}</span>}</div>
+    <div class="imx-label imx-stat-l">{label}</div>
+    {note && <div class="imx-stat-n">{note}</div>}
+  </div>
+</div>
+
+<script>
+  // Count up once when a numeric stat scrolls into view. The final value is already in the HTML,
+  // so this is skipped entirely for reduced-motion users and when JavaScript is off.
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const els = document.querySelectorAll<HTMLElement>('.imx-count[data-to]');
+  if (!reduce && els.length) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.unobserve(e.target);
+        const el = e.target as HTMLElement;
+        const to = Number(el.dataset.to);
+        const dec = (el.dataset.to!.split('.')[1] ?? '').length;
+        const t0 = performance.now();
+        const tick = (t: number) => {
+          const k = Math.min(1, (t - t0) / 900);
+          el.textContent = (to * (1 - Math.pow(1 - k, 3))).toFixed(dec);
+          if (k < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+    }, { threshold: 0.6 });
+    els.forEach((el) => io.observe(el));
+  }
+</script>

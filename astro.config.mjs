@@ -11,7 +11,7 @@ export default defineConfig({
   site,
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [mdx(), react(), sitemap()],
+  integrations: [mdx(), react(), sitemap({ filter: (page) => !page.includes('/imaxt/') })],
   vite: { plugins: [tailwindcss()] },
   markdown: {
     shikiConfig: { theme: 'github-dark' },

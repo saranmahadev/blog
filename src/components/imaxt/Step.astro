@@ -1,0 +1,13 @@
+---
+import '@/styles/imaxt.css';
+
+interface Props { title: string }
+const { title } = Astro.props;
+---
+
+<li class="imx-step">
+  <div>
+    <div class="imx-step-t">{title}</div>
+    <div class="imx-step-b"><slot /></div>
+  </div>
+</li>

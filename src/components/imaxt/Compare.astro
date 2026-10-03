@@ -1,0 +1,13 @@
+---
+import '@/styles/imaxt.css';
+
+interface Props { wide?: boolean }
+const { wide } = Astro.props;
+---
+
+<div class:list={['imx', wide && 'imx-wide']}>
+  <div class="imx-compare" role="group" aria-label="Comparison">
+    <slot />
+    <span class="imx-vs" aria-hidden="true">VS</span>
+  </div>
+</div>

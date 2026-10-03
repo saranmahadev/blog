@@ -1,0 +1,13 @@
+---
+import '@/styles/imaxt.css';
+import type { ImaxtTone } from './types';
+
+interface Props { label?: string; kind?: 'before' | 'after'; tone?: ImaxtTone }
+const { label, kind = 'after', tone } = Astro.props;
+const t = tone ?? (kind === 'after' ? 'accent' : undefined);
+---
+
+<div class:list={['imx-side', kind !== 'before' && 'imx-slab']} data-kind={kind} data-tone={t}>
+  {label && <span class="imx-label imx-side-l">{label}</span>}
+  <div class="imx-side-b"><slot /></div>
+</div>

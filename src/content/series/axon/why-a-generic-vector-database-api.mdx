@@ -5,12 +5,27 @@ date: 2026-10-03
 order: 1
 tags: [AI, RAG, Databases]
 featured: true
+cover:
+  kind: stack
+  text: "One API for every vector"
+  sub: "Axon, part one"
 ---
-**The short version.** Most retrieval projects need the same four things: a place to put vectors, a way to filter them, a way to update them safely, and an API that doesn't change every month. Axon is my attempt to make that boring.
+
+<Statement>Every retrieval project rebuilds the **same plumbing**. Axon is my attempt to make it *boring*.</Statement>
+
+Most retrieval projects need the same four things: a place to put vectors, a way to filter them, a way to update them safely, and an API that doesn't change every month.
+
+<Sidenote label="Mock data">The numbers in the blocks below are placeholders, not measurements.</Sidenote>
 
 ## The problem
 
 I have now built the same ingestion and search plumbing three times. Each version was [a little better](/axon/the-ingestion-pipeline/) and a little more tied to its project. None of them could be reused without a rewrite.
+
+<StatRow>
+  <Stat value="3" label="copies of the same code" tone="rose" />
+  <Stat value="4" unit="steps" label="in every pipeline" tone="sky" />
+  <Stat value="1" label="API to replace them" tone="mint" />
+</StatRow>
 
 ### Three copies of the same code
 
@@ -20,12 +35,12 @@ The copies differ in details, but the shape is identical:
 - store vectors with metadata
 - search with filters, then rank
 
-<figure class="wide">
-  <div class="cover tone-sky cv-grid" style="height:320px"><span class="cv-tag mono">Figure 1 · wide block</span></div>
-  <figcaption class="mono muted" style="margin-top:12px;text-align:center">Images, diagrams and code can break out of the text column.</figcaption>
-</figure>
+<Compare>
+  <Side kind="before" label="Before">Three pipelines, three sets of bugs</Side>
+  <Side label="After">One small API, one set of bugs</Side>
+</Compare>
 
-> The best API is the one you can describe in a single paragraph.
+<PullQuote by="Design rule">The best API is the one you can describe in a single paragraph.</PullQuote>
 
 ## A small API
 
@@ -41,7 +56,7 @@ const hits = await axon.search({
 });
 ```
 
-<div class="callout slab tone-sky"><strong class="mono" style="font-size:12px;padding-top:4px">Note</strong><span>Callouts use a soft tone so the accent stays for actions.</span></div>
+<Marquee words={["Embed", "Filter", "Rank", "Repeat"]} tone="accent" />
 
 ## What comes next
 

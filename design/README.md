@@ -51,6 +51,10 @@ The accent is for actions, links and highlights; it never carries body text.
 - Article: 260px contents and series rail, text column (max 720px), 300px actions rail. Wide blocks may extend 60px into the gutters. Below 1024px the rails collapse.
 - Covers: tone-on-tone patterns only on the lead story, series tiles and article hero. Elsewhere, a flat tone square with the post's initial.
 
+## Imaxt
+
+Imaxt is the blog's signature feature: typography and layout used as the visuals, because posts carry no images. Blocks: Statement, Stat/StatRow, PullQuote, Compare, Steps, Timeline, Bars, Sidenote, CodeWalk, Marquee, plus typographic covers. Display type is Fraunces (optical-size axis) alongside Archivo's width and weight axes; it loads only on pages that use it. Reference: the `/imaxt/` Lab page on the live site. The design canvas for Imaxt is added in a later step.
+
 ## The accent in code
 
 One token, `--accent`, plus `--on-accent` (text on it) and `--accent-lt` (the lightened value used on dark surfaces). Change the accent in `src/styles/tokens.css`; nothing else needs editing.

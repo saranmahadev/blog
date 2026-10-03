@@ -4,7 +4,8 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getContent, getRelated, type Post, type Series } from '@/lib/content';
 import { formatDate, readingTime } from '@/lib/site';
 import Pill from './Pill.astro';
-import Cover from './Cover.astro';
+import { imaxt, ImaxtCover } from '@/components/imaxt';
+import { isImageCover } from '@/lib/cover';
 
 interface Props { post: Post; series?: Series }
 const { post, series } = Astro.props;
@@ -17,7 +18,6 @@ const minutes = readingTime(post.entry.body ?? '');
 const idx = series ? series.posts.findIndex((p) => p.key === post.key) : -1;
 const prev = series?.posts[idx - 1];
 const next = series?.posts[idx + 1];
-const hasHeroArt = !!series || !!data.cover;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -27,18 +27,18 @@ const jsonLd = {
   author: { '@type': 'Person', name: data.author },
   datePublished: data.date.toISOString(),
   dateModified: (data.updated ?? data.date).toISOString(),
-  ...(data.cover && { image: new URL(data.cover.image, Astro.site).href }),
+  ...(isImageCover(data.cover) && { image: new URL(data.cover.image, Astro.site).href }),
 };
 ---
 
-<BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={data.cover?.image} type="article">
+<BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={isImageCover(data.cover) ? data.cover.image : undefined} type="article">
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <div class="readbar" aria-hidden="true"><i id="readbar" style="width:0"></i></div>
 
   <section class:list={['art-band', post.tone ? `tone-${post.tone}` : 'art-neutral']}>
     <div class="wrap">
-      <div class:list={['art-hero', !hasHeroArt && 'solo']}>
+      <div class="art-hero">
         <div>
           <div class="mono" style="margin-bottom:26px">
             <a href="/">Home</a>{' / '}
@@ -56,9 +56,9 @@ const jsonLd = {
             {data.tags.map((t) => <Pill label={t} />)}
           </div>
         </div>
-        {data.cover
+        {isImageCover(data.cover)
           ? <img src={data.cover.image} alt={data.cover.alt} class="rounded-2xl w-full" style="border:1.5px solid var(--line);box-shadow:var(--hard)" />
-          : series && <Cover tone={series.tone} pattern={series.pattern} ratio="4 / 3" tag={`${series.entry.data.title} / ${String(idx + 1).padStart(2, '0')}`} style="background-color:var(--card);box-shadow:var(--hard)" />}
+          : <ImaxtCover cover={data.cover} title={data.title} tone="ink" ratio="4 / 3" caption={series ? `${series.entry.data.title} / ${String(idx + 1).padStart(2, '0')}` : 'Post'} style="box-shadow:var(--hard)" />}
       </div>
     </div>
   </section>
@@ -92,7 +92,7 @@ const jsonLd = {
 
       <div class="prose-col">
         <article class="prose">
-          <Content />
+          <Content components={imaxt} />
         </article>
 
         {series && (prev || next) && (

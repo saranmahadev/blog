@@ -28,6 +28,21 @@ pnpm build      # outputs dist/
 - Posts can be featured (`featured: true`): the newest featured post is the Home lead story.
 - Use `.mdx` and `import` a component from `src/components/interactive/` to embed React; add `client:visible`/`client:load` to hydrate it.
 
+## Imaxt: typography as the visuals
+
+Posts use no images. Imaxt blocks (Statement, Stat, PullQuote, Compare, Steps, Timeline, Bars, Sidenote, CodeWalk, Marquee) turn type and layout into figures. Write the post as `.mdx` and use them directly, with no imports. Every block and its source is on the hidden `/imaxt/` Lab page; the code is in `src/components/imaxt/` and `src/styles/imaxt.css`.
+
+A post can set a typographic cover in its frontmatter (`kind`: `word`, `stat`, `quote` or `stack`); without one, a stacked cover is made from the title:
+
+```yaml
+cover:
+  kind: stack
+  text: "One API for every vector"
+  sub: "Axon, part one"
+```
+
+Numbers in the sample posts are mock data, labelled as such.
+
 ## Changing the colours
 
 All colours are tokens in `src/styles/tokens.css`. The accent is `--accent` (with `--on-accent` for text on it and `--accent-lt` for dark surfaces); the dark theme overrides them in the `[data-theme='dark']` block.
