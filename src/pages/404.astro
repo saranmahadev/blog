@@ -1,0 +1,14 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Not found" noindex>
+  <section class="tone-accent" style="border-bottom:1.5px solid var(--line);color:var(--on-accent)">
+    <div class="wrap" style="padding-top:64px;padding-bottom:64px">
+      <div class="mono">Error 404</div>
+      <h1 class="disp" style="font-size:clamp(90px,16vw,260px)">Lost it.</h1>
+      <p class="serif" style="font-size:26px;max-width:32ch;margin-top:18px">That page moved or never existed. Head back to the front page.</p>
+      <div class="row" style="margin-top:26px;gap:12px"><a class="btn ink" href="/">Back home</a><a class="btn" href="/series/" style="color:#1c1c1c">Browse series</a></div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,63 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# One deploy per ref; never cancel a production deploy mid-flight.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+  id-token: write # Workload Identity Federation (no long-lived keys)
+  pull-requests: write # preview URL comment
+
+env:
+  FIREBASE_PROJECT: ${{ vars.FIREBASE_PROJECT_ID }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm build
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  deploy:
+    needs: build
+    # Skip until the repo variables/secrets below are configured, and for fork PRs.
+    if: vars.FIREBASE_PROJECT_ID != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
+      - name: Deploy preview (pull requests)
+        if: github.event_name == 'pull_request'
+        run: npx --yes firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.number }}" --project "$FIREBASE_PROJECT" --expires 7d
+      - name: Deploy production
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: npx --yes firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT"

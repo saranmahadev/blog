@@ -1,0 +1,18 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SeriesTile from '@/components/blog/SeriesTile.astro';
+import { getContent } from '@/lib/content';
+
+const { series } = await getContent();
+---
+
+<BaseLayout title="Series" description="Multi-part writing, one idea per post.">
+  <section class="wrap" style="padding-top:56px;padding-bottom:32px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Series</div>
+    <h1 class="disp" style="font-size:clamp(72px,12vw,180px)">Series</h1>
+    <p class="serif" style="font-size:24px;max-width:40ch;margin-top:18px;color:var(--muted)">Multi-part writing, one idea per post.</p>
+  </section>
+  <section class="band acc" style="margin-top:32px">
+    <div class="wrap"><div class="stiles">{series.map((s) => <SeriesTile series={s} />)}</div></div>
+  </section>
+</BaseLayout>

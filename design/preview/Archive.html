@@ -1,0 +1,67 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Archive and tag pages</title><link rel="stylesheet" href="mock.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet"></head><body style="margin:0">
+
+
+
+<style>body{margin:0}</style>
+
+<div class="dm light" style="--accent: #0F7B4D;--accent-lt: #6AAD91;--on-accent: #ffffff">
+
+<header class="hdr"><div class="wrap hdr-in">
+  <a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a>
+  <nav class="nav" aria-label="Primary"><a href="#">Home</a><a href="#">Series</a><a href="#">Topics</a><a class="on" href="#">Archive</a><a href="#">About</a></nav>
+  <span class="sp"></span>
+  <button class="srch" type="button" aria-label="Search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search <span class="kbd" style="margin-left:auto">/</span></button>
+  <button class="ib" type="button" aria-label="Toggle dark mode"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+  <button class="btn ink" type="button">Sign in</button>
+</div></header>
+
+<main>
+<section class="wrap" style="padding-top:56px;padding-bottom:32px">
+  <div class="mono muted" style="margin-bottom:14px"><a href="#">Home</a> / Archive</div>
+  <h1 class="disp" style="font-size:clamp(90px,13vw,200px)">Archive</h1>
+</section>
+
+<section class="wrap" style="padding-bottom:20px" aria-label="Filters">
+  <div class="row rule" style="padding:18px 0;gap:22px;flex-wrap:wrap">
+    <div class="seg" role="group" aria-label="Kind"><button class="on" type="button">All</button><button type="button">Series</button><button type="button">Standalone</button></div>
+    <div class="row" style="gap:8px;flex-wrap:wrap"><a class="pill lg" href="#">AI</a><a class="pill lg" href="#">RAG</a><a class="pill lg" href="#">Databases</a><a class="pill lg" href="#">Systems</a><a class="pill lg" href="#">Linux</a><a class="pill lg" href="#">Career</a></div>
+    <span class="sp"></span>
+    <span class="mono muted">Sort</span><div class="seg"><button class="on" type="button">Newest</button><button type="button">Oldest</button></div>
+  </div>
+</section>
+
+<section class="wrap" style="padding-bottom:64px" aria-label="Posts">
+  <h2 class="mono rule" style="padding:14px 0 0;margin-bottom:0;border-bottom:0">October 2026</h2>
+  <div class="arow"><span class="meta">Oct 3</span><h3 class="head"><a href="#">Why I'm building a generic vector database API</a></h3><span class="pill tone-mint">Axon · 1</span><span class="meta">9 min</span></div>
+  <div class="arow"><span class="meta">Oct 1</span><h3 class="head"><a href="#">The ingestion pipeline</a></h3><span class="pill tone-mint">Axon · 2</span><span class="meta">7 min</span></div>
+  <h2 class="mono" style="padding:28px 0 0">September 2026</h2>
+  <div class="arow" style="border-top:1px solid var(--hair);margin-top:14px"><span class="meta">Sep 30</span><h3 class="head"><a href="#">Choosing an embedding model without a benchmark</a></h3><span class="pill">Standalone</span><span class="meta">5 min</span></div>
+  <div class="arow"><span class="meta">Sep 29</span><h3 class="head"><a href="#">Leader election</a></h3><span class="pill tone-lilac">Systems Notes · 2</span><span class="meta">10 min</span></div>
+  <div class="arow"><span class="meta">Sep 22</span><h3 class="head"><a href="#">Notes from my first year as a staff engineer</a></h3><span class="pill tone-rose">Career Notes · 1</span><span class="meta">9 min</span></div>
+  <div class="arow"><span class="meta">Sep 20</span><h3 class="head"><a href="#">Building the graph</a></h3><span class="pill tone-sky">Code Graphs · 2</span><span class="meta">11 min</span></div>
+  <div class="arow"><span class="meta">Sep 18</span><h3 class="head"><a href="#">HNSW in fifteen minutes</a></h3><span class="pill">Standalone</span><span class="meta">15 min</span></div>
+  <div class="row" style="justify-content:center;gap:10px;margin-top:48px" role="navigation" aria-label="Pagination">
+    <button class="ib" type="button" aria-label="Previous page" style="opacity:.5">←</button>
+    <button class="ib tone-accent" type="button" aria-current="page" style="font-weight:800">1</button>
+    <button class="ib" type="button" style="font-weight:800">2</button>
+    <button class="ib" type="button" style="font-weight:800">3</button>
+    <button class="ib" type="button" aria-label="Next page">→</button>
+  </div>
+</section>
+
+<section class="band sig" aria-label="Tag page variant">
+  <div class="wrap">
+    <div class="mono" style="margin-bottom:14px">Variant: tag page · /tags/rag/</div>
+    <div class="row" style="align-items:flex-end;gap:32px;flex-wrap:wrap">
+      <h2 class="disp" style="font-size:clamp(90px,13vw,200px)"><span class="hl">#RAG</span></h2>
+      <div style="padding-bottom:16px"><div class="serif" style="font-size:24px;max-width:30ch">Retrieval, chunking and everything around it.</div><div class="mono" style="margin-top:10px">3 posts · 2 series</div></div>
+      <span class="sp"></span>
+      <a class="btn ink" href="#" style="margin-bottom:16px">Tag RSS →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="foot"><div class="wrap"><div class="row"><div class="logo" style="font-size:24px"><i></i><span>Drafted</span><small class="by mono">By Dev</small></div><span class="sp"></span><span class="mono" style="color:#a8a498">© 2026 Drafted · By Dev</span></div></div></footer>
+</main>
+</div>
+</body></html>

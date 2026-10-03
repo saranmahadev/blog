@@ -1,0 +1,8 @@
+---
+import type { Tone } from '@/lib/site';
+
+interface Props { letter: string; tone?: Tone }
+const { letter, tone } = Astro.props;
+---
+
+<div class:list={['thumb', tone && `tone-${tone}`]} style={tone ? undefined : 'background-color:var(--paper2)'} aria-hidden="true">{letter}</div>

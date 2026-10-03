@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Series page</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="mock.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="dm {{theme}}" style="--accent: {{accent}};--accent-lt: {{accentLt}};--on-accent: {{onAccent}}">
+
+<header class="hdr"><div class="wrap hdr-in">
+  <a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a>
+  <nav class="nav" aria-label="Primary"><a href="#">Home</a><a class="on" href="#">Series</a><a href="#">Topics</a><a href="#">Archive</a><a href="#">About</a></nav>
+  <span class="sp"></span>
+  <button class="srch" type="button" aria-label="Search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search <span class="kbd" style="margin-left:auto">/</span></button>
+  <button class="ib" type="button" aria-label="Toggle dark mode"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+  <button class="btn ink" type="button">Sign in</button>
+</div></header>
+
+<main>
+<section class="tone-mint" style="border-bottom:1px solid var(--hair);position:relative;overflow:hidden;color:var(--on-tone)">
+  <div class="cover cv-dots" style="position:absolute;inset:0;border:0;border-radius:0;opacity:.14"></div>
+  <div class="wrap" style="position:relative;padding-top:56px;padding-bottom:56px;display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:56px;align-items:end">
+    <div>
+      <div class="mono" style="margin-bottom:22px"><a href="#">Home</a> / <a href="#">Series</a> / Axon</div>
+      <h1 class="disp" style="font-size:clamp(80px,10vw,168px)">Building Axon</h1>
+      <p class="serif" style="font-size:26px;line-height:1.4;max-width:40ch;margin-top:22px">A generic vector database API, from first commit to production. Four parts, one idea per post.</p>
+      <div class="row" style="margin-top:28px;gap:12px"><a class="btn ink" href="#">Start reading <span aria-hidden="true">→</span></a><a class="btn" href="#">Subscribe via RSS</a></div>
+    </div>
+    <div class="slab" style="padding:24px;background-color:#fffdf6;color:#1c1c1c">
+      <div class="mono">Your progress</div>
+      <div class="disp" style="font-size:72px;margin:10px 0">1 / 4</div>
+      <div class="prog"><i style="width:25%"></i></div>
+      <p class="mono" style="margin-top:12px">Up next: Part 2</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" style="padding-top:56px;padding-bottom:80px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:56px">
+  <ol>
+    <li class="slab hov tone-mint" style="margin-bottom:28px;padding:28px;display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:24px;align-items:center">
+      <span class="disp" style="font-size:88px">01</span>
+      <div><h2 class="head" style="font-size:32px"><a href="#">Why I'm building a generic vector database API</a></h2><p class="serif" style="font-size:18px;margin-top:8px">The case for pulling the plumbing out of every project.</p><div class="mono" style="margin-top:10px">Oct 3 · 9 min</div></div>
+      <span class="badge tone-accent">Read</span>
+    </li>
+    <li class="slab hov" style="margin-bottom:28px;padding:28px;display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:24px;align-items:center;outline:3px solid var(--accent);outline-offset:4px">
+      <span class="disp" style="font-size:88px;color:transparent;-webkit-text-stroke:2px var(--text)">02</span>
+      <div><h2 class="head" style="font-size:32px"><a href="#">The ingestion pipeline</a></h2><p class="serif muted" style="font-size:18px;margin-top:8px">Chunking, embedding and writing, without losing your place on failure.</p><div class="meta" style="margin-top:10px">Oct 1 · 7 min</div></div>
+      <a class="btn accent" href="#">Up next →</a>
+    </li>
+    <li class="slab hov" style="margin-bottom:28px;padding:28px;display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:24px;align-items:center">
+      <span class="disp" style="font-size:88px;color:transparent;-webkit-text-stroke:2px var(--text)">03</span>
+      <div><h2 class="head" style="font-size:32px"><a href="#">Query and ranking</a></h2><p class="serif muted" style="font-size:18px;margin-top:8px">Filters, hybrid search and what to do when results disagree.</p><div class="meta" style="margin-top:10px">Coming soon</div></div>
+      <span class="badge tone-lilac">Draft</span>
+    </li>
+    <li class="slab hov" style="padding:28px;display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:24px;align-items:center">
+      <span class="disp" style="font-size:88px;color:transparent;-webkit-text-stroke:2px var(--text)">04</span>
+      <div><h2 class="head" style="font-size:32px"><a href="#">Going to production</a></h2><p class="serif muted" style="font-size:18px;margin-top:8px">Limits, backups and the boring checklist.</p><div class="meta" style="margin-top:10px">Coming soon</div></div>
+      <span class="badge tone-lilac">Draft</span>
+    </li>
+  </ol>
+
+  <aside class="stack" style="gap:32px">
+    <div><div class="mono rule" style="padding-top:12px;margin-bottom:10px">About this series</div><p class="serif" style="font-size:18px;line-height:1.55">Short posts that each answer one question. Published roughly once a week.</p></div>
+    <div><div class="mono rule" style="padding-top:12px;margin-bottom:12px">Topics</div><div class="row" style="flex-wrap:wrap;gap:8px"><a class="pill" href="#">AI</a><a class="pill" href="#">RAG</a><a class="pill" href="#">Databases</a></div></div>
+    <div class="slab tone-lilac" style="padding:20px"><div class="head" style="font-size:22px">Get new parts by email</div><div class="stack" style="gap:10px;margin-top:14px"><label class="sr" for="se">Email</label><input class="inp" id="se" type="email" placeholder="you@example.com"><button class="btn accent block" type="button">Subscribe</button></div></div>
+    <div><div class="mono rule" style="padding-top:12px;margin-bottom:12px">More series</div>
+      <a class="slab hov tone-lilac" style="display:block;padding:16px;margin-bottom:18px" href="#"><span class="mono">6 parts</span><div class="head" style="font-size:20px">Systems Notes</div></a>
+      <a class="slab hov tone-sky" style="display:block;padding:16px" href="#"><span class="mono">3 parts</span><div class="head" style="font-size:20px">Code Graphs</div></a></div>
+  </aside>
+</div>
+
+<footer class="foot"><div class="wrap"><div class="row"><div class="logo" style="font-size:24px"><i></i><span>Drafted</span><small class="by mono">By Dev</small></div><span class="sp"></span><span class="mono" style="color:#a8a498">© 2026 Drafted · By Dev</span></div></div></footer>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0F7B4D","options":["#0F7B4D","#1A8917","#0B7A75","#22C55E","#3B49DF","#3B4BFF"],"section":"Palette"},"dark":{"editor":"boolean","default":false,"section":"Palette"},"$preview":{"width":1440,"height":1605}}'>
+class Component extends DCLogic {
+  tv() {
+    const hex = (this.props.accent ?? '#0F7B4D').replace('#', '');
+    const rgb = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    const lum = (c) => { const [r, g, b] = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+    const toHex = (c) => '#' + c.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+    const lighten = (c, t) => c.map((v) => v * (1 - t) + 255 * t);
+    const lt = lum(rgb) < 0.25 ? lighten(rgb, 0.38) : rgb;
+    const dark = !!this.props.dark;
+    const acc = dark ? lt : rgb;
+    const L = lum(acc);
+    const onAccent = 1.05 / (L + 0.05) > (L + 0.05) / 0.0616 ? '#ffffff' : '#1c1c1c';
+    return { accent: toHex(acc), accentLt: toHex(lt), onAccent, theme: dark ? 'dark' : 'light' };
+  }
+  renderVals() {
+    return { ...this.tv() };
+  }
+}
+</script>
+</body>
+</html>

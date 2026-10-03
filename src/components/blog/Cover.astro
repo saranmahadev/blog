@@ -1,0 +1,10 @@
+---
+import type { Pattern, Tone } from '@/lib/site';
+
+interface Props { tone: Tone; pattern: Pattern; ratio?: string; tag?: string; class?: string; style?: string }
+const { tone, pattern, ratio = '16 / 9', tag, class: cls, style } = Astro.props;
+---
+
+<div class:list={['cover', `tone-${tone}`, `cv-${pattern}`, cls]} style={`aspect-ratio:${ratio};${style ?? ''}`} aria-hidden="true">
+  {tag && <span class="cv-tag mono">{tag}</span>}
+</div>

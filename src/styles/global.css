@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource/space-mono/400.css';
+@import '@fontsource/space-mono/700.css';
+@import '@fontsource-variable/source-serif-4';
+@import './tokens.css';
+@import './components.css';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));

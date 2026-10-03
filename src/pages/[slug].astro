@@ -1,0 +1,49 @@
+---
+// Serves both standalone posts (/<slug>/) and series landing pages (/<series>/).
+import type { GetStaticPaths } from 'astro';
+import { getContent } from '@/lib/content';
+import { formatShort, readingTime } from '@/lib/site';
+import Article from '@/components/blog/Article.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+export const getStaticPaths = (async () => {
+  const { posts, series } = await getContent();
+  return [
+    ...posts.filter((p) => !p.seriesSlug).map((post) => ({ params: { slug: post.slug }, props: { post, series: undefined } })),
+    ...series.map((s) => ({ params: { slug: s.slug }, props: { post: undefined, series: s } })),
+  ];
+}) satisfies GetStaticPaths;
+
+const { post, series } = Astro.props;
+---
+
+{post && <Article post={post} />}
+{series && (
+  <BaseLayout title={series.entry.data.title} description={series.entry.data.description}>
+    <section class:list={['series-hero', `tone-${series.tone}`]}>
+      <div class:list={['cover', `cv-${series.pattern}`]} style="position:absolute;inset:0;border:0;border-radius:0;opacity:.3" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="mono" style="margin-bottom:22px"><a href="/">Home</a> / <a href="/series/">Series</a> / {series.entry.data.title}</div>
+        <h1 class="disp" style="font-size:clamp(64px,10vw,168px)">{series.entry.data.title}</h1>
+        <p class="serif" style="font-size:26px;line-height:1.4;max-width:40ch;margin-top:22px">{series.entry.data.description}</p>
+        <div class="row" style="margin-top:28px;gap:12px">
+          {series.posts[0] && <a class="btn ink" href={series.posts[0].url}>Start reading <span aria-hidden="true">→</span></a>}
+        </div>
+      </div>
+    </section>
+    <div class="wrap" style="padding-top:56px;padding-bottom:80px">
+      <ol style="max-width:920px">
+        {series.posts.map((p, i) => (
+          <li class:list={['slab', 'hov', 'part', i === 0 && `tone-${series.tone}`]}>
+            <span class:list={['disp', 'part-n', i > 0 && 'out']}>{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h2 class="head" style="font-size:30px"><a href={p.url}>{p.data.title}</a></h2>
+              <p class="serif" style="font-size:18px;margin-top:8px;opacity:.85">{p.data.description}</p>
+              <div class="meta" style="margin-top:10px;color:inherit;opacity:.75">{formatShort(p.data.date)} · {readingTime(p.entry.body ?? '')} min</div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </BaseLayout>
+)}

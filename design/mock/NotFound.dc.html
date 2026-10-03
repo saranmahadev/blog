@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>404 and empty states</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="mock.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="dm {{theme}}" style="--accent: {{accent}};--accent-lt: {{accentLt}};--on-accent: {{onAccent}};min-height:900px">
+
+<header class="hdr"><div class="wrap hdr-in"><a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a><span class="sp"></span><button class="btn ink" type="button">Sign in</button></div></header>
+
+<main>
+<section class="tone-accent" style="border-bottom:1px solid var(--hair);position:relative;overflow:hidden;color:var(--on-accent)">
+  <div class="cover cv-stripes" style="position:absolute;inset:0;border:0;border-radius:0;opacity:.1"></div>
+  <div class="wrap" style="position:relative;padding-top:64px;padding-bottom:64px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:end">
+    <div>
+      <div class="mono">Error 404</div>
+      <h1 class="disp" style="font-size:clamp(100px,16vw,260px)">Lost it.</h1>
+      <p class="serif" style="font-size:26px;max-width:32ch;margin-top:18px">That page moved or never existed. Try the search or head back to the front page.</p>
+      <div class="row" style="margin-top:26px;gap:12px"><a class="btn ink" href="#">Back home</a><a class="btn" href="#" style="color:#1c1c1c">Search the blog</a></div>
+    </div>
+    <div class="disp" style="font-size:220px;line-height:.8;color:transparent;-webkit-text-stroke:3px var(--on-accent)">404</div>
+  </div>
+</section>
+
+<section class="wrap" style="padding-top:56px;padding-bottom:72px" aria-label="Empty states">
+  <div class="mono muted" style="margin-bottom:20px">Empty states</div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px">
+    <div class="slab flat" style="padding:28px;border-style:dashed;box-shadow:none"><div class="cover cv-dots tone-sky" style="height:90px;margin-bottom:18px"></div><div class="head" style="font-size:24px">No bookmarks yet</div><p class="serif muted" style="font-size:17px;margin:8px 0 16px">Tap the bookmark button on any post to save it here.</p><a class="btn ink sm" href="#">Browse posts</a></div>
+    <div class="slab flat" style="padding:28px;border-style:dashed;box-shadow:none"><div class="cover cv-rings tone-lilac" style="height:90px;margin-bottom:18px"></div><div class="head" style="font-size:24px">No results for "xyzzy"</div><p class="serif muted" style="font-size:17px;margin:8px 0 16px">Check the spelling, or try a broader word like "database".</p><a class="btn sm" href="#">Clear search</a></div>
+    <div class="slab flat" style="padding:28px;border-style:dashed;box-shadow:none"><div class="cover cv-grid tone-mint" style="height:90px;margin-bottom:18px"></div><div class="head" style="font-size:24px">Nothing in this series yet</div><p class="serif muted" style="font-size:17px;margin:8px 0 16px">Posts appear here as soon as they're published.</p><a class="btn sm" href="#">All series</a></div>
+  </div>
+</section>
+
+<footer class="foot"><div class="wrap"><div class="row"><div class="logo" style="font-size:24px"><i></i><span>Drafted</span><small class="by mono">By Dev</small></div><span class="sp"></span><span class="mono" style="color:#a8a498">© 2026 Drafted · By Dev</span></div></div></footer>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0F7B4D","options":["#0F7B4D","#1A8917","#0B7A75","#22C55E","#3B49DF","#3B4BFF"],"section":"Palette"},"dark":{"editor":"boolean","default":false,"section":"Palette"},"$preview":{"width":1440,"height":1303}}'>
+class Component extends DCLogic {
+  tv() {
+    const hex = (this.props.accent ?? '#0F7B4D').replace('#', '');
+    const rgb = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    const lum = (c) => { const [r, g, b] = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+    const toHex = (c) => '#' + c.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+    const lighten = (c, t) => c.map((v) => v * (1 - t) + 255 * t);
+    const lt = lum(rgb) < 0.25 ? lighten(rgb, 0.38) : rgb;
+    const dark = !!this.props.dark;
+    const acc = dark ? lt : rgb;
+    const L = lum(acc);
+    const onAccent = 1.05 / (L + 0.05) > (L + 0.05) / 0.0616 ? '#ffffff' : '#1c1c1c';
+    return { accent: toHex(acc), accentLt: toHex(lt), onAccent, theme: dark ? 'dark' : 'light' };
+  }
+  renderVals() {
+    return { ...this.tv() };
+  }
+}
+</script>
+</body>
+</html>

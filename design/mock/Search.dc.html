@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Search overlay</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="mock.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="dm {{theme}}" style="--accent: {{accent}};--accent-lt: {{accentLt}};--on-accent: {{onAccent}};position:relative;min-height:1100px;overflow:hidden">
+
+<!-- dimmed page behind the overlay -->
+<div aria-hidden="true">
+    <header class="hdr"><div class="wrap hdr-in"><a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a><span class="sp"></span><span class="srch">Search <span class="kbd" style="margin-left:auto">/</span></span></div></header>
+  <div class="wrap" style="padding-top:40px"><div class="cover cv-dots tone-mint" style="height:420px"></div><div class="disp" style="font-size:96px;margin-top:24px">Why I'm building a generic vector database API</div></div>
+</div>
+<div class="scrim" style="position:absolute;inset:0"></div>
+
+<section role="dialog" aria-label="Search" aria-modal="true" style="position:absolute;left:50%;top:96px;transform:translateX(-50%);width:920px">
+  <div class="dlg" style="padding:0;overflow:hidden">
+    <div class="row" style="padding:18px 22px;gap:14px;border-bottom:1px solid var(--hair)">
+      <svg class="ico" viewBox="0 0 24 24" style="width:26px;height:26px"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <label class="sr" for="q">Search</label>
+      <input id="q" class="inp focus" value="vector" style="border:0;background:transparent;font-size:28px;font-weight:700;outline:none;height:56px">
+      <span class="kbd">esc</span>
+    </div>
+    <div class="row" style="padding:14px 22px;gap:10px;border-bottom:1px solid var(--hair);flex-wrap:wrap">
+      <span class="mono muted">Filter</span>
+      <button class="pill lg on" type="button">Everything</button><button class="pill lg" type="button">Series</button><button class="pill lg" type="button">Standalone</button><button class="pill lg" type="button">AI</button><button class="pill lg" type="button">RAG</button>
+      <span class="sp"></span><span class="meta">4 results</span>
+    </div>
+    <div style="padding:8px 22px 4px"><div class="mono muted" style="padding:12px 0 6px">Series</div>
+      <a class="slab tone-mint row" style="padding:16px 18px;gap:16px" href="#"><span class="disp" style="font-size:44px">04</span><div><div class="head" style="font-size:22px">Building Axon</div><div class="serif" style="font-size:16px">A generic <mark class="hl">vector</mark> database API, from first commit to production.</div></div><span class="sp"></span><span class="kbd" style="background:#fffdf6;color:#1c1c1c">↵</span></a>
+    </div>
+    <div style="padding:8px 22px 20px"><div class="mono muted" style="padding:12px 0 6px">Posts</div>
+      <a class="row" style="padding:14px 0;border-top:1px solid var(--hair);align-items:flex-start;gap:14px" href="#"><div class="cover cv-dots tone-mint" style="width:64px;height:64px;flex:none"></div><div><div class="head" style="font-size:20px">Why I'm building a generic <mark class="hl">vector</mark> database API</div><div class="serif muted" style="font-size:15px;margin-top:2px">…retrieval project ends up rebuilding the same plumbing for <mark class="hl">vector</mark> storage…</div><div class="mono muted" style="margin-top:6px">Axon · Part 1</div></div></a>
+      <a class="row" style="padding:14px 0;border-top:1px solid var(--hair);align-items:flex-start;gap:14px" href="#"><div class="cover cv-rings tone-sky" style="width:64px;height:64px;flex:none"></div><div><div class="head" style="font-size:20px">HNSW in fifteen minutes</div><div class="serif muted" style="font-size:15px;margin-top:2px">…the index behind most <mark class="hl">vector</mark> search, explained with one picture…</div><div class="mono muted" style="margin-top:6px">Standalone</div></div></a>
+      <a class="row" style="padding:14px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);align-items:flex-start;gap:14px" href="#"><div class="cover cv-stripes tone-rose" style="width:64px;height:64px;flex:none"></div><div><div class="head" style="font-size:20px">Choosing an embedding model without a benchmark</div><div class="serif muted" style="font-size:15px;margin-top:2px">…turning text into a <mark class="hl">vector</mark> is the easy part…</div><div class="mono muted" style="margin-top:6px">Standalone</div></div></a>
+    </div>
+    <div class="row mono muted" style="padding:12px 22px;background:var(--paper2);border-top:1px solid var(--hair);gap:18px"><span><span class="kbd">↑</span> <span class="kbd">↓</span> navigate</span><span><span class="kbd">↵</span> open</span><span><span class="kbd">esc</span> close</span><span class="sp"></span><span>Search runs in your browser</span></div>
+  </div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0F7B4D","options":["#0F7B4D","#1A8917","#0B7A75","#22C55E","#3B49DF","#3B4BFF"],"section":"Palette"},"dark":{"editor":"boolean","default":false,"section":"Palette"},"$preview":{"width":1440,"height":1160}}'>
+class Component extends DCLogic {
+  tv() {
+    const hex = (this.props.accent ?? '#0F7B4D').replace('#', '');
+    const rgb = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    const lum = (c) => { const [r, g, b] = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+    const toHex = (c) => '#' + c.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+    const lighten = (c, t) => c.map((v) => v * (1 - t) + 255 * t);
+    const lt = lum(rgb) < 0.25 ? lighten(rgb, 0.38) : rgb;
+    const dark = !!this.props.dark;
+    const acc = dark ? lt : rgb;
+    const L = lum(acc);
+    const onAccent = 1.05 / (L + 0.05) > (L + 0.05) / 0.0616 ? '#ffffff' : '#1c1c1c';
+    return { accent: toHex(acc), accentLt: toHex(lt), onAccent, theme: dark ? 'dark' : 'light' };
+  }
+  renderVals() {
+    return { ...this.tv() };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+---
+import { readingTime } from '@/lib/site';
+import { initialOf, type Post } from '@/lib/content';
+import Pill from './Pill.astro';
+import Thumb from './Thumb.astro';
+
+interface Props { post: Post }
+const { post } = Astro.props;
+---
+
+<article class="story">
+  <div>
+    <Pill label={post.seriesTitle ?? 'Standalone'} tone={post.tone} />
+    <h3 class="head"><a href={post.url}>{post.data.title}</a></h3>
+    <span class="meta">{readingTime(post.entry.body ?? '')} min</span>
+  </div>
+  <Thumb letter={initialOf(post)} tone={post.tone} />
+</article>

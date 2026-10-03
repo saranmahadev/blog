@@ -1,0 +1,78 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Pill from '@/components/blog/Pill.astro';
+import Cover from '@/components/blog/Cover.astro';
+import StoryRow from '@/components/blog/StoryRow.astro';
+import FeedCard from '@/components/blog/FeedCard.astro';
+import SeriesTile from '@/components/blog/SeriesTile.astro';
+import { getContent } from '@/lib/content';
+import { formatDate, formatShort, readingTime, SITE } from '@/lib/site';
+
+const { posts, series } = await getContent();
+const lead = posts.find((p) => p.data.featured) ?? posts[0];
+const rest = posts.filter((p) => p !== lead);
+const stories = [...rest.filter((p) => p.data.featured), ...rest.filter((p) => !p.data.featured)].slice(0, 3);
+const latest = rest.slice(0, 5);
+---
+
+<BaseLayout>
+  {lead ? (
+    <div class="wrap" style="padding-top:40px">
+      <div class="top">
+        <article>
+          <div class="row" style="gap:10px;flex-wrap:wrap">
+            <Pill label={lead.seriesTitle ? `${lead.seriesTitle} · Part ${(series.find((s) => s.slug === lead.seriesSlug)?.posts.indexOf(lead) ?? 0) + 1}` : 'Standalone'} tone={lead.tone} />
+            <span class="meta"><time datetime={lead.data.date.toISOString()}>{formatDate(lead.data.date)}</time> · {readingTime(lead.entry.body ?? '')} min read</span>
+          </div>
+          <h1 class="disp lead-h" style="margin-top:16px"><a href={lead.url}>{lead.data.title}</a></h1>
+          <p class="serif dek">{lead.data.description}</p>
+          <Cover tone={lead.tone ?? 'sky'} pattern={lead.pattern} ratio="21 / 9" tag={lead.seriesTitle} style="margin-top:24px" />
+          <div class="row" style="margin-top:22px">
+            <span class="av tone-ink" aria-hidden="true">{lead.data.author[0]}</span>
+            <div><div style="font-weight:700">{lead.data.author}</div><div class="meta">{lead.data.tags.slice(0, 3).join(' · ')}</div></div>
+            <span class="sp"></span>
+            <a class="btn ink" href={lead.url}>Read the story <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+
+        <section aria-label="Top stories">
+          <div class="col-h"><span class="mono">Top stories</span></div>
+          {stories.map((p) => <StoryRow post={p} />)}
+        </section>
+
+        <section aria-label="Latest">
+          <div class="col-h"><span class="mono">Latest</span></div>
+          <ol class="numl">
+            {latest.map((p, i) => (
+              <li>
+                <span class="num">{String(i + 1).padStart(2, '0')}</span>
+                <div><a class="head" style="font-size:19px;display:block" href={p.url}>{p.data.title}</a><span class="meta">{formatShort(p.data.date)}</span></div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
+    </div>
+  ) : (
+    <div class="wrap" style="padding:96px 0"><h1 class="disp sec-t">{SITE.title}</h1><p class="serif dek">Nothing published yet.</p></div>
+  )}
+
+  {series.length > 0 && (
+    <section class="band acc" style="margin-top:72px" aria-label="Series">
+      <div class="wrap">
+        <div class="sec-h">
+          <h2 class="disp sec-t">Series</h2>
+          <a class="btn" href="/series/">All series <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="stiles">{series.slice(0, 4).map((s) => <SeriesTile series={s} />)}</div>
+      </div>
+    </section>
+  )}
+
+  {posts.length > 0 && (
+    <section class="wrap" style="padding-top:72px;padding-bottom:72px" aria-label="All posts">
+      <div class="sec-h"><h2 class="disp sec-t">All posts</h2></div>
+      <div class="feed">{posts.map((p) => <FeedCard post={p} />)}</div>
+    </section>
+  )}
+</BaseLayout>

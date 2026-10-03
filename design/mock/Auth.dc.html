@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sign in, register, account menu</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="mock.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="dm {{theme}}" style="--accent: {{accent}};--accent-lt: {{accentLt}};--on-accent: {{onAccent}};min-height:1200px">
+
+<header class="hdr"><div class="wrap hdr-in">
+  <a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a><span class="sp"></span>
+  <button class="ib" type="button" aria-label="Notifications"><svg class="ico" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 003.4 0"/></svg></button>
+  <button class="row clay" type="button" style="padding:4px 14px 4px 4px;border-radius:999px;gap:10px" aria-haspopup="menu" aria-expanded="true"><span class="av tone-sky" style="box-shadow:none">R</span><strong style="font-size:14px">Rin</strong><span aria-hidden="true">▾</span></button>
+</div></header>
+
+<main class="wrap" style="padding-top:48px;padding-bottom:64px">
+  <div class="mono muted" style="margin-bottom:28px">Auth states · all dialogs share one pattern: slab card, clay controls</div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;align-items:start">
+
+    <section class="dlg" aria-label="Sign in">
+      <h1 class="disp" style="font-size:56px">Sign in</h1>
+      <p class="serif muted" style="font-size:18px;margin:10px 0 22px">Bookmark posts, like them and join the comments.</p>
+      <div class="stack" style="gap:16px">
+        <div class="field"><label for="e1">Email</label><input class="inp" id="e1" type="email" value="rin@example.com"></div>
+        <div class="field"><label for="p1">Password</label><input class="inp focus" id="p1" type="password" value="••••••••••"><a class="hint" href="#" style="text-decoration:underline">Forgot your password?</a></div>
+        <button class="btn ink block" type="button">Sign in</button>
+      </div>
+      <p class="hint" style="margin-top:18px;text-align:center">New here? <a href="#" style="text-decoration:underline;font-weight:700">Create an account</a></p>
+    </section>
+
+    <section class="dlg" aria-label="Create account">
+      <h1 class="disp" style="font-size:56px">Create account</h1>
+      <p class="serif muted" style="font-size:18px;margin:10px 0 22px">It takes a minute. No password rules to memorise.</p>
+      <div class="stack" style="gap:16px">
+        <div class="field"><label for="u2">Username</label><input class="inp" id="u2" value="rin"><span class="hint">Shown next to your comments.</span></div>
+        <div class="field"><label for="e2">Email</label><input class="inp" id="e2" type="email" value="rin@example"><span class="err">Enter a full address, like name@example.com</span></div>
+        <div class="field"><label for="p2">Password</label><input class="inp" id="p2" type="password" value="••••••"><span class="hint">At least 8 characters.</span></div>
+        <button class="btn ink block" type="button">Create account</button>
+      </div>
+    </section>
+
+    <div class="stack" style="gap:36px">
+      <section class="dlg tone-mint" aria-label="Verify email">
+        <div class="mono">Check your inbox</div>
+        <h1 class="disp" style="font-size:48px;margin:8px 0 12px">Verify your email</h1>
+        <p class="serif" style="font-size:18px">We sent a link to rin@example.com. Open it to finish setting up.</p>
+        <div class="row" style="margin-top:18px;gap:10px"><button class="btn" type="button">Resend email</button><button class="btn ghost" type="button">Change email</button></div>
+      </section>
+      <section class="dlg" aria-label="Reset password">
+        <h1 class="disp" style="font-size:44px">Reset password</h1>
+        <div class="field" style="margin:16px 0"><label for="e3">Email</label><input class="inp" id="e3" type="email" placeholder="you@example.com"></div>
+        <button class="btn ink block" type="button">Send reset link</button>
+      </section>
+    </div>
+  </div>
+
+  <div style="position:relative;margin-top:56px;height:300px">
+    <div class="mono muted" style="margin-bottom:12px">Account menu (from the header) and toasts</div>
+    <div class="slab" style="position:absolute;left:0;top:34px;width:300px;padding:12px" role="menu" aria-label="Account menu">
+      <div class="row" style="padding:10px 10px 14px;gap:12px"><span class="av tone-sky">R</span><div><strong>Rin</strong><div class="mono muted">Reader</div></div></div>
+      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Bookmarks</a>
+      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Reading history</a>
+      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Preferences</a>
+      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Admin <span class="badge tone-accent" style="margin-left:auto">admin only</span></a>
+      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Sign out</a>
+    </div>
+    <div class="stack" style="position:absolute;left:360px;top:34px;gap:16px">
+      <div class="toast" role="status"><span class="badge tone-mint">Saved</span>Added to your bookmarks.<button class="btn sm accent" type="button">Undo</button></div>
+      <div class="toast" role="alert"><span class="badge tone-rose">Error</span>Couldn't post your comment. Try again.</div>
+      <div class="toast" role="status"><span class="badge tone-sky">Info</span>Your comment is awaiting review.</div>
+    </div>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0F7B4D","options":["#0F7B4D","#1A8917","#0B7A75","#22C55E","#3B49DF","#3B4BFF"],"section":"Palette"},"dark":{"editor":"boolean","default":false,"section":"Palette"},"$preview":{"width":1440,"height":1260}}'>
+class Component extends DCLogic {
+  tv() {
+    const hex = (this.props.accent ?? '#0F7B4D').replace('#', '');
+    const rgb = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    const lum = (c) => { const [r, g, b] = c.map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+    const toHex = (c) => '#' + c.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+    const lighten = (c, t) => c.map((v) => v * (1 - t) + 255 * t);
+    const lt = lum(rgb) < 0.25 ? lighten(rgb, 0.38) : rgb;
+    const dark = !!this.props.dark;
+    const acc = dark ? lt : rgb;
+    const L = lum(acc);
+    const onAccent = 1.05 / (L + 0.05) > (L + 0.05) / 0.0616 ? '#ffffff' : '#1c1c1c';
+    return { accent: toHex(acc), accentLt: toHex(lt), onAccent, theme: dark ? 'dark' : 'light' };
+  }
+  renderVals() {
+    return { ...this.tv() };
+  }
+}
+</script>
+</body>
+</html>
