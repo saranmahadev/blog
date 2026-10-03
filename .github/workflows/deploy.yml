@@ -1,9 +1,16 @@
 name: Build and deploy
 
-# Runs only for commits on main. Pull requests and other branches do not trigger it.
+# Never runs on every commit. It runs when:
+#   - a commit lands on main (build + deploy)
+#   - the "ci" label is added to a pull request (build and checks only, no deploy)
+#   - someone starts it by hand from the Actions tab (build only; deploys only if run on main)
+# To re-check a PR after new commits, remove and re-add the "ci" label, or run it by hand.
 on:
   push:
     branches: [main]
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
 
 # One deploy at a time; never cancel one that is already running.
 concurrency:
@@ -19,6 +26,7 @@ env:
 
 jobs:
   build:
+    if: github.event_name != 'pull_request' || github.event.label.name == 'ci'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,8 +51,8 @@ jobs:
 
   deploy:
     needs: build
-    # Skipped until the repository variable below is configured.
-    if: vars.FIREBASE_PROJECT_ID != ''
+    # Only from main, and skipped until the repository variable below is configured.
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.FIREBASE_PROJECT_ID != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

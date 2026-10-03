@@ -2,7 +2,7 @@
 
 **Drafted**, by Dev. A static-first technical blog: Astro + Markdown/MDX + React islands + Tailwind, deployed to Firebase Hosting.
 
-The visual design lives in [`design/`](design/README.md) (static previews, screenshots and the design system). The site implements it in `src/styles/` (tokens and components) and `src/components/`.
+The visual design lives in [`design/`](design/README.md) (static previews and the design system). The site implements it in `src/styles/` (tokens and components) and `src/components/`.
 
 ## Develop
 
@@ -59,9 +59,9 @@ Search, tag and archive pages, RSS, sign-in, bookmarks, likes and comments (see 
 
 ## Deploy
 
-CI (`.github/workflows/deploy.yml`) builds on every push/PR. Deploys run once these are set in GitHub:
+CI (`.github/workflows/deploy.yml`) builds on demand and deploys from `main`. Deploys run once these are set in GitHub:
 
 - Variables: `FIREBASE_PROJECT_ID`, `SITE_URL`
 - Secrets: `WORKLOAD_IDENTITY_PROVIDER`, `FIREBASE_DEPLOY_SERVICE_ACCOUNT`
 
-The workflow runs only on commits to `main` (merging a pull request counts), and deploys to production. Pull requests and other branches do not run it. The Firebase project is set in `.firebaserc`.
+The workflow runs on commits to `main` (build + deploy), when the `ci` label is added to a pull request (build and checks only, no deploy), or by hand from the Actions tab. Ordinary PR commits do not run it; to re-check a PR, re-add the label. The Firebase project is set in `.firebaserc`.

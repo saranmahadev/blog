@@ -5,7 +5,6 @@ The visual design for **Drafted** (by Dev). The live site implements this in `sr
 | Path | What it is |
 | --- | --- |
 | `preview/*.html` | Static pages, open in a browser (light theme). Start with `Main.html` |
-| `screenshots/*.jpg` | Older full-page renders from before Imaxt covers; the previews are the reference now |
 | `mock/` | Source of the Design canvas (`*.dc.html`, `mock.css`, `canvas.json`), including the palette pickers |
 | `tools/build-previews.py` | Regenerates `preview/` from `mock/` |
 | `tools/build-imaxt-mock.mjs` | Regenerates the four Imaxt boards (`Imaxt*.dc.html`, desktop and mobile) plus `mock/site.css` and `imaxt-cover.css` from the real site CSS and the built `/imaxt/` page. Run `pnpm build` first |
