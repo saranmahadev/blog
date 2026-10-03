@@ -88,24 +88,18 @@
     </div>
 
     <section aria-label="Comments" style="font-family:'Archivo',sans-serif;margin-top:72px">
-      <div class="row" style="border-bottom:1px solid var(--hair);padding-bottom:14px"><h2 class="disp" style="font-size:52px;margin:0">Comments</h2><span class="pill on">3</span><span class="sp"></span><span class="meta">Newest first</span></div>
-
-      
-        <form style="margin-top:24px">
-          <div class="row" style="align-items:flex-start;gap:14px">
-            <span class="av tone-sky">R</span>
-            <div class="field" style="flex:1"><label for="c1">Add a comment</label><textarea class="inp" id="c1" placeholder="Be specific and kind."></textarea>
-              <div class="row"><span class="hint">Comments are checked before they appear.</span><span class="sp"></span><button class="btn accent" type="button">Post comment</button></div></div>
-          </div>
-        </form>
-      
-      
-        <div class="slab tone-lilac row" style="margin-top:24px;padding:22px;gap:16px"><strong class="head" style="font-size:20px">Sign in to join the conversation.</strong><span class="sp"></span><button class="btn" type="button">Create account</button><button class="btn ink" type="button">Sign in</button></div>
-      
-
-      <div class="cmt"><span class="av tone-ink">D</span><div><div class="row" style="gap:8px"><strong>Dev</strong><span class="badge tone-accent">Author</span><span class="meta">2 hours ago</span></div><p>Thanks for reading. Part 2 goes up next week.</p><div class="row" style="margin-top:10px;gap:8px"><button class="btn sm" type="button">Reply</button></div></div></div>
-      <div class="cmt"><span class="av tone-lilac">M</span><div><div class="row" style="gap:8px"><strong>Maya</strong><span class="meta">Yesterday</span></div><p>The single-request test is a nice constraint. How do you handle filters that need joins?</p><div class="row" style="margin-top:10px;gap:8px"><button class="btn sm" type="button">Reply</button><button class="btn sm" type="button">Report</button></div></div></div>
-      <div class="cmt pend"><span class="av tone-sky">R</span><div><div class="row" style="gap:8px"><strong>Rin</strong><span class="badge tone-rose">Awaiting review</span><span class="meta">Just now</span></div><p>Only you can see this until it's approved.</p></div></div>
+      <div class="row" style="border-bottom:1px solid var(--hair);padding-bottom:14px;flex-wrap:wrap"><h2 class="disp" style="font-size:52px;margin:0">Comments</h2><span class="pill">Private</span></div>
+      <p class="hint" style="margin-top:10px">Only you and the author can see what you write here. The author replies, and you can answer back.</p>
+      <form style="margin-top:24px">
+        <div class="row" style="align-items:flex-start;gap:14px">
+          <span class="av tone-sky">R</span>
+          <div class="field" style="flex:1"><label for="c1">Write to the author</label><textarea class="inp" id="c1" placeholder="Be specific and kind."></textarea>
+            <div class="row"><span class="hint">0 / 2000</span><span class="sp"></span><button class="btn accent" type="button">Send</button></div></div>
+        </div>
+      </form>
+      <p class="cm-note">Sent. Only you and the author can see this.</p>
+      <div class="cmt"><span class="av tone-sky">R</span><div><div class="row" style="gap:8px;flex-wrap:wrap"><strong>Rin</strong><span class="meta">2 h ago</span></div><p>Does the checkpoint survive a crash in the middle of a batch?</p><div class="row" style="margin-top:10px;gap:8px"><button class="btn sm" type="button">Edit</button><button class="btn sm ghost" type="button">Delete</button></div></div></div>
+      <div class="cm-reply"><div class="cmt"><span class="av tone-ink">D</span><div><div class="row" style="gap:8px;flex-wrap:wrap"><strong>Dev</strong><span class="badge tone-accent">Author</span><span class="meta">Just now</span></div><p>Yes. The checkpoint is written after every batch, so a restart picks up from the last one.</p><div class="row" style="margin-top:10px;gap:8px"><button class="btn sm" type="button">Reply</button></div></div></div></div>
     </section>
   </article>
 

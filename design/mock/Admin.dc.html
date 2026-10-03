@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Admin dashboard</title>
+<title>Author inbox</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="mock.css">
 </head>
@@ -13,79 +13,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet">
 <style>body{margin:0}</style>
 </helmet>
-<div class="dm {{theme}}" style="--accent: {{accent}};--accent-lt: {{accentLt}};--on-accent: {{onAccent}};display:flex;min-height:2100px">
+<div class="dm {{theme}}" style="--accent: {{accent}};--accent-lt: {{accentLt}};--on-accent: {{onAccent}};display:flex;min-height:1400px">
 
 <aside class="side" aria-label="Admin navigation">
   <a class="logo" style="padding:6px 8px 22px;font-size:24px" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a>
-  <a class="on" href="#">Overview</a><a href="#">Comments <span class="badge tone-rose" style="margin-left:auto">3</span></a><a href="#">Users</a><a href="#">Reports <span class="badge tone-rose" style="margin-left:auto">2</span></a><a href="#">Posts</a><a href="#">Audit log</a><a href="#">Settings</a>
+  <a class="on" href="#">Inbox <span class="badge tone-accent" style="margin-left:auto">2</span></a><a href="#" style="opacity:.6">Users and roles <span class="badge" style="margin-left:auto">Soon</span></a><a href="#" style="opacity:.6">Audit log <span class="badge" style="margin-left:auto">Soon</span></a><a href="#" style="opacity:.6">Analytics <span class="badge" style="margin-left:auto">Soon</span></a>
   <span class="sp"></span>
-  <div class="row" style="padding:12px;border-top:2px solid #f4f1e8;gap:10px"><span class="av tone-ink">D</span><div><strong style="font-size:14px">Dev</strong><div class="mono" style="color:#a8a498">admin</div></div></div>
+  <div class="row" style="padding:12px;border-top:2px solid #f4f1e8;gap:10px"><span class="av tone-ink">D</span><div><strong style="font-size:14px">Dev</strong><div class="mono" style="color:#a8a498">author</div></div></div>
 </aside>
 
 <main style="flex:1;min-width:0">
-  <header class="row rule-b" style="padding:20px 40px;gap:16px;background:var(--paper)">
-    <h1 class="disp" style="font-size:56px">Overview</h1><span class="sp"></span>
-    <div class="srch" style="width:280px"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search users, comments</div>
-    <button class="ib" type="button" aria-label="Toggle dark mode"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
-  </header>
-
-  <div style="padding:36px 40px 64px">
-    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px">
-      <div class="slab stat tone-rose"><div class="mono">Pending comments</div><div class="disp v">3</div></div>
-      <div class="slab stat tone-lilac"><div class="mono">Open reports</div><div class="disp v">2</div></div>
-      <div class="slab stat tone-sky"><div class="mono">Users</div><div class="disp v">5</div></div>
-      <div class="slab stat tone-mint"><div class="mono">Admins</div><div class="disp v">1</div></div>
-    </div>
-
-    <section style="margin-top:48px" aria-label="Moderation queue">
-      <div class="row" style="margin-bottom:16px"><h2 class="disp" style="font-size:44px">Moderation queue</h2><span class="sp"></span><div class="seg"><button class="on" type="button">Pending</button><button type="button">Published</button><button type="button">Hidden</button></div></div>
-      <div class="tbl-wrap"><table class="tbl">
-        <thead><tr><th>Author</th><th>Comment</th><th>Post</th><th>Status</th><th style="text-align:right">Actions</th></tr></thead>
-        <tbody>
-          <tr><td><div class="row" style="gap:10px"><span class="av tone-sky" style="width:32px;height:32px;font-size:13px">R</span>Rin</div></td><td style="max-width:360px">Only you can see this until it's approved.</td><td>Building Axon · 1</td><td><span class="badge">Pending</span></td><td><div class="row" style="justify-content:flex-end;gap:8px"><button class="btn sm accent" type="button">Approve</button><button class="btn sm" type="button">Hide</button><button class="btn sm danger" type="button">Delete</button></div></td></tr>
-          <tr><td><div class="row" style="gap:10px"><span class="av tone-lilac" style="width:32px;height:32px;font-size:13px">T</span>Tom</div></td><td style="max-width:360px">Great write-up, is there a repository to follow?</td><td>HNSW in fifteen minutes</td><td><span class="badge">Pending</span></td><td><div class="row" style="justify-content:flex-end;gap:8px"><button class="btn sm accent" type="button">Approve</button><button class="btn sm" type="button">Hide</button><button class="btn sm danger" type="button">Delete</button></div></td></tr>
-          <tr><td><div class="row" style="gap:10px"><span class="av tone-mint" style="width:32px;height:32px;font-size:13px">K</span>Kay</div></td><td style="max-width:360px">Check out my site for cheap deals…</td><td>Linux file permissions, finally</td><td><span class="badge tone-rose">Flagged as spam</span></td><td><div class="row" style="justify-content:flex-end;gap:8px"><button class="btn sm" type="button">Approve</button><button class="btn sm" type="button">Hide</button><button class="btn sm danger" type="button">Delete</button></div></td></tr>
-        </tbody>
-      </table></div>
-    </section>
-
-    <div style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;margin-top:48px;align-items:start">
-      <section aria-label="Users and roles">
-        <h2 class="disp" style="font-size:44px;margin-bottom:16px">Users and roles</h2>
-        <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>User</th><th>Role</th><th>Joined</th><th></th></tr></thead>
-          <tbody>
-            <tr><td><div class="row" style="gap:10px"><span class="av tone-ink" style="width:32px;height:32px;font-size:13px">D</span>Dev</div></td><td><span class="badge tone-accent">admin</span></td><td class="mono">Sep 2026</td><td></td></tr>
-            <tr><td><div class="row" style="gap:10px"><span class="av tone-sky" style="width:32px;height:32px;font-size:13px">R</span>Rin</div></td><td><span class="badge">user</span></td><td class="mono">Sep 2026</td><td style="text-align:right"><button class="btn sm" type="button">Change role</button></td></tr>
-            <tr><td><div class="row" style="gap:10px"><span class="av tone-lilac" style="width:32px;height:32px;font-size:13px">M</span>Maya</div></td><td><span class="badge tone-lilac">moderator</span></td><td class="mono">Sep 2026</td><td style="text-align:right"><button class="btn sm" type="button">Change role</button></td></tr>
-            <tr><td><div class="row" style="gap:10px"><span class="av tone-mint" style="width:32px;height:32px;font-size:13px">T</span>Tom</div></td><td><span class="badge">user</span></td><td class="mono">Oct 2026</td><td style="text-align:right"><button class="btn sm" type="button">Change role</button></td></tr>
-            <tr><td><div class="row" style="gap:10px"><span class="av tone-rose" style="width:32px;height:32px;font-size:13px">K</span>Kay</div></td><td><span class="badge tone-mint">author</span></td><td class="mono">Oct 2026</td><td style="text-align:right"><button class="btn sm" type="button">Change role</button></td></tr>
-          </tbody>
-        </table></div>
-        <p class="hint" style="margin-top:12px">Roles are stored as secure claims and checked on the server, not just hidden in this UI.</p>
-      </section>
-
-      <section aria-label="Reports and audit log" class="stack" style="gap:36px">
-        <div>
-          <h2 class="disp" style="font-size:44px;margin-bottom:16px">Reports</h2>
-          <div class="slab" style="padding:18px;margin-bottom:18px"><div class="row"><span class="badge">Open</span><span class="meta">Reported by Maya</span></div><p style="margin:10px 0 12px;font-size:15px">Comment by Kay: "Check out my site for cheap deals…"</p><div class="row" style="gap:8px"><button class="btn sm accent" type="button">Hide comment</button><button class="btn sm" type="button">Dismiss</button></div></div>
-          <div class="slab" style="padding:18px"><div class="row"><span class="badge">Open</span><span class="meta">Reported by Tom</span></div><p style="margin:10px 0 12px;font-size:15px">Comment by Rin: duplicate of an earlier comment.</p><div class="row" style="gap:8px"><button class="btn sm accent" type="button">Hide comment</button><button class="btn sm" type="button">Dismiss</button></div></div>
-        </div>
-        <div>
-          <h2 class="disp" style="font-size:44px;margin-bottom:16px">Audit log</h2>
-          <ul class="mono" style="font-size:12px;line-height:1.4">
-            <li style="padding:10px 0;border-top:1px solid var(--hair)">Dev set Maya to moderator <span class="muted">· Sep 29</span></li>
-            <li style="padding:10px 0;border-top:1px solid var(--hair)">Maya hid a comment on "HNSW in fifteen minutes" <span class="muted">· Sep 30</span></li>
-            <li style="padding:10px 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)">Dev set Kay to author <span class="muted">· Oct 2</span></li>
-          </ul>
-        </div>
-      </section>
-    </div>
+  <header class="row rule-b" style="padding:20px 40px;gap:16px;background:var(--paper)"><h1 class="disp" style="font-size:56px">Inbox</h1><span class="sp"></span><span class="meta">Comments are private: only the reader and you can see a conversation.</span></header>
+  <div style="padding:28px 40px 64px;max-width:980px">
+    <div class="seg" role="tablist" aria-label="Inbox view"><button class="on" type="button" role="tab" aria-selected="true">Needs a reply <span class="badge tone-accent">2</span></button><button type="button" role="tab" aria-selected="false">All conversations (14)</button></div>
+    <section class="slab inb inb-new" aria-label="Conversation about Forward proxies, explained with one diagram"><div class="row inb-head"><a class="head" style="font-size:20px" href="#">Forward proxies, explained with one diagram</a><span class="badge tone-accent">New</span><span class="sp"></span><span class="meta">with Ana</span></div><div class="cmt"><span class="av tone-lilac">A</span><div><div class="row" style="gap:8px;flex-wrap:wrap"><strong>Ana</strong><span class="meta">2 min ago</span></div><p>Is a forward proxy the same as a VPN?</p><div class="row" style="margin-top:10px;gap:8px"><button class="btn sm" type="button">Reply</button><button class="btn sm ghost" type="button">Delete</button></div></div></div><div class="cm-reply"><form class="cm-form" style="display:flex;gap:14px;align-items:flex-start;margin-top:8px"><span class="av tone-ink">D</span><div class="field" style="flex:1"><label for="ar">Reply</label><textarea class="inp" id="ar" style="min-height:80px" placeholder="Be specific and kind."></textarea><div class="row"><span class="hint">0 / 2000</span><span class="sp"></span><button class="btn accent" type="button">Send reply</button></div></div></form></div></section>
+    <section class="slab inb inb-new" aria-label="Conversation about The ingestion pipeline"><div class="row inb-head"><a class="head" style="font-size:20px" href="#">The ingestion pipeline</a><span class="badge tone-accent">New</span><span class="sp"></span><span class="meta">with Raj</span></div><div class="cmt"><span class="av tone-mint">R</span><div><div class="row" style="gap:8px;flex-wrap:wrap"><strong>Raj</strong><span class="meta">1 h ago</span></div><p>How does the id stay stable across retries?</p><div class="row" style="margin-top:10px;gap:8px"><button class="btn sm" type="button">Reply</button><button class="btn sm ghost" type="button">Delete</button></div></div></div></section>
+    <section class="slab inb" aria-label="Conversation about Variable fonts, played with"><div class="row inb-head"><a class="head" style="font-size:20px" href="#">Variable fonts, played with</a><span class="sp"></span><span class="meta">with Maya</span></div><div class="cmt"><span class="av tone-rose">M</span><div><div class="row" style="gap:8px;flex-wrap:wrap"><strong>Maya</strong><span class="meta">Oct 2</span></div><p>Does the optical-size axis help on small screens?</p></div></div><div class="cm-reply"><div class="cmt"><span class="av tone-ink">D</span><div><div class="row" style="gap:8px;flex-wrap:wrap"><strong>Dev</strong><span class="badge tone-accent">Author</span><span class="meta">Oct 2</span></div><p>It does: Fraunces gets sharper serifs at small sizes.</p></div></div></div><div class="cm-reply"><div class="cmt"><span class="av tone-rose">M</span><div><div class="row" style="gap:8px;flex-wrap:wrap"><strong>Maya</strong><span class="meta">Oct 2</span></div><p>Thanks, that answers it.</p></div></div></section>
   </div>
 </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0F7B4D","options":["#0F7B4D","#1A8917","#0B7A75","#22C55E","#3B49DF","#3B4BFF"],"section":"Palette"},"dark":{"editor":"boolean","default":false,"section":"Palette"},"$preview":{"width":1440,"height":2160}}'>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0F7B4D","options":["#0F7B4D","#1A8917","#0B7A75","#22C55E","#3B49DF","#3B4BFF"],"section":"Palette"},"dark":{"editor":"boolean","default":false,"section":"Palette"},"$preview":{"width":1440,"height":1400}}'>
 class Component extends DCLogic {
   tv() {
     const hex = (this.props.accent ?? '#0F7B4D').replace('#', '');

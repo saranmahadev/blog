@@ -4,8 +4,8 @@
   "boards": {
     "Admin.dc.html": {
       "expand": "fill",
-      "h": 2160,
-      "title": "Admin dashboard",
+      "h": 1460,
+      "title": "Author inbox (admin)",
       "w": 1440,
       "x": 1520,
       "y": 12608
@@ -20,24 +20,24 @@
     },
     "Article.dc.html": {
       "expand": "fill",
-      "h": 4239,
+      "h": 4060,
       "is_interactive": true,
-      "title": "Article (desktop)",
+      "title": "Article (desktop), private comments",
       "w": 1440,
       "x": 0,
       "y": 4247
     },
     "ArticleMobile.dc.html": {
-      "h": 2499,
-      "title": "Article (mobile)",
+      "h": 3020,
+      "title": "Article (mobile), private comments",
       "w": 390,
       "x": 1520,
       "y": 4247
     },
     "Auth.dc.html": {
       "expand": "fill",
-      "h": 1260,
-      "title": "Sign in, register, account menu",
+      "h": 1295,
+      "title": "Sign in, register, verify bar, account menu",
       "w": 1440,
       "x": 1520,
       "y": 10988
@@ -76,7 +76,7 @@
     "Profile.dc.html": {
       "expand": "fill",
       "h": 1379,
-      "title": "Profile, bookmarks, preferences",
+      "title": "Profile: bookmarks and preferences (design for phase 4b)",
       "w": 1440,
       "x": 0,
       "y": 12608
@@ -144,6 +144,14 @@
       "w": 390,
       "h": 6754,
       "title": "Imaxt blocks 2 (mobile)"
+    },
+    "Inbox.dc.html": {
+      "x": 0,
+      "y": 32400,
+      "w": 1440,
+      "h": 2240,
+      "title": "Inbox: reader and author views",
+      "expand": "fill"
     }
   },
   "createdOnFiles": {
@@ -210,6 +218,14 @@
       "w": 240,
       "x": 0,
       "y": 19400
+    },
+    "r10": {
+      "kind": "title1",
+      "maxW": 1910,
+      "text": "10  Accounts and private comments",
+      "w": 240,
+      "x": 0,
+      "y": 32100
     }
   },
   "order": [
