@@ -396,3 +396,5 @@ button.srch { cursor: pointer; font: inherit; font-size: 14px; text-align: left;
   .hdr-in .logo span:not(.by) { font-size: 28px; }
   .acct-btn { padding: 2px; }
 }
+
+.linkish { text-decoration: underline; font: inherit; color: inherit; cursor: pointer; }

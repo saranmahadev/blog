@@ -5,25 +5,6 @@ import * as functions from 'firebase-functions/v1';
 
 initializeApp();
 
-export type Role = 'user' | 'author' | 'moderator' | 'admin';
-
-const displayNameFrom = (name: string | undefined, email: string | undefined) =>
-  (name?.trim() || email?.split('@')[0] || 'Reader').slice(0, 40);
-
-/** Every new account gets a profile document and the default role claim. Clients cannot write either. */
-export const onUserCreated = functions.region('asia-south1').auth.user().onCreate(async (user) => {
-  await getAuth().setCustomUserClaims(user.uid, { role: 'user' satisfies Role });
-  // The client usually creates its own profile first; never overwrite it.
-  await getFirestore().doc(`users/${user.uid}`).create({
-    displayName: displayNameFrom(user.displayName, user.email),
-    email: user.email ?? null,
-    role: 'user' satisfies Role,
-    bio: '',
-    preferences: {},
-    createdAt: FieldValue.serverTimestamp(),
-  }).catch((err: { code?: number }) => { if (err.code !== 6) throw err; }); // 6 = ALREADY_EXISTS
-});
-
 /**
  * Deleting an account deletes its data: the profile, every message the person wrote, and every thread they
  * started (including the author's replies inside those threads, which exist only for that conversation).
@@ -110,8 +91,8 @@ export const postComment = functions.region('asia-south1').https.onCall(async (d
     if (recent.docs.some((d) => d.get('body') === body && d.get('postKey') === postKey)) throw new fail('already-exists', 'You already sent that message.');
   }
 
-  const profile = await db.doc(`users/${uid}`).get();
-  const authorName = String(profile.get('displayName') || context.auth.token.name || 'Reader').slice(0, 40);
+  // The name comes from the sign-in record (no profile document to read).
+  const authorName = String(context.auth.token.name || context.auth.token.email?.split('@')[0] || 'Reader').slice(0, 40);
 
   const doc = {
     postKey, parentId: threadId, replyToId, threadOwnerId, authorId: uid, authorName,
@@ -125,4 +106,48 @@ export const postComment = functions.region('asia-south1').https.onCall(async (d
   }
   const ref = await db.collection('comments').add(doc);
   return { id: ref.id };
+});
+
+
+// ---- reader state: hand-over while a page is closing ----------------------------------------------
+const KEY = /^[a-z0-9~-]{1,120}$/;
+
+/** Turns what a browser sends into a safe Firestore merge. Anything unexpected is ignored, never trusted. */
+export function cleanState(x: any): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  const entries = (o: unknown) => (o && typeof o === 'object' ? Object.entries(o as Record<string, unknown>).slice(0, 200) : []);
+  const b: Record<string, unknown> = {};
+  for (const [k, v] of entries(x?.b)) if (KEY.test(k)) { if (v === null) b[k] = FieldValue.delete(); else if (typeof v === 'number' && Number.isFinite(v)) b[k] = Math.trunc(v); }
+  const p: Record<string, number> = {};
+  for (const [k, v] of entries(x?.p)) if (KEY.test(k) && typeof v === 'number' && Number.isFinite(v)) p[k] = Math.max(0, Math.min(100, Math.round(v)));
+  const s: Record<string, string> = {};
+  for (const [k, v] of entries(x?.s)) if (k === 't' && (v === 'light' || v === 'dark' || v === 'system')) s[k] = v;
+  if (Object.keys(b).length) out.b = b;
+  if (Object.keys(p).length) out.p = p;
+  if (Object.keys(s).length) out.s = s;
+  if (x?.n0 === true) out.n = 0;
+  return out;
+}
+
+/**
+ * Receives a reader's unsynced changes while their page is closing (sendBeacon cannot set headers, so the sign-in
+ * token travels in the body). Answers nothing useful: the browser does not wait for it. The usual sync repeats the
+ * same field-level writes later, so a duplicate does no harm.
+ */
+export const syncBeacon = functions.region('asia-south1').runWith({ maxInstances: 5 }).https.onRequest(async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') { res.set('Access-Control-Allow-Headers', 'content-type').status(204).send(''); return; }
+  if (req.method !== 'POST') { res.status(405).send(''); return; }
+  try {
+    const raw = req.rawBody?.toString('utf8') ?? '';
+    if (raw.length === 0 || raw.length > 32_000) { res.status(413).send(''); return; }
+    const body = JSON.parse(raw);
+    const decoded = await getAuth().verifyIdToken(String(body?.token ?? ''));
+    const state = cleanState(body?.state);
+    if (Object.keys(state).length) await getFirestore().doc(`users/${decoded.uid}`).set(state, { merge: true });
+    res.status(204).send('');
+  } catch (err) {
+    functions.logger.warn('syncBeacon rejected', { error: String(err) });
+    res.status(400).send('');
+  }
 });

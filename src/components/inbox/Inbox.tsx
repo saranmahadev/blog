@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuth, useRole } from '@/lib/auth';
 import { firebaseConfigured } from '@/lib/firebase';
-import { getSeenAt, isNew, loadThreads, markSeen, type Thread } from '@/lib/inbox';
+import { isNew, loadThreads, type Thread } from '@/lib/inbox';
+import { getSnapshot, markInboxRead } from '@/lib/sync';
 import { Composer, Item, canReplyTo } from '@/components/comments/parts';
 
 type PostInfo = { key: string; title: string; url: string };
@@ -24,12 +25,13 @@ export default function Inbox({ posts }: { posts: PostInfo[] }) {
 
   const load = useCallback(async () => {
     if (!user || role === null) return;
-    const [t, s] = await Promise.all([loadThreads(user, isAuthor).catch(() => []), getSeenAt(user.uid).catch(() => null)]);
+    const t = await loadThreads(user, isAuthor).catch(() => []);
     setThreads(t);
     if (!marked.current) {
       marked.current = true;
-      setFreshIds(new Set(t.filter((x) => isNew(x, isAuthor, s)).map((x) => x.id))); // what was new when you arrived stays listed this visit...
-      markSeen(user.uid).catch(() => {}); // ...and everything counts as read next time
+      const seen = getSnapshot().local.seenAt; // this device's last visit
+      setFreshIds(new Set(t.filter((x) => isNew(x, isAuthor, seen ? new Date(seen) : null)).map((x) => x.id))); // what was new when you arrived stays listed this visit...
+      markInboxRead(); // ...and the unread count goes back to zero (saved with the rest, a few seconds later)
     }
   }, [user, role, isAuthor]);
   useEffect(() => { load(); }, [load]);

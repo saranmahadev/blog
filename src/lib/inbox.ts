@@ -11,19 +11,6 @@ const toComment = (id: string, x: Record<string, any>): Comment => ({
   authorName: x.authorName, authorRole: x.authorRole ?? 'user', body: x.body, createdAt: x.createdAt?.toDate?.() ?? null, postKey: x.postKey,
 });
 
-/** The time the reader last opened their inbox (null if never). */
-export async function getSeenAt(uid: string): Promise<Date | null> {
-  const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
-  const snap = await m.getDoc(m.doc(db, 'users', uid));
-  return snap.get('inboxSeenAt')?.toDate?.() ?? null;
-}
-
-export async function markSeen(uid: string) {
-  const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
-  await m.updateDoc(m.doc(db, 'users', uid), { inboxSeenAt: m.serverTimestamp() });
-  try { sessionStorage.removeItem('inbox-unread'); } catch {}
-}
-
 export async function loadThreads(user: User, isAuthor: boolean, max = 300): Promise<Thread[]> {
   const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
   const col = m.collection(db, 'comments');
@@ -52,21 +39,3 @@ export async function loadThreads(user: User, isAuthor: boolean, max = 300): Pro
 export const isNew = (t: Thread, isAuthor: boolean, seenAt: Date | null) =>
   (isAuthor ? t.last.authorRole !== 'admin' : t.last.authorRole === 'admin') && (!seenAt || (t.last.createdAt?.getTime() ?? Infinity) > seenAt.getTime());
 
-/** How many conversations have something new for me. Cheap: reads only messages since my last visit, cached briefly. */
-export async function countUnread(user: User, isAuthor: boolean): Promise<number> {
-  try {
-    const cached = JSON.parse(sessionStorage.getItem('inbox-unread') ?? 'null');
-    if (cached && cached.uid === user.uid && cached.author === isAuthor && Date.now() - cached.at < 60_000) return cached.n;
-  } catch {}
-  const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
-  const seen = await getSeenAt(user.uid);
-  const col = m.collection(db, 'comments');
-  const since = seen ? [m.where('createdAt', '>', m.Timestamp.fromDate(seen))] : [];
-  const q = isAuthor
-    ? m.query(col, m.where('authorRole', '==', 'user'), ...since, m.orderBy('createdAt', 'asc'), m.limit(100))
-    : m.query(col, m.where('threadOwnerId', '==', user.uid), m.where('authorRole', '==', 'admin'), ...since, m.orderBy('createdAt', 'asc'), m.limit(100));
-  const snap = await m.getDocs(q);
-  const n = new Set(snap.docs.map((d) => d.get('parentId') ?? d.id)).size;
-  try { sessionStorage.setItem('inbox-unread', JSON.stringify({ uid: user.uid, author: isAuthor, n, at: Date.now() })); } catch {}
-  return n;
-}

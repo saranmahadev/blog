@@ -4,7 +4,7 @@ import { collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, se
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
 let env: RulesTestEnvironment;
-const profile = { displayName: 'Rin', email: 'rin@example.com', role: 'user', bio: '', preferences: {} };
+const state = { b: { 'axon~intro': 1700000000000 }, p: { 'axon~intro': 40 }, s: { t: 'dark' }, n: 0 };
 
 beforeAll(async () => {
   env = await initializeTestEnvironment({ projectId: 'drafted-rules-test', firestore: { rules: readFileSync('firestore.rules', 'utf8'), host: '127.0.0.1', port: 8080 } });
@@ -12,51 +12,54 @@ beforeAll(async () => {
 afterAll(() => env.cleanup());
 beforeEach(async () => {
   await env.clearFirestore();
-  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/rin'), profile); });
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/rin'), { ...state, n: 3, m: 5 }); });
 });
 
 const as = (uid: string, claims: Record<string, unknown> = {}) => env.authenticatedContext(uid, claims).firestore();
 
-describe('users', () => {
-  it('lets a reader read their own profile only', async () => {
+describe('users (one small state document per reader)', () => {
+  const doc_ = (uid: string, extra = {}) => doc(as(uid, extra), `users/${uid}`);
+  it('lets a reader read only their own document; the author can read any', async () => {
     await assertSucceeds(getDoc(doc(as('rin'), 'users/rin')));
     await assertFails(getDoc(doc(as('tom'), 'users/rin')));
     await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(), 'users/rin')));
-  });
-  it('lets staff read profiles', async () => {
-    await assertSucceeds(getDoc(doc(as('maya', { role: 'moderator' }), 'users/rin')));
     await assertSucceeds(getDoc(doc(as('dev', { role: 'admin' }), 'users/rin')));
+    await assertFails(getDoc(doc(as('maya', { role: 'moderator' }), 'users/rin')));
   });
-  it('lets a reader edit displayName, bio and preferences', async () => {
-    await assertSucceeds(updateDoc(doc(as('rin'), 'users/rin'), { displayName: 'Rin R', bio: 'Hi', preferences: { theme: 'dark' } }));
+  it('lets a reader change bookmarks, progress and settings, field by field', async () => {
+    await assertSucceeds(updateDoc(doc(as('rin'), 'users/rin'), { 'b.newpost': 1, 'p.intro': 80, 's.t': 'light' }));
+    await assertSucceeds(setDoc(doc(as('rin'), 'users/rin'), { b: { 'series~post': 7 } }, { merge: true })); // how the app writes it
+    await assertSucceeds(setDoc(doc(as('rin'), 'users/rin'), { b: { other: 2 } }, { merge: true }));
   });
-  it('blocks role escalation and email changes', async () => {
+  it('lets a reader create their own document, but only with state fields and no unread count above zero', async () => {
+    await assertSucceeds(setDoc(doc_('tom'), { b: { a: 1 }, p: {}, s: {} }));
+    await assertFails(setDoc(doc(as('tom'), 'users/someone-else'), { b: {} }));
+    await assertFails(setDoc(doc_('tom-a'), { b: {}, role: 'admin' }));
+    await assertFails(setDoc(doc_('tom-b'), { b: {}, n: 9 }));
+    await assertFails(setDoc(doc_('tom-c'), { b: {}, m: 1 }));
+    await assertSucceeds(setDoc(doc_('tom-d'), { b: {}, n: 0 }));
+  });
+  it('only lets the reader reset the unread count to zero, never raise it', async () => {
+    await assertSucceeds(updateDoc(doc(as('rin'), 'users/rin'), { n: 0 }));
+    await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { n: 9 }));
+    await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { m: 99 }));
+  });
+  it('blocks other fields, other people and deletion', async () => {
     await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { role: 'admin' }));
-    await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { email: 'x@example.com' }));
-  });
-  it('lets a reader record when they last read their inbox, but only as the server time', async () => {
-    await assertSucceeds(updateDoc(doc(as('rin'), 'users/rin'), { inboxSeenAt: serverTimestamp() }));
-    await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { inboxSeenAt: new Date('2030-01-01') }));
-    await assertFails(updateDoc(doc(as('tom'), 'users/rin'), { inboxSeenAt: serverTimestamp() }));
-  });
-  it('validates field shapes', async () => {
-    await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { displayName: '' }));
-    await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { displayName: 'x'.repeat(41) }));
-    await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { bio: 'x'.repeat(281) }));
-  });
-  it("blocks other people's edits and client deletes", async () => {
-    await assertFails(updateDoc(doc(as('rin2'), 'users/rin'), { displayName: 'Hax' }));
+    await assertFails(updateDoc(doc(as('rin'), 'users/rin'), { displayName: 'x' }));
+    await assertFails(updateDoc(doc(as('tom'), 'users/rin'), { 'b.x': 1 }));
     await assertFails(deleteDoc(doc(as('rin'), 'users/rin')));
   });
-  it('lets a reader create only their own plain profile', async () => {
-    const mine = { displayName: 'Tom', email: 'tom@example.com', role: 'user', bio: '', preferences: {}, createdAt: serverTimestamp() };
-    const tom = (extra = {}) => as('tom', { email: 'tom@example.com', ...extra });
-    await assertSucceeds(setDoc(doc(tom(), 'users/tom'), mine));
-    await assertFails(setDoc(doc(as('tom', { email: 'tom@example.com' }), 'users/rin2'), mine)); // someone else's id
-    await assertFails(setDoc(doc(tom(), 'users/tom'), { ...mine, role: 'admin' }));
-    await assertFails(setDoc(doc(tom(), 'users/tom'), { ...mine, email: 'other@example.com' }));
-    await assertFails(setDoc(doc(tom(), 'users/tom'), { ...mine, extra: 1 }));
-    await assertFails(setDoc(doc(tom(), 'users/tom'), { ...mine, createdAt: new Date('2020-01-01') }));
+  it('caps how many bookmarks, progress entries and settings one document can hold', async () => {
+    const many = (n: number, v: unknown = 1) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`k${i}`, v]));
+    await assertSucceeds(setDoc(doc_('cap1'), { b: many(200), p: many(500), s: many(8, 'x') }));
+    await assertFails(setDoc(doc_('cap2'), { b: many(201) }));
+    await assertFails(setDoc(doc_('cap3'), { p: many(501) }));
+    await assertFails(setDoc(doc_('cap4'), { s: many(9, 'x') }));
+  });
+  it('keeps the author record away from everyone', async () => {
+    await assertFails(getDoc(doc(as('rin'), 'config/author')));
+    await assertFails(setDoc(doc(as('rin'), 'config/author'), { uid: 'rin' }));
   });
 });
 

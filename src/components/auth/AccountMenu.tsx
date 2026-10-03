@@ -1,19 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { initialOf, useAuth, useRole } from '@/lib/auth';
-import { countUnread } from '@/lib/inbox';
+import { initialOf, useAuth } from '@/lib/auth';
+import { useSync } from '@/lib/useSync';
 import { firebaseConfigured, getAuthClient } from '@/lib/firebase';
 
 export default function AccountMenu() {
   const { status, user } = useAuth();
-  const role = useRole(user);
   const [open, setOpen] = useState(false);
-  const [unread, setUnread] = useState(0);
+  const { unread } = useSync();
   const root = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!user || role === null) return;
-    countUnread(user, role === 'admin').then(setUnread).catch(() => setUnread(0));
-  }, [user, role]);
 
   useEffect(() => {
     if (!open) return;

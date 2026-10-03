@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { authMessage, safeNext, useAuth } from '@/lib/auth';
-import { firebaseConfigured, getAuthClient, getDb } from '@/lib/firebase';
+import { firebaseConfigured, getAuthClient } from '@/lib/firebase';
 
 type Mode = 'login' | 'register' | 'reset';
 
@@ -46,7 +46,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       } else if (mode === 'register') {
         const cred = await m.createUserWithEmailAndPassword(client, email.trim(), password);
         await m.updateProfile(cred.user, { displayName: username.trim() });
-        await ensureProfile(cred.user.uid, cred.user.email, username.trim()).catch(() => {});
+        await cred.user.getIdToken(true); // so the name is on the sign-in token the server reads
         location.assign(next); // no email is sent automatically; the banner at the top offers to send one
       } else {
         // Same message whether or not the address exists, so this cannot be used to probe for accounts.
@@ -104,21 +104,4 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       </p>
     </section>
   );
-}
-
-/**
- * Make sure users/{uid} exists with the chosen username. The server creates a document at sign-up too (with a
- * name made from the email), so whichever arrives first, end up with the username the reader picked.
- */
-export async function ensureProfile(uid: string, email: string | null, displayName: string) {
-  const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
-  const ref = m.doc(db, 'users', uid);
-  const name = displayName.slice(0, 40);
-  const rename = () => m.updateDoc(ref, { displayName: name });
-  if ((await m.getDoc(ref)).exists()) return rename();
-  try {
-    await m.setDoc(ref, { displayName: name, email, role: 'user', bio: '', preferences: {}, createdAt: m.serverTimestamp() });
-  } catch {
-    await rename(); // the server created it between our check and our write
-  }
 }

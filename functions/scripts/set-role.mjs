@@ -17,5 +17,6 @@ process.env.GOOGLE_CLOUD_QUOTA_PROJECT ||= projectId;
 initializeApp({ projectId });
 const user = await getAuth().getUserByEmail(email);
 await getAuth().setCustomUserClaims(user.uid, { ...(user.customClaims ?? {}), role });
-await getFirestore().doc(`users/${user.uid}`).set({ role }, { merge: true });
+// The server needs to know who the author is so it can tell them about new messages.
+if (role === 'admin') await getFirestore().doc('config/author').set({ uid: user.uid });
 console.log(`${email} (${user.uid}) is now "${role}". Sign out and back in to pick it up.`);
