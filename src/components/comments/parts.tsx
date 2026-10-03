@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from 'react';
-import { initialOf, useAuth } from '@/lib/auth';
-import { getDb, getFunctionsClient } from '@/lib/firebase';
+import { useEffect, useState, type FormEvent } from 'react';
+import { initialOf } from '@/lib/auth';
+import { deleteMessage, discardMessage, editMessage, editQueued, queueMessage, retryMessage, undoMessage, UNDO_MS, type OutItem, type Stored } from '@/lib/messages';
 
 // Comments are private: each thread is a conversation between one reader and the author.
 export type Comment = {
@@ -21,55 +21,36 @@ function ago(d: Date | null) {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-export const callMessage = (err: unknown) => {
-  const e = err as { code?: string; message?: string };
-  const known = ['resource-exhausted', 'invalid-argument', 'failed-precondition', 'permission-denied', 'already-exists'];
-  if (known.some((k) => e?.code?.includes(k))) return (e.message || '').replace(/^.*?: /, '').replace(/ \[\d+\]$/, '') || 'Could not send your message.';
-  if (e?.code?.includes('unauthenticated')) return 'Sign in to comment.';
-  return 'Could not send your message. Try again.';
-};
-
-// The connection dropped or timed out: the request may or may not have reached the server.
-export const isNetworkError = (err: unknown) => /internal|unavailable|deadline-exceeded|unknown/.test((err as { code?: string })?.code ?? '');
-
+export const fromStored = (s: Stored): Comment => ({
+  id: s.id, parentId: s.parentId, replyToId: s.replyToId, threadOwnerId: s.threadOwnerId, authorId: s.authorId, authorName: s.authorName,
+  authorRole: s.authorRole, body: s.body, createdAt: s.createdAt ? new Date(s.createdAt) : null, postKey: s.postKey,
+});
 
 /** Only the author replies. A reader may answer the author's replies, in the thread they started. */
 export function canReplyTo(opts: { canPost: boolean; isAuthor: boolean; me?: string }, c: Comment, thread: Comment) {
   return opts.canPost && (opts.isAuthor || (opts.me === thread.threadOwnerId && c.authorRole === 'admin' && c.id !== thread.id));
 }
 
+/** Re-renders every second while something is counting down. */
+function useNow(active: boolean) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => { if (!active) return; const t = setInterval(() => setNow(Date.now()), 500); return () => clearInterval(t); }, [active]);
+  return now;
+}
+
 export function Composer({ postKey, parentId, replyToId, name, email, compact, onDone }: { postKey: string; parentId?: string; replyToId?: string | null; name: string; email: string; compact?: boolean; onDone: (msg: string) => void }) {
   const [body, setBody] = useState('');
-  const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const { user } = useAuth();
   const id = `cm-${replyToId ?? parentId ?? 'new'}`;
 
-  async function submit(e: FormEvent) {
+  function submit(e: FormEvent) {
     e.preventDefault();
     if (!body.trim()) return setErr('Write something first.');
-    setBusy(true); setErr('');
-    // One id per send: if the connection drops, retrying with the same id cannot create a duplicate.
-    const clientId = crypto.randomUUID().replace(/-/g, '');
-    const send = async () => {
-      const [fns, m] = await Promise.all([getFunctionsClient(), import('firebase/functions')]);
-      await m.httpsCallable(fns, 'postComment')({ postKey, body, parentId: parentId ?? null, replyToId: replyToId ?? null, clientId });
-    };
-    try {
-      await user?.getIdToken(true); // the server checks the verified-email claim in the token
-      try { await send(); }
-      catch (e1) {
-        if (!isNetworkError(e1)) throw e1;
-        await new Promise((r) => setTimeout(r, 1500));
-        await send(); // same clientId
-      }
-      setBody('');
-      onDone(parentId ? 'Sent.' : 'Sent. Only you and the author can see this.');
-    } catch (e2) {
-      if (isNetworkError(e2)) { onDone('We could not confirm that your message was sent. It may have gone through: check the list below before sending again.'); }
-      else setErr(callMessage(e2));
-    }
-    setBusy(false);
+    setErr('');
+    // It shows in the thread straight away and is sent after a short undo window (the queue survives closing the tab).
+    queueMessage({ postKey, parentId: parentId ?? null, replyToId: replyToId ?? null, body });
+    setBody('');
+    onDone(`Sending in ${UNDO_MS / 1000} seconds. You can undo until then.`);
   }
 
   return (
@@ -81,7 +62,7 @@ export function Composer({ postKey, parentId, replyToId, name, email, compact, o
         <div className="row" style={{ flexWrap: 'wrap' }}>
           <span className="hint" id={`${id}-h`}>{body.length} / 2000</span>
           <span className="sp" />
-          <button className="btn accent" type="submit" disabled={busy}>{busy ? 'Sending…' : parentId ? 'Send reply' : 'Send'}</button>
+          <button className="btn accent" type="submit">{parentId ? 'Send reply' : 'Send'}</button>
         </div>
         {err && <span className="err" role="alert">{err}</span>}
       </div>
@@ -89,8 +70,44 @@ export function Composer({ postKey, parentId, replyToId, name, email, compact, o
   );
 }
 
-export function Item({ c, me, isAuthor, canReply, onReply, onChanged, setNote }: {
-  c: Comment; me?: string; isAuthor: boolean; canReply: boolean; onReply: () => void; onChanged: () => void; setNote: (t: string) => void;
+/** A message that has not reached the server yet: counting down to send, sending, or refused. */
+export function PendingItem({ m, name }: { m: OutItem; name: string }) {
+  const [editing, setEditing] = useState(false);
+  const [text, setText] = useState(m.body);
+  const now = useNow(m.status !== 'failed');
+  const left = Math.max(0, Math.ceil((m.sendAt - now) / 1000));
+  const counting = m.status === 'queued' && left > 0 && !m.waiting;
+  return (
+    <div className="cmt pend">
+      <span className="av tone-sky" aria-hidden="true">{initialOf(name)}</span>
+      <div>
+        <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+          <strong>{name}</strong>
+          {m.status === 'failed' ? <span className="badge tone-rose">Not sent</span> : <span className="badge">{counting ? `Sending in ${left} s` : m.waiting ? 'Waiting a moment' : 'Sending…'}</span>}
+        </div>
+        {editing ? (
+          <form className="stack" style={{ gap: 10, marginTop: 8 }} onSubmit={(e) => { e.preventDefault(); if (text.trim()) editQueued(m.clientId, text); setEditing(false); }}>
+            <label className="sr" htmlFor={`pe-${m.clientId}`}>Edit message</label>
+            <textarea className="inp" id={`pe-${m.clientId}`} maxLength={2000} value={text} onChange={(e) => setText(e.target.value)} />
+            <div className="row" style={{ gap: 8 }}><button className="btn sm accent" type="submit">Send again</button><button className="btn sm ghost" type="button" onClick={() => { setEditing(false); setText(m.body); }}>Cancel</button></div>
+          </form>
+        ) : <p className="cm-body">{m.body}</p>}
+        {m.status === 'failed' && !editing && <p className="err" role="alert" style={{ marginTop: 6 }}>{m.error}</p>}
+        {!editing && (
+          <div className="row" style={{ marginTop: 10, gap: 8, flexWrap: 'wrap' }}>
+            {counting && <button className="btn sm" type="button" onClick={() => { undoMessage(m.clientId); }}>Undo</button>}
+            {m.status === 'failed' && <button className="btn sm" type="button" onClick={() => setEditing(true)}>Edit and send again</button>}
+            {m.status === 'failed' && <button className="btn sm ghost" type="button" onClick={() => retryMessage(m.clientId)}>Try again</button>}
+            {m.status === 'failed' && <button className="btn sm ghost" type="button" onClick={() => discardMessage(m.clientId)}>Discard</button>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function Item({ c, me, isAuthor, canReply, onReply, setNote }: {
+  c: Comment; me?: string; isAuthor: boolean; canReply: boolean; onReply: () => void; setNote: (t: string) => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(c.body);
@@ -102,20 +119,14 @@ export function Item({ c, me, isAuthor, canReply, onReply, onChanged, setNote }:
     const t = text.trim();
     if (!t || t.length > 2000) return;
     setBusy(true);
-    try {
-      const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
-      await m.updateDoc(m.doc(db, 'comments', c.id), { body: t, updatedAt: m.serverTimestamp() });
-      setEditing(false); setNote('Saved.'); onChanged();
-    } catch { setNote('Could not save your edit.'); }
+    const ok = await editMessage(c.id, t);
+    setNote(ok ? 'Saved.' : 'Could not save your edit.');
+    if (ok) setEditing(false);
     setBusy(false);
   }
   async function remove() {
     if (!confirm('Delete this message?')) return;
-    try {
-      const [db, m] = await Promise.all([getDb(), import('firebase/firestore')]);
-      await m.deleteDoc(m.doc(db, 'comments', c.id));
-      onChanged();
-    } catch { setNote('Could not delete the message.'); }
+    if (!(await deleteMessage(c.id))) setNote('Could not delete the message.');
   }
 
   return (

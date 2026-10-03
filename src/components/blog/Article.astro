@@ -5,6 +5,9 @@ import { getContent, getRelated, slugifyTag, type Post, type Series } from '@/li
 import { formatDate, readingTime } from '@/lib/site';
 import Pill from './Pill.astro';
 import Comments from '@/components/comments/Comments.tsx';
+import BookmarkButton from '@/components/library/BookmarkButton.tsx';
+import ReadTracker from '@/components/library/ReadTracker.tsx';
+import ReadBadge from '@/components/library/ReadBadge.tsx';
 import { imaxt, ImaxtCover } from '@/components/imaxt';
 import { isImageCover } from '@/lib/cover';
 
@@ -107,6 +110,7 @@ const jsonLd = {
                 <li class="row" style="padding:5px 0;gap:8px;align-items:baseline">
                   <span class="mono">{String(n + 1).padStart(2, '0')}</span>
                   {p.key === post.key ? <strong>{p.data.title}</strong> : <a href={p.url} style="text-decoration:underline">{p.data.title}</a>}
+                  <ReadBadge client:idle slug={p.key} />
                 </li>
               ))}
             </ol>
@@ -115,6 +119,7 @@ const jsonLd = {
       </aside>
 
       <div class="prose-col">
+        <ReadTracker client:idle slug={post.key} />
         <article class="prose" data-pagefind-body>
           <Content components={imaxt} />
         </article>
@@ -131,6 +136,7 @@ const jsonLd = {
 
       <aside class="rail rail-r" aria-label="Actions and related">
         <div class="art-actions" role="toolbar" aria-label="Post actions">
+          <BookmarkButton client:load slug={post.key} />
           <button class="ib sm" type="button" aria-label="Copy link" data-copy>
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1" /></svg>
           </button>

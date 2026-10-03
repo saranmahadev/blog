@@ -28,9 +28,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 </header>
 
 <script>
+  import { setTheme } from '@/lib/sync';
   document.getElementById('theme-toggle')?.addEventListener('click', () => {
-    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = next;
-    try { localStorage.setItem('theme', next); } catch {}
+    setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
   });
 </script>
