@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { getContent, getRelated, type Post, type Series } from '@/lib/content';
+import { getContent, getRelated, slugifyTag, type Post, type Series } from '@/lib/content';
 import { formatDate, readingTime } from '@/lib/site';
 import Pill from './Pill.astro';
 import { imaxt, ImaxtCover } from '@/components/imaxt';
@@ -53,7 +53,7 @@ const jsonLd = {
               <div class="meta" style="color:inherit;opacity:.8"><time datetime={data.date.toISOString()}>{formatDate(data.date)}</time> · {minutes} min read</div>
             </div>
             <span class="sp"></span>
-            {data.tags.map((t) => <Pill label={t} />)}
+            {data.tags.map((t) => <Pill label={t} href={`/topics/${slugifyTag(t)}/`} />)}
           </div>
         </div>
         {isImageCover(data.cover)

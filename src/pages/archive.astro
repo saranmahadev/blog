@@ -1,0 +1,39 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Pill from '@/components/blog/Pill.astro';
+import { getContent } from '@/lib/content';
+import { formatShort, readingTime } from '@/lib/site';
+
+const { posts } = await getContent();
+const byYear = new Map<number, typeof posts>();
+for (const p of posts) {
+  const y = p.data.date.getUTCFullYear();
+  byYear.set(y, [...(byYear.get(y) ?? []), p]);
+}
+const years = [...byYear.entries()].sort((a, b) => b[0] - a[0]);
+---
+
+<BaseLayout title="Archive" description="Every post, newest first.">
+  <section class="wrap" style="padding-top:56px;padding-bottom:32px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Archive</div>
+    <h1 class="disp" style="font-size:clamp(72px,12vw,180px)">Archive</h1>
+    <p class="serif" style="font-size:24px;max-width:40ch;margin-top:18px;color:var(--muted)">{posts.length} posts, newest first.</p>
+  </section>
+  <section class="wrap" style="padding-bottom:96px">
+    {years.map(([year, list]) => (
+      <div class="arch-year">
+        <h2 class="disp arch-y">{year}</h2>
+        <ol class="arch-list">
+          {list.map((p) => (
+            <li>
+              <time class="mono muted" datetime={p.data.date.toISOString()}>{formatShort(p.data.date)}</time>
+              <a class="head" href={p.url}>{p.data.title}</a>
+              <span class="arch-meta"><Pill label={p.seriesTitle ?? 'Standalone'} tone={p.tone} href={p.seriesSlug ? `/${p.seriesSlug}/` : undefined} /><span class="meta">{readingTime(p.entry.body ?? '')} min</span></span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    ))}
+    {years.length === 0 && <p class="serif dek">Nothing published yet.</p>}
+  </section>
+</BaseLayout>

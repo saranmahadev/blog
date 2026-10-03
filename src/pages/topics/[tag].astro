@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FeedCard from '@/components/blog/FeedCard.astro';
+import { getContent, getTopics } from '@/lib/content';
+
+export async function getStaticPaths() {
+  const { posts } = await getContent();
+  return getTopics(posts).map((topic) => ({ params: { tag: topic.slug }, props: { topic } }));
+}
+const { topic } = Astro.props;
+---
+
+<BaseLayout title={`${topic.label}`} description={`Posts about ${topic.label}.`}>
+  <section class="wrap" style="padding-top:56px;padding-bottom:32px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / <a href="/topics/">Topics</a> / {topic.label}</div>
+    <h1 class="disp" style="font-size:clamp(64px,10vw,150px)">{topic.label}</h1>
+    <p class="serif" style="font-size:24px;margin-top:18px;color:var(--muted)">{topic.posts.length === 1 ? '1 post' : `${topic.posts.length} posts`}</p>
+  </section>
+  <section class="wrap" style="padding-bottom:96px">
+    <div class="feed">{topic.posts.map((p) => <FeedCard post={p} />)}</div>
+  </section>
+</BaseLayout>

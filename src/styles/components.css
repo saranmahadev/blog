@@ -297,3 +297,20 @@ main { flex: 1; }
 .diagram svg :is(.edgeLabel text, text.messageText, .edgeLabel span) { paint-order: stroke; stroke: var(--card); stroke-width: 5px; stroke-linejoin: round; }
 @media (max-width: 1100px) { .diagram-wide { margin-left: 0; margin-right: 0; } }
 @media (max-width: 760px) { .diagram { padding: 14px; } }
+
+/* Browse: archive and topics */
+.arch-year { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; padding: 28px 0; border-top: 2px solid var(--ink); }
+.arch-y { font-size: clamp(48px, 6vw, 88px); line-height: 0.9; }
+.arch-list li { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 20px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--hair); }
+.arch-list li:last-child { border-bottom: 0; }
+.arch-list .head { font-size: 22px; }
+.arch-meta { display: flex; align-items: center; gap: 12px; }
+.topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+.topic { display: flex; flex-direction: column; gap: 8px; padding: 20px; height: 100%; }
+.topic-n { font-size: 56px; color: var(--accent); }
+@media (max-width: 760px) {
+  .arch-year { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .arch-list li { grid-template-columns: 64px minmax(0, 1fr); }
+  .arch-meta { grid-column: 2; }
+  .arch-list .head { font-size: 19px; }
+}
