@@ -1,20 +1,18 @@
 name: Build and deploy
 
+# Runs only for commits on main. Pull requests and other branches do not trigger it.
 on:
   push:
     branches: [main]
-  pull_request:
-  workflow_dispatch:
 
-# One deploy per ref; never cancel a production deploy mid-flight.
+# One deploy at a time; never cancel one that is already running.
 concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  group: deploy-main
+  cancel-in-progress: false
 
 permissions:
   contents: read
   id-token: write # Workload Identity Federation (no long-lived keys)
-  pull-requests: write # preview URL comment
 
 env:
   FIREBASE_PROJECT: ${{ vars.FIREBASE_PROJECT_ID }}
@@ -42,8 +40,8 @@ jobs:
 
   deploy:
     needs: build
-    # Skip until the repo variables/secrets below are configured, and for fork PRs.
-    if: vars.FIREBASE_PROJECT_ID != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    # Skipped until the repository variable below is configured.
+    if: vars.FIREBASE_PROJECT_ID != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,9 +53,5 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
-      - name: Deploy preview (pull requests)
-        if: github.event_name == 'pull_request'
-        run: npx --yes firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.number }}" --project "$FIREBASE_PROJECT" --expires 7d
-      - name: Deploy production
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      - name: Deploy to Firebase Hosting
         run: npx --yes firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT"

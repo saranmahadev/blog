@@ -43,4 +43,4 @@ CI (`.github/workflows/deploy.yml`) builds on every push/PR. Deploys run once th
 - Variables: `FIREBASE_PROJECT_ID`, `SITE_URL`
 - Secrets: `WORKLOAD_IDENTITY_PROVIDER`, `FIREBASE_DEPLOY_SERVICE_ACCOUNT`
 
-Pull requests get a Firebase preview channel; pushes to `main` deploy to production. The Firebase project is set in `.firebaserc`.
+The workflow runs only on commits to `main` (merging a pull request counts), and deploys to production. Pull requests and other branches do not run it. The Firebase project is set in `.firebaserc`.
