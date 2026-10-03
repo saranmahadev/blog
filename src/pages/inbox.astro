@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Inbox from '@/components/inbox/Inbox.tsx';
+import { getContent } from '@/lib/content';
+
+const { posts } = await getContent();
+const info = posts.map((p) => ({ key: p.key, title: p.data.title, url: p.url }));
+---
+
+<BaseLayout title="Inbox" noindex>
+  <div class="wrap" data-pagefind-ignore style="padding-top:56px;padding-bottom:96px;max-width:920px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Inbox</div>
+    <h1 class="disp" style="font-size:clamp(56px,9vw,120px)">Inbox</h1>
+    <p class="serif muted" style="font-size:20px;max-width:46ch;margin-top:12px">Your private conversations with the author, across every post.</p>
+    <Inbox client:load posts={info} />
+  </div>
+</BaseLayout>

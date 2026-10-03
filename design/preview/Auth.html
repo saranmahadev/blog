@@ -8,8 +8,7 @@
 
 <header class="hdr"><div class="wrap hdr-in">
   <a class="logo" href="#"><i></i><span>Drafted</span><small class="by mono">By Dev</small></a><span class="sp"></span>
-  <button class="ib" type="button" aria-label="Notifications"><svg class="ico" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 003.4 0"/></svg></button>
-  <button class="row clay" type="button" style="padding:4px 14px 4px 4px;border-radius:999px;gap:10px" aria-haspopup="menu" aria-expanded="true"><span class="av tone-sky" style="box-shadow:none">R</span><strong style="font-size:14px">Rin</strong><span aria-hidden="true">▾</span></button>
+  <button class="row clay" type="button" style="padding:4px 14px 4px 4px;border-radius:999px;gap:10px;position:relative" aria-haspopup="menu" aria-expanded="true"><span class="av tone-sky" style="box-shadow:none">R</span><strong style="font-size:14px">Rin</strong><span aria-hidden="true">▾</span><span class="acct-dot"></span></button>
 </div></header>
 
 <main class="wrap" style="padding-top:48px;padding-bottom:64px">
@@ -30,7 +29,7 @@
 
     <section class="dlg" aria-label="Create account">
       <h1 class="disp" style="font-size:56px">Create account</h1>
-      <p class="serif muted" style="font-size:18px;margin:10px 0 22px">It takes a minute. No password rules to memorise.</p>
+      <p class="serif muted" style="font-size:18px;margin:10px 0 22px">It takes a minute. We only email you if you ask us to.</p>
       <div class="stack" style="gap:16px">
         <div class="field"><label for="u2">Username</label><input class="inp" id="u2" value="rin"><span class="hint">Shown next to your comments.</span></div>
         <div class="field"><label for="e2">Email</label><input class="inp" id="e2" type="email" value="rin@example"><span class="err">Enter a full address, like name@example.com</span></div>
@@ -40,11 +39,11 @@
     </section>
 
     <div class="stack" style="gap:36px">
-      <section class="dlg tone-mint" aria-label="Verify email">
-        <div class="mono">Check your inbox</div>
-        <h1 class="disp" style="font-size:48px;margin:8px 0 12px">Verify your email</h1>
-        <p class="serif" style="font-size:18px">We sent a link to rin@example.com. Open it to finish setting up.</p>
-        <div class="row" style="margin-top:18px;gap:10px"><button class="btn" type="button">Resend email</button><button class="btn ghost" type="button">Change email</button></div>
+      <section aria-label="Verification bar">
+        <div class="mono muted" style="margin-bottom:10px">Verify bar, top of every page until verified. Nothing is emailed automatically.</div>
+        <div class="vbar"><p><strong>Verify your email to comment.</strong> Your address is rin@example.com.</p><button class="btn sm ink" type="button">Send verification email</button></div>
+        <div style="height:12px"></div>
+        <div class="vbar"><p><strong>Verify your email to comment.</strong> We sent a link to rin@example.com. Open it, then press “I have verified”. Check your spam folder if it does not arrive.</p><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn sm ink" type="button">I have verified</button><button class="btn sm ghost" type="button">Resend in 42s</button></div></div>
       </section>
       <section class="dlg" aria-label="Reset password">
         <h1 class="disp" style="font-size:44px">Reset password</h1>
@@ -57,11 +56,9 @@
   <div style="position:relative;margin-top:56px;height:300px">
     <div class="mono muted" style="margin-bottom:12px">Account menu (from the header) and toasts</div>
     <div class="slab" style="position:absolute;left:0;top:34px;width:300px;padding:12px" role="menu" aria-label="Account menu">
-      <div class="row" style="padding:10px 10px 14px;gap:12px"><span class="av tone-sky">R</span><div><strong>Rin</strong><div class="mono muted">Reader</div></div></div>
-      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Bookmarks</a>
-      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Reading history</a>
-      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Preferences</a>
-      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Admin <span class="badge tone-accent" style="margin-left:auto">admin only</span></a>
+      <div class="row" style="padding:10px 10px 14px;gap:12px"><span class="av tone-sky">R</span><div><strong>Rin</strong><div class="mono muted">Verified</div></div></div>
+      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Inbox <span class="badge tone-accent" style="margin-left:auto">2 new</span></a>
+      <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Profile</a>
       <a class="row" role="menuitem" style="padding:11px 10px;border-top:1px solid var(--hair)" href="#">Sign out</a>
     </div>
     <div class="stack" style="position:absolute;left:360px;top:34px;gap:16px">

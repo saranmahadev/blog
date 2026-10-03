@@ -24,9 +24,23 @@ export const onUserCreated = functions.region('asia-south1').auth.user().onCreat
   }).catch((err: { code?: number }) => { if (err.code !== 6) throw err; }); // 6 = ALREADY_EXISTS
 });
 
-/** Profile cleanup when an account is deleted (the data-deletion promise). */
+/**
+ * Deleting an account deletes its data: the profile, every message the person wrote, and every thread they
+ * started (including the author's replies inside those threads, which exist only for that conversation).
+ */
 export const onUserDeleted = functions.region('asia-south1').auth.user().onDelete(async (user) => {
-  await getFirestore().doc(`users/${user.uid}`).delete();
+  const db = getFirestore();
+  const [written, owned] = await Promise.all([
+    db.collection('comments').where('authorId', '==', user.uid).get(),
+    db.collection('comments').where('threadOwnerId', '==', user.uid).get(),
+  ]);
+  const writer = db.bulkWriter();
+  const seen = new Set<string>();
+  for (const d of [...written.docs, ...owned.docs]) {
+    if (!seen.has(d.ref.path)) { seen.add(d.ref.path); void writer.delete(d.ref); }
+  }
+  void writer.delete(db.doc(`users/${user.uid}`));
+  await writer.close();
 });
 
 const COMMENT_MAX = 2000;
@@ -47,6 +61,11 @@ export const postComment = functions.region('asia-south1').https.onCall(async (d
   if (!context.auth.token.email_verified) throw new fail('failed-precondition', 'Verify your email to comment.');
   const uid = context.auth.uid;
   const isAuthor = context.auth.token.role === 'admin';
+
+  // A retry after a dropped connection sends the same clientId and gets the original answer instead of a duplicate.
+  const clientId = typeof data?.clientId === 'string' && /^[A-Za-z0-9_-]{8,40}$/.test(data.clientId) ? data.clientId : null;
+  const docRef = clientId ? getFirestore().doc(`comments/${uid}_${clientId}`) : null;
+  if (docRef && (await docRef.get()).exists) return { id: docRef.id, duplicate: true };
 
   const postKey = typeof data?.postKey === 'string' ? data.postKey : '';
   if (!/^[a-z0-9-]+(\/[a-z0-9-]+)?$/.test(postKey) || postKey.length > 120) throw new fail('invalid-argument', 'Unknown post.');
@@ -94,11 +113,16 @@ export const postComment = functions.region('asia-south1').https.onCall(async (d
   const profile = await db.doc(`users/${uid}`).get();
   const authorName = String(profile.get('displayName') || context.auth.token.name || 'Reader').slice(0, 40);
 
-  const ref = await db.collection('comments').add({
+  const doc = {
     postKey, parentId: threadId, replyToId, threadOwnerId, authorId: uid, authorName,
     authorRole: isAuthor ? 'admin' : 'user',
     body,
     createdAt: FieldValue.serverTimestamp(),
-  });
+  };
+  if (docRef) {
+    try { await docRef.create(doc); } catch (err) { if ((err as { code?: number }).code !== 6) throw err; } // 6 = already created by a parallel retry
+    return { id: docRef.id };
+  }
+  const ref = await db.collection('comments').add(doc);
   return { id: ref.id };
 });

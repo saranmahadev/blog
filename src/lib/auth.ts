@@ -32,12 +32,12 @@ export function useAuth(): AuthState {
   return state;
 }
 
-/** The signed-in user's role claim ("admin" is the blog author). Empty until the token has been read. */
-export function useRole(user: User | null): string {
-  const [role, setRole] = useState('');
+/** The signed-in user's role claim ("admin" is the blog author). `null` until the token has been read. */
+export function useRole(user: User | null): string | null {
+  const [role, setRole] = useState<string | null>(null);
   useEffect(() => {
     let live = true;
-    setRole('');
+    setRole(null);
     user?.getIdTokenResult().then((r) => { if (live) setRole(String(r.claims.role ?? '')); }).catch(() => {});
     return () => { live = false; };
   }, [user, user?.emailVerified]);
