@@ -1,0 +1,10 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AuthForm from '@/components/auth/AuthForm.tsx';
+---
+
+<BaseLayout title="Sign in" noindex>
+  <div class="wrap" data-pagefind-ignore style="padding-top:56px;padding-bottom:96px;max-width:620px">
+    <AuthForm client:load mode="login" />
+  </div>
+</BaseLayout>

@@ -1,0 +1,10 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Profile from '@/components/auth/Profile.tsx';
+---
+
+<BaseLayout title="Your profile" noindex>
+  <div class="wrap" data-pagefind-ignore style="padding-top:56px;padding-bottom:96px">
+    <Profile client:load />
+  </div>
+</BaseLayout>
