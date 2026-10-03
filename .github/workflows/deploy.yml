@@ -1,10 +1,11 @@
 name: Build and deploy
 
 # Never runs on every commit. It runs when:
-#   - a commit lands on main (build + deploy)
-#   - the "ci" label is added to a pull request (build and checks only, no deploy)
+#   - a commit lands on main (build + deploy to production)
+#   - the "build" label is added to a pull request (build and checks only)
+#   - the "deploy-preview" label is added to a pull request (build, then a temporary preview URL)
 #   - someone starts it by hand from the Actions tab (build only; deploys only if run on main)
-# To re-check a PR after new commits, remove and re-add the "ci" label, or run it by hand.
+# To re-run for a PR after new commits, remove and re-add the label, or run it by hand.
 on:
   push:
     branches: [main]
@@ -26,7 +27,7 @@ env:
 
 jobs:
   build:
-    if: github.event_name != 'pull_request' || github.event.label.name == 'ci'
+    if: github.event_name != 'pull_request' || contains(fromJSON('["build","deploy-preview"]'), github.event.label.name)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -66,3 +67,20 @@ jobs:
           service_account: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
       - name: Deploy to Firebase Hosting
         run: npx --yes firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT"
+
+  preview:
+    needs: build
+    if: github.event_name == 'pull_request' && github.event.label.name == 'deploy-preview' && vars.FIREBASE_PROJECT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
+      - name: Deploy preview channel (expires in 7 days)
+        run: npx --yes firebase-tools@latest hosting:channel:deploy "pr-${{ github.event.pull_request.number }}" --expires 7d --project "$FIREBASE_PROJECT"
