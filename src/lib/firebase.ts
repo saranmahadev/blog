@@ -33,7 +33,9 @@ function getApp() {
 
 export function getAuthClient() {
   auth ??= Promise.all([getApp(), import('firebase/auth')]).then(([a, m]) => {
-    const instance = m.getAuth(a);
+    // No popup/redirect resolver: email and password need none, and without it the SDK does not load Google's
+    // apis.google.com script or open a hidden auth iframe, so the page's Content-Security-Policy can stay tight.
+    const instance = m.initializeAuth(a, { persistence: [m.indexedDBLocalPersistence, m.browserLocalPersistence] });
     if (useEmulators) m.connectAuthEmulator(instance, 'http://127.0.0.1:9099', { disableWarnings: true });
     return instance;
   });
