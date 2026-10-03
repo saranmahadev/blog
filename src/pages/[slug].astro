@@ -5,6 +5,8 @@ import { getContent } from '@/lib/content';
 import { formatShort, readingTime } from '@/lib/site';
 import Article from '@/components/blog/Article.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import SeriesProgress from '@/components/library/SeriesProgress.tsx';
+import ReadBadge from '@/components/library/ReadBadge.tsx';
 
 export const getStaticPaths = (async () => {
   const { posts, series } = await getContent();
@@ -35,12 +37,13 @@ const { post, series } = Astro.props;
       </div>
     </section>
     <div class="wrap" style="padding-top:56px;padding-bottom:80px">
+      <div style="max-width:920px;margin-bottom:28px"><SeriesProgress client:idle parts={series.posts.map((p) => ({ slug: p.key, title: p.data.title, url: p.url }))} /></div>
       <ol style="max-width:920px">
         {series.posts.map((p, i) => (
           <li class:list={['slab', 'hov', 'part', i === 0 && `tone-${series.tone}`]}>
             <span class:list={['disp', 'part-n', i > 0 && 'out']}>{String(i + 1).padStart(2, '0')}</span>
             <div>
-              <h2 class="head" style="font-size:30px"><a href={p.url}>{p.data.title}</a></h2>
+              <h2 class="head" style="font-size:30px"><a href={p.url}>{p.data.title}</a> <ReadBadge client:idle slug={p.key} /></h2>
               <p class="serif" style="font-size:18px;margin-top:8px;opacity:.85">{p.data.description}</p>
               <div class="meta" style="margin-top:10px;color:inherit;opacity:.75">{formatShort(p.data.date)} · {readingTime(p.entry.body ?? '')} min</div>
             </div>

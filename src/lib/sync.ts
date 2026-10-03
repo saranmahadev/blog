@@ -8,7 +8,7 @@
 //   4. failures retry with backoff; one tab syncs at a time (Web Locks), and repeats are harmless (field-level writes).
 // Where a browser lacks a feature there is a fallback: no localStorage -> memory plus immediate writes;
 // no Web Locks -> every tab may write (idempotent); no sendBeacon -> keepalive fetch; neither -> next visit.
-import { applyAction, buildPatch, clearSent, isDirty, mergeAnonymous, mergeServer, parseLocal, type Action, type Local, type Patch } from './sync-core';
+import { applyAction, buildPatch, clearSent, emptyLocal, isDirty, mergeAnonymous, mergeServer, parseLocal, type Action, type Local, type Patch } from './sync-core';
 
 const DEBOUNCE_MS = 10_000;
 const MAX_WAIT_MS = 60_000;
@@ -45,6 +45,9 @@ function publish(patch: Partial<Snapshot> = {}) { snap = { ...snap, local: curre
 function persist(l: Local) { write(key(uid), JSON.stringify(l)); }
 export const subscribe = (fn: () => void) => { listeners.add(fn); return () => { listeners.delete(fn); }; };
 export const getSnapshot = () => snap;
+/** What the server renders (and the first client render must match): nothing saved yet. */
+const EMPTY: Snapshot = { local: emptyLocal(), status: 'local', signedIn: false, unread: 0, latestMessageAt: 0, persisted: null, storage: true };
+export const getServerSnapshot = () => EMPTY;
 
 // ---- theme -------------------------------------------------------------------------------------
 export function applyTheme(value: string | undefined) {
