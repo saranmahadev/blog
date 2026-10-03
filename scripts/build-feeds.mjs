@@ -44,6 +44,9 @@ function articleHtml(post) {
     return `<p><em>Diagram${cap ? `: ${cap}` : ''}.${desc ? ` ${desc}` : ''}</em></p>`;
   });
 
+  // A sidenote's label would run into its text ("NoteIdempotent means..."), so set it as a labelled quote.
+  html = html.replace(/<aside class="imx-note"><span class="imx-label">([\s\S]*?)<\/span>([\s\S]*?)<\/aside>/g, (_m, label, text) => `<blockquote><p><strong>${label}.</strong> ${text}</p></blockquote>`);
+
   const page_url = abs(post.url);
   const resolve = (v) => { try { return new URL(v, page_url).href; } catch { return undefined; } };
   const clean = sanitizeHtml(html, {
@@ -63,7 +66,8 @@ function articleHtml(post) {
       a: (_tag, attribs) => ({ tagName: 'a', attribs: attribs.href ? { ...attribs, href: resolve(attribs.href) ?? '' } : attribs }),
       img: (_tag, attribs) => ({ tagName: 'img', attribs: { ...attribs, src: resolve(attribs.src ?? '') ?? '' } }),
     },
-    exclusiveFilter: (f) => (f.tag === 'div' || f.tag === 'p' || f.tag === 'span') && !f.text.trim() && f.mediaChildren.length === 0,
+    // Anything the page hides from assistive technology is decoration (marquee words, bar tracks, legends), so it goes too.
+    exclusiveFilter: (f) => f.attribs['aria-hidden'] === 'true' || ((f.tag === 'div' || f.tag === 'p' || f.tag === 'span') && !f.text.trim() && f.mediaChildren.length === 0),
   }).replace(/\n{3,}/g, '\n\n').trim();
 
   const more = interactive

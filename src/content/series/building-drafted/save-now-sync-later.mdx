@@ -1,0 +1,60 @@
+---
+title: "Save now, sync later"
+description: "A blog needs a database for almost nothing. Here is the one small document per reader, and how it avoids losing anything."
+date: 2026-10-03
+order: 5
+tags: [Drafted, Engineering, True story]
+cover:
+  kind: stat
+  text: "1"
+  sub: "document per reader"
+---
+
+<Sidenote label="True story">These are decisions I really made while building this site. I have put them in a tidier order than they happened.</Sidenote>
+
+At some point in the build I stopped and asked how much database this blog really needed. The honest answer was: very little. I wanted to use it minimally.
+
+## What Does a Blog Need to Remember?
+
+Posts are static files, so they need no database. Each one already has a stable address, its slug, and that is all anything else needs to refer to it.
+
+That leaves only what belongs to one reader: the posts they bookmarked, how far they read in each, their theme choice, and the private messages. So I asked for the smallest possible shape.
+
+<Compare>
+  <Side kind="before" label="A table for every feature">Bookmarks, progress, likes, profiles and settings each in their own place. Many reads, many writes, and a bill that grows with them.</Side>
+  <Side label="One small document">A single document per reader, keyed by post slug, loaded once when you sign in.</Side>
+</Compare>
+
+There are no likes and no profile bio, so there is nothing to store for them.
+
+## The Question That Mattered
+
+Then I changed how I thought about time. Messages and bookmarks do not have to be instant. They can be saved on your own device straight away and written to the server a little later.
+
+The question I could not skip was the obvious one: *what if the person closes the tab before it is written?*
+
+That question shaped the whole design. A change is saved in your browser the moment you make it, so closing the tab cannot lose it. Then it travels to the server in the safest order I could build:
+
+<Steps>
+  <Step title="Save locally">Written to the browser immediately.</Step>
+  <Step title="Wait a moment">About ten seconds after your last change, so a burst of changes becomes one write.</Step>
+  <Step title="Send as one batch">One small, repeat-safe write. Sending it twice does no harm.</Step>
+  <Step title="If the tab is closing">The browser is asked to hand the data over on the way out.</Step>
+  <Step title="If that fails">A second method is tried. If that fails too, it stays queued and goes out on your next visit.</Step>
+</Steps>
+
+## A Fallback for Every Caveat
+
+Whenever a browser feature might be missing, I wrote a fallback. If the browser has no local storage, changes are kept in memory and sent at once, and the page says so. If it cannot coordinate tabs, every tab may send, which is safe because the writes are repeat-safe. Messages sent from a phone on a bad connection stay in the queue until the server confirms them.
+
+<StatRow>
+  <Stat value="1" label="document per reader" tone="mint" />
+  <Stat value="10" unit="s" label="to undo a message" tone="sky" />
+  <Stat value="200" label="bookmarks per reader" tone="lilac" />
+</StatRow>
+
+## What I Wanted From It
+
+I wanted a fresh approach that costs very little to run, because a blog that charges its owner every time someone reads it has the wrong shape. Most pages never touch the database at all.
+
+**Save first, sync later, and never lose it.**

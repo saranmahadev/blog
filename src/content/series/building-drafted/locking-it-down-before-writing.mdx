@@ -1,0 +1,50 @@
+---
+title: "Locking it down before writing a word"
+description: "Before the first real post, I sealed the site: a strict browser policy, default-deny data, and three things that broke on the live site."
+date: 2026-10-03
+order: 7
+tags: [Drafted, Security, True story]
+cover:
+  kind: word
+  text: "Sealed"
+  sub: "before the first post"
+---
+
+<Sidenote label="True story">These are decisions I really made while building this site. I have put them in a tidier order than they happened.</Sidenote>
+
+Before the first real article went up, I wanted the site's security settled. Once there is writing on a site, people start to trust it, and that is a bad time to find a hole.
+
+## The Browser Policy
+
+The biggest single protection is a Content-Security-Policy: a list that tells the browser where a page is allowed to load things from.
+
+<Compare>
+  <Side kind="before" label="Without a policy">If anyone ever slips a script into a page, the browser runs it.</Side>
+  <Side label="With a policy">Anything not on the list is refused, whoever put it there.</Side>
+</Compare>
+
+Around it sit smaller settings: pages served only over HTTPS, no way to put the site inside someone else's page, and no access to the camera, microphone or location. A check in the build loads real pages in a real browser and fails if the policy is ever broken.
+
+## The Data Is Closed by Default
+
+The database starts from "no" and each rule opens only what is needed. A reader can reach only their own small record. Messages can be created only by a server function that checks who you are and refuses spam. And I tightened one more thing: I cannot read your bookmarks or reading progress either. Nobody can.
+
+## Three Things That Broke
+
+The strict policy was tested against my local copy of Firebase, which cannot reproduce everything the real one does. So the real site showed me three surprises.
+
+<Timeline>
+  <Event date="Before launch" title="A tiny Google image">The Firestore client quietly requests a small image from Google to check its connection. My policy blocked it, so I allowed that one address and nothing else.</Event>
+  <Event date="Right after a deploy" title="Missing scripts">Pages kept for up to an hour in the browser still pointed at script files the new deploy had replaced, so they returned 404. The cause was a caching rule that did not match page addresses. Pages are now checked every visit.</Event>
+  <Event date="After a hard refresh" title="A blocked Google script">Sign-in tried to load a script from Google that exists only for the popup sign-in I had already decided not to offer. I removed the popup helper, so it never asks.</Event>
+</Timeline>
+
+These surprises are the reason I trust a strict policy: it does not let a mistake pass quietly.
+
+## Everything Around the Code
+
+The rest is less visible. Installs use exactly the versions in the lockfile. The deploy uses a pinned version of the Firebase tool, not "latest". Workflow tokens are read-only except in the two jobs that publish. A weekly check audits the dependencies and scans the code, and Dependabot proposes updates but never merges one.
+
+<Sidenote label="Note">A few protections live in Google and GitHub settings, not in code: restricting the web API key to this domain, a billing alert, two-step verification on the author's mailbox, and secret scanning. The README lists them.</Sidenote>
+
+**Security is a set of small refusals, written down before they are needed.**

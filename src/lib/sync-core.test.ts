@@ -5,10 +5,10 @@ const bm = (l = emptyLocal(), slug: string, on = true, at = 1000) => applyAction
 
 describe('local changes', () => {
   it('encodes series slugs and records what changed', () => {
-    const l = bm(undefined, 'axon/the-ingestion-pipeline');
-    expect(l.b['axon~the-ingestion-pipeline']).toBe(1000);
+    const l = bm(undefined, 'building-drafted/save-now-sync-later');
+    expect(l.b['building-drafted~save-now-sync-later']).toBe(1000);
     expect(isDirty(l)).toBe(true);
-    expect(buildPatch(l).b).toEqual({ 'axon~the-ingestion-pipeline': 1000 });
+    expect(buildPatch(l).b).toEqual({ 'building-drafted~save-now-sync-later': 1000 });
   });
   it('removing a bookmark becomes a delete in the patch', () => {
     const l = bm(bm(undefined, 'a'), 'a', false);

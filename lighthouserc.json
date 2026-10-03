@@ -2,7 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": ["/index.html", "/axon/the-ingestion-pipeline/index.html", "/variable-fonts-played-with/index.html"],
+      "url": ["/index.html", "/building-drafted/locking-it-down-before-writing/index.html", "/dev-universe/a-connected-ecosystem/index.html"],
       "numberOfRuns": 1,
       "settings": { "chromeFlags": "--no-sandbox", "preset": "desktop" }
     },

@@ -1,0 +1,54 @@
+---
+title: "Bookmarks that follow you"
+description: "Save a post, close the tab, come back on another device. How bookmarks and reading progress work, signed in or not."
+date: 2026-10-03
+order: 10
+tags: [Drafted, Features, Note]
+cover:
+  kind: word
+  text: "Saved"
+  sub: "bookmarks and progress"
+---
+
+<Sidenote label="Note">This is a tour of one feature, not a story. It says what the feature does and how it works.</Sidenote>
+
+A reading list is only useful if it is still there when you come back.
+
+## What You Can Do
+
+Every post has a bookmark button next to the copy and share buttons. Press it and the post is saved. Press it again and it is removed.
+
+As you scroll, the site also remembers how far down each post you have been. If you leave and come back, a small **Pick up where you left off** button takes you to that spot.
+
+Both live on your profile page, in three tabs:
+
+<Steps>
+  <Step title="Bookmarks">Everything you saved, each with the date you saved it.</Step>
+  <Step title="Continue reading">Posts you are part way through, with how much you have read.</Step>
+  <Step title="Finished">Posts you have read to the end.</Step>
+</Steps>
+
+In lists across the site, a post you have started shows a small percentage, and one you have finished shows **Read**.
+
+## You Do Not Need an Account
+
+Bookmarks work the moment you press the button, signed in or not. They are saved on your own device first. A visitor without an account sees their bookmarks on the profile page, with buttons to sign in or create an account.
+
+If you do sign in, the bookmarks you saved while signed out are merged into your account, so nothing is lost by signing in late.
+
+## Why It Feels Instant
+
+Everything is saved to your browser straight away and sent to the server a little later, in one small batch. That is why pressing the button never waits for the network, and why closing the tab cannot lose a bookmark. The post *Save now, sync later* explains how.
+
+There is a small status line that tells you where your changes are: saved, saving, offline, or not saved.
+
+## What Is Kept, and What Is Not
+
+<StatRow>
+  <Stat value="200" label="bookmarks at most" tone="mint" />
+  <Stat value="1" label="furthest point kept per post" tone="sky" />
+</StatRow>
+
+Only the furthest point you reached in a post is stored, not a trail of every scroll. Reading progress and bookmarks are private to you. The database rules let only you read them, and not even the author account can.
+
+**A bookmark should be saved the moment you press it, and be there when you come back.**

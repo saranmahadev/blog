@@ -1,0 +1,55 @@
+---
+title: "Light, dark, and readable by everyone"
+description: "Drafted follows your system theme, remembers your choice, and is checked for contrast and keyboard use before every deploy."
+date: 2026-10-03
+order: 12
+tags: [Drafted, Features, Note]
+cover:
+  kind: word
+  text: "Both"
+  sub: "light and dark"
+---
+
+<Sidenote label="Note">This is a tour of one feature, not a story. It says what the feature does and how it works.</Sidenote>
+
+Reading is a physical thing: eyes, screens, rooms with different light. A site should adapt to that and not argue with it.
+
+## Three Themes
+
+There are three choices: **light**, **dark** and **system**. System is the default, so the site follows your device. If you change it, your choice is remembered, and if you are signed in it follows you to your other devices.
+
+The theme is applied before the page is first drawn, so there is no flash of the wrong colours when a page loads.
+
+## Everything Works in Both
+
+A dark theme is easy to do badly: a colour that reads well on white can disappear on black. So both themes are tested, not assumed.
+
+<Compare>
+  <Side kind="before" label="Checked by eye">A designer flips the switch, looks, and decides it is fine.</Side>
+  <Side label="Checked by a machine">Every key page is scanned in light and in dark before each deploy, and a text colour that is too faint stops the release.</Side>
+</Compare>
+
+Diagrams are drawn twice at build time, one version for each theme, so they are as readable in the dark as in the light.
+
+## Reading Without a Mouse
+
+The same checks cover the way you move around the page:
+
+- A **Skip to content** link appears for keyboard users as soon as they press Tab.
+- Search opens with **/**, moves with the arrow keys and closes with **Esc**.
+- Buttons and links have names a screen reader can read out.
+- Anything that moves, like a counting number or a scrolling band of words, stands still if your device asks for reduced motion.
+
+## The Checks Behind It
+
+These are not intentions. They run as part of the deploy, and a failure stops it.
+
+<StatRow>
+  <Stat value="2" label="themes scanned for contrast" tone="mint" />
+  <Stat value="95" label="accessibility score floor" tone="sky" />
+  <Stat value="0" label="serious issues allowed" tone="lilac" />
+</StatRow>
+
+The scans also cover the signed-in screens: the account menu, the profile, the inbox and the comment box.
+
+**A site is only readable if it is readable for the person who is reading it.**

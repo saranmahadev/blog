@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import { serve, chromePath } from './serve.mjs';
 
-const PAGES = ['/', '/archive/', '/topics/', '/topics/ai/', '/series/', '/axon/', '/axon/the-ingestion-pipeline/', '/variable-fonts-played-with/', '/forward-proxies-explained/', '/imaxt/', '/about/', '/login/', '/register/', '/reset/', '/inbox/', '/404.html'];
+const PAGES = ['/', '/archive/', '/topics/', '/topics/drafted/', '/series/', '/welcome-to-drafted/', '/building-drafted/', '/building-drafted/why-drafted-has-no-images/', '/building-drafted/locking-it-down-before-writing/', '/dev-universe/a-connected-ecosystem/', '/building-dev-universe/how-drafted-started/', '/building-dev-universe/community/', '/curious-to-coder/the-software-you-stopped-noticing/', '/curious-to-coder/symptoms-that-you-should-pursue-coding/', '/building-drafted/light-dark-and-readable/', '/imaxt/', '/about/', '/login/', '/register/', '/reset/', '/inbox/', '/404.html'];
 const { base, close } = await serve();
 const browser = await chromium.launch({ executablePath: chromePath() });
 let failures = 0;
@@ -18,7 +18,7 @@ for (const theme of ['light', 'dark']) {
     await page.evaluate(() => { const s = new CSSStyleSheet(); s.replaceSync('*, *::before, *::after { transition: none !important; animation: none !important; }'); document.adoptedStyleSheets = [...document.adoptedStyleSheets, s]; });
     // Also scan the search dialog once per theme.
     const runs = [{ label: url, setup: async () => {} }];
-    if (url === '/') runs.push({ label: '/ (search open)', setup: async () => { await page.click('button.srch'); await page.fill('#site-search', 'vector'); await page.waitForSelector('.sres'); } });
+    if (url === '/') runs.push({ label: '/ (search open)', setup: async () => { await page.click('button.srch'); await page.fill('#site-search', 'sync'); await page.waitForSelector('.sres'); } });
     for (const r of runs) {
       await r.setup();
       const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
