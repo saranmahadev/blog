@@ -114,6 +114,36 @@
       "title": "Palette options 2: greens and blues (pick one)",
       "expand": "fill",
       "is_interactive": true
+    },
+    "Imaxt.dc.html": {
+      "x": 0,
+      "y": 19700,
+      "w": 1440,
+      "h": 5120,
+      "title": "Imaxt blocks (desktop)",
+      "expand": "fill"
+    },
+    "ImaxtMobile.dc.html": {
+      "x": 1520,
+      "y": 19700,
+      "w": 390,
+      "h": 5765,
+      "title": "Imaxt blocks (mobile)"
+    },
+    "Imaxt2.dc.html": {
+      "x": 0,
+      "y": 25585,
+      "w": 1440,
+      "h": 6436,
+      "title": "Imaxt blocks 2: code, data, diagrams (desktop)",
+      "expand": "fill"
+    },
+    "Imaxt2Mobile.dc.html": {
+      "x": 1520,
+      "y": 25585,
+      "w": 390,
+      "h": 6754,
+      "title": "Imaxt blocks 2 (mobile)"
     }
   },
   "createdOnFiles": {
@@ -172,6 +202,14 @@
       "w": 240,
       "x": 0,
       "y": 14828
+    },
+    "r9": {
+      "kind": "title1",
+      "maxW": 1910,
+      "text": "9  Imaxt: typography and layout as the visuals",
+      "w": 240,
+      "x": 0,
+      "y": 19400
     }
   },
   "order": [

@@ -35,7 +35,9 @@
     "hast-util-from-html-isomorphic": "^2.0.0",
     "hast-util-to-string": "^3.0.1",
     "mermaid-isomorphic": "^3.1.0",
+    "parse5": "^8.0.1",
     "playwright": "^1.63.0",
+    "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "unist-util-visit": "^5.1.0"
