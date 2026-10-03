@@ -4,7 +4,7 @@ import { patternFor, toneFor, type Pattern, type Tone } from './site';
 /** Top-level paths owned by fixed pages/assets; content may not use them. */
 export const RESERVED_SLUGS = new Set([
   'about', 'imaxt', 'projects', 'blog', 'series', 'tags', 'search', 'login', 'profile', 'admin',
-  'api', 'rss', 'rss.xml', 'sitemap', '404', '_astro', 'images', 'fonts', 'icons',
+  'api', 'archive', 'topics', 'rss', 'rss.xml', 'sitemap', '404', '_astro', 'images', 'fonts', 'icons',
   'favicon.svg', 'robots.txt',
 ]);
 
@@ -124,3 +124,23 @@ export function getRelated(post: Post, all: Post[], limit = 3) {
 
 /** Letter shown on a post's thumbnail: its series, else its own title. */
 export const initialOf = (p: Post) => (p.seriesTitle ?? p.data.title).trim()[0]?.toUpperCase() ?? '·';
+
+export const slugifyTag = (t: string) =>
+  t.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+export type Topic = { slug: string; label: string; posts: Post[] };
+
+/** Tags across all posts, grouped by slug (case-insensitive). Most-used first. */
+export function getTopics(posts: Post[]): Topic[] {
+  const map = new Map<string, Topic>();
+  for (const p of posts) {
+    for (const t of p.data.tags) {
+      const slug = slugifyTag(t);
+      if (!slug) continue;
+      const topic = map.get(slug) ?? { slug, label: t, posts: [] };
+      if (!topic.posts.includes(p)) topic.posts.push(p);
+      map.set(slug, topic);
+    }
+  }
+  return [...map.values()].sort((a, b) => b.posts.length - a.posts.length || a.label.localeCompare(b.label));
+}

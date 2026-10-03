@@ -65,3 +65,22 @@ CI (`.github/workflows/deploy.yml`) builds on demand and deploys from `main`. De
 - Secrets: `WORKLOAD_IDENTITY_PROVIDER`, `FIREBASE_DEPLOY_SERVICE_ACCOUNT`
 
 The workflow runs on commits to `main` (build + deploy), when the `build` label is added to a pull request (build and checks only), when `deploy-preview` is added (build plus a temporary preview URL that expires in 7 days), or by hand from the Actions tab. Ordinary PR commits do not run it; to re-check a PR, re-add the label. The Firebase project is set in `.firebaserc`.
+
+### Quality gates
+
+After the build, the `gates` job must pass before any deploy or preview:
+
+- `pnpm check:links`: every internal link, image, script and `#anchor` in `dist/` resolves.
+- `pnpm check:a11y`: axe-core (WCAG 2.1 A/AA) on key pages in light and dark, plus the open search dialog. Fails on serious or critical violations.
+- `pnpm check:lighthouse`: Lighthouse (`lighthouserc.json`) on Home and two Imaxt-heavy posts. Floors: performance 90, accessibility 95, SEO 95.
+
+Run them locally after `pnpm build` with `pnpm check:dist` (set `CHROME_PATH` if Chrome is not at a standard location).
+
+## Search, feeds and SEO
+
+- Search is Pagefind, indexed from the built HTML (`pnpm build` runs it). It covers posts and series; add `data-pagefind-ignore` to keep something out of the index. The overlay opens with `/` and only works on a built site.
+- `/rss.xml` (all posts) and `/<series>/rss.xml` (per series) carry titles and descriptions.
+- `/sitemap.xml` is generated from content, with `lastmod` from post dates. `/imaxt/` is excluded.
+- Share images: `pnpm build` renders each post's Imaxt cover to `/og/<slug>.png` (1200x630) with headless Chrome, then discards the card pages. They exist only in `dist/`; nothing is committed. Posts with an image cover use that image.
+- Posts emit `Article` and `BreadcrumbList` JSON-LD.
+

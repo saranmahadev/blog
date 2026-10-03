@@ -20,14 +20,17 @@ const { post, series } = Astro.props;
 {post && <Article post={post} />}
 {series && (
   <BaseLayout title={series.entry.data.title} description={series.entry.data.description}>
-    <section class:list={['series-hero', `tone-${series.tone}`]}>
+    <link slot="head" rel="alternate" type="application/rss+xml" title={`${series.entry.data.title} (series)`} href={`${series.url}rss.xml`} />
+    <section data-pagefind-body class:list={['series-hero', `tone-${series.tone}`]}>
+      <span hidden data-pagefind-filter="kind:Series"></span>
       <div class:list={['cover', `cv-${series.pattern}`]} style="position:absolute;inset:0;border:0;border-radius:0;opacity:.3" aria-hidden="true"></div>
       <div class="wrap">
-        <div class="mono" style="margin-bottom:22px"><a href="/">Home</a> / <a href="/series/">Series</a> / {series.entry.data.title}</div>
+        <div class="mono" data-pagefind-ignore style="margin-bottom:22px"><a href="/">Home</a> / <a href="/series/">Series</a> / {series.entry.data.title}</div>
         <h1 class="disp" style="font-size:clamp(64px,10vw,168px)">{series.entry.data.title}</h1>
         <p class="serif" style="font-size:26px;line-height:1.4;max-width:40ch;margin-top:22px">{series.entry.data.description}</p>
         <div class="row" style="margin-top:28px;gap:12px">
           {series.posts[0] && <a class="btn ink" href={series.posts[0].url}>Start reading <span aria-hidden="true">→</span></a>}
+          <a class="btn" href={`${series.url}rss.xml`}>Subscribe via RSS</a>
         </div>
       </div>
     </section>

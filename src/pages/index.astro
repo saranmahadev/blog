@@ -71,8 +71,9 @@ const latest = rest.slice(0, 5);
 
   {posts.length > 0 && (
     <section class="wrap" style="padding-top:72px;padding-bottom:72px" aria-label="All posts">
-      <div class="sec-h"><h2 class="disp sec-t">All posts</h2></div>
-      <div class="feed">{posts.map((p) => <FeedCard post={p} />)}</div>
+      <div class="sec-h"><h2 class="disp sec-t">All posts</h2><a class="btn" href="/archive/">Archive <span aria-hidden="true">→</span></a></div>
+      <div class="feed">{posts.slice(0, 12).map((p) => <FeedCard post={p} />)}</div>
+      {posts.length > 12 && <p style="margin-top:32px"><a class="btn" href="/archive/">See the archive <span aria-hidden="true">→</span></a></p>}
     </section>
   )}
 </BaseLayout>

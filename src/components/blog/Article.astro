@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { getContent, getRelated, type Post, type Series } from '@/lib/content';
+import { getContent, getRelated, slugifyTag, type Post, type Series } from '@/lib/content';
 import { formatDate, readingTime } from '@/lib/site';
 import Pill from './Pill.astro';
 import { imaxt, ImaxtCover } from '@/components/imaxt';
@@ -19,28 +19,51 @@ const idx = series ? series.posts.findIndex((p) => p.key === post.key) : -1;
 const prev = series?.posts[idx - 1];
 const next = series?.posts[idx + 1];
 
+const ogImage = isImageCover(data.cover) ? data.cover.image : `/og/${post.key}.png`;
+const abs = (path: string) => new URL(path, Astro.site).href;
+const crumbs = [
+  { name: 'Home', url: '/' },
+  ...(series ? [{ name: series.entry.data.title, url: series.url }] : []),
+  { name: data.title, url: post.url },
+];
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: data.title,
-  description: data.description,
-  author: { '@type': 'Person', name: data.author },
-  datePublished: data.date.toISOString(),
-  dateModified: (data.updated ?? data.date).toISOString(),
-  ...(isImageCover(data.cover) && { image: new URL(data.cover.image, Astro.site).href }),
+  '@graph': [
+    {
+      '@type': 'Article',
+      headline: data.title,
+      description: data.description,
+      author: { '@type': 'Person', name: data.author },
+      datePublished: data.date.toISOString(),
+      dateModified: (data.updated ?? data.date).toISOString(),
+      image: abs(ogImage),
+      mainEntityOfPage: abs(post.url),
+      keywords: data.tags.join(', '),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: abs(c.url) })),
+    },
+  ],
 };
 ---
 
-<BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={isImageCover(data.cover) ? data.cover.image : undefined} type="article">
+<BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={ogImage} type="article">
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  {series && <link slot="head" rel="alternate" type="application/rss+xml" title={`${series.entry.data.title} (series)`} href={`${series.url}rss.xml`} />}
 
   <div class="readbar" aria-hidden="true"><i id="readbar" style="width:0"></i></div>
 
-  <section class:list={['art-band', post.tone ? `tone-${post.tone}` : 'art-neutral']}>
+  <section data-pagefind-body class:list={['art-band', post.tone ? `tone-${post.tone}` : 'art-neutral']}>
+    <div hidden>
+      <span data-pagefind-filter="kind:Post"></span>
+      {series && <span data-pagefind-filter={`series:${series.entry.data.title}`}></span>}
+      {data.tags.map((t) => <span data-pagefind-filter={`topic:${t}`}></span>)}
+    </div>
     <div class="wrap">
       <div class="art-hero">
         <div>
-          <div class="mono" style="margin-bottom:26px">
+          <div class="mono" data-pagefind-ignore style="margin-bottom:26px">
             <a href="/">Home</a>{' / '}
             {series ? <><a href={series.url}>{series.entry.data.title}</a>{` / Part ${idx + 1}`}</> : 'Post'}
           </div>
@@ -53,7 +76,7 @@ const jsonLd = {
               <div class="meta" style="color:inherit;opacity:.8"><time datetime={data.date.toISOString()}>{formatDate(data.date)}</time> · {minutes} min read</div>
             </div>
             <span class="sp"></span>
-            {data.tags.map((t) => <Pill label={t} />)}
+            {data.tags.map((t) => <Pill label={t} href={`/topics/${slugifyTag(t)}/`} />)}
           </div>
         </div>
         {isImageCover(data.cover)
@@ -91,7 +114,7 @@ const jsonLd = {
       </aside>
 
       <div class="prose-col">
-        <article class="prose">
+        <article class="prose" data-pagefind-body>
           <Content components={imaxt} />
         </article>
 

@@ -50,8 +50,41 @@ jobs:
           path: dist
           retention-days: 7
 
-  deploy:
+  # Quality gates run on the built site. A failure here blocks both deploy and preview.
+  gates:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Internal links and anchors
+        run: pnpm check:links
+      - name: Accessibility (axe, light and dark)
+        run: pnpm check:a11y
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Lighthouse budgets
+        run: pnpm check:lighthouse
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse
+          path: .lighthouseci
+          retention-days: 7
+
+  deploy:
+    needs: [build, gates]
     # Only from main, and skipped until the repository variable below is configured.
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.FIREBASE_PROJECT_ID != ''
     runs-on: ubuntu-latest
@@ -69,7 +102,7 @@ jobs:
         run: npx --yes firebase-tools@latest deploy --only hosting --project "$FIREBASE_PROJECT"
 
   preview:
-    needs: build
+    needs: [build, gates]
     if: github.event_name == 'pull_request' && github.event.label.name == 'deploy-preview' && vars.FIREBASE_PROJECT_ID != ''
     runs-on: ubuntu-latest
     steps:

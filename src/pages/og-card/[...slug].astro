@@ -1,0 +1,42 @@
+---
+// Share-image source. Rendered to /og/<slug>.png by scripts/build-og.mjs, then removed from dist.
+import '@/styles/global.css';
+import { ImaxtCover } from '@/components/imaxt';
+import { getContent } from '@/lib/content';
+import { SITE } from '@/lib/site';
+
+export async function getStaticPaths() {
+  const { posts } = await getContent();
+  return [
+    { params: { slug: 'default' }, props: { post: undefined } },
+    ...posts.map((post) => ({ params: { slug: post.key }, props: { post } })),
+  ];
+}
+const { post } = Astro.props;
+const cover = post?.data.cover;
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>OG card</title>
+    <style is:global>
+      html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+      .card { display: grid; grid-template-rows: minmax(0, 1fr) 68px; width: 1200px; height: 630px; background: var(--paper); }
+      .card .imx-cover { border: 0; border-radius: 0; height: 100%; width: 100%; aspect-ratio: auto !important; }
+      .og-foot { display: flex; align-items: center; gap: 12px; padding: 0 40px; border-top: 2px solid var(--ink); font-family: var(--font-display); font-weight: 800; font-size: 28px; }
+      .og-foot small { font-family: var(--font-mono); font-weight: 400; font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+      .og-foot i { width: 26px; height: 26px; border-radius: 8px; background: var(--accent); border: 2px solid var(--ink); }
+    </style>
+  </head>
+  <body data-og-ready>
+    <div class="card">
+      {post
+        ? <ImaxtCover cover={cover as any} title={post.data.title} tone={post.tone ?? 'ink'} caption={post.seriesTitle ?? 'Post'} />
+        : <ImaxtCover cover={{ kind: 'stack', text: 'Drafted by Dev' } as any} title={SITE.title} tone="mint" caption="Notes on engineering, systems and AI" />}
+      <div class="og-foot"><i></i>{SITE.title}<small>{SITE.byline}</small></div>
+    </div>
+  </body>
+</html>

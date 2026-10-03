@@ -1,0 +1,23 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getContent, getTopics } from '@/lib/content';
+
+const { posts } = await getContent();
+const topics = getTopics(posts);
+---
+
+<BaseLayout title="Topics" description="Browse posts by topic.">
+  <section class="wrap" style="padding-top:56px;padding-bottom:32px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Topics</div>
+    <h1 class="disp" style="font-size:clamp(72px,12vw,180px)">Topics</h1>
+    <p class="serif" style="font-size:24px;max-width:40ch;margin-top:18px;color:var(--muted)">Browse by what a post is about.</p>
+  </section>
+  <section class="wrap" style="padding-bottom:96px">
+    <ul class="topic-grid">
+      {topics.map((t) => (
+        <li><a class="slab hov topic" href={`/topics/${t.slug}/`}><span class="disp topic-n">{t.posts.length}</span><span class="head" style="font-size:22px">{t.label}</span><span class="mono muted">{t.posts.length === 1 ? '1 post' : `${t.posts.length} posts`}</span></a></li>
+      ))}
+    </ul>
+    {topics.length === 0 && <p class="serif dek">No topics yet.</p>}
+  </section>
+</BaseLayout>

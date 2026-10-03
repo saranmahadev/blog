@@ -9,15 +9,19 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/build-og.mjs && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
-    "astro": "astro"
+    "astro": "astro",
+    "check:links": "node scripts/check-links.mjs",
+    "check:a11y": "node scripts/check-a11y.mjs",
+    "check:lighthouse": "lhci autorun",
+    "check:dist": "pnpm check:links && pnpm check:a11y && pnpm check:lighthouse"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.2",
     "@astrojs/react": "^7.0.0",
-    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/rss": "^4.0.19",
     "@fontsource-variable/archivo": "^5.3.0",
     "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/source-serif-4": "^5.3.0",
@@ -29,12 +33,15 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@astrojs/markdown-remark": "^7.3.1",
+    "@axe-core/playwright": "^4.13.0",
+    "@lhci/cli": "^0.15.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "hast-util-from-html-isomorphic": "^2.0.0",
     "hast-util-to-string": "^3.0.1",
     "mermaid-isomorphic": "^3.1.0",
+    "pagefind": "^1.5.2",
     "parse5": "^8.0.1",
     "playwright": "^1.63.0",
     "postcss": "^8.5.28",
