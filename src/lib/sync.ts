@@ -15,7 +15,7 @@ const MAX_WAIT_MS = 60_000;
 const REFRESH_MS = 5 * 60_000;
 const TOKEN_MS = 20 * 60_000;
 
-export type SyncStatus = 'local' | 'saved' | 'pending' | 'syncing' | 'offline' | 'error';
+type SyncStatus = 'local' | 'saved' | 'pending' | 'syncing' | 'offline' | 'error';
 export type Snapshot = { local: Local; status: SyncStatus; signedIn: boolean; unread: number; latestMessageAt: number; pulledAt: number; persisted: boolean | null; storage: boolean };
 
 const key = (uid: string | null) => `drafted:v1:${uid ?? 'anon'}`;
@@ -50,7 +50,7 @@ const EMPTY: Snapshot = { local: emptyLocal(), status: 'local', signedIn: false,
 export const getServerSnapshot = () => EMPTY;
 
 // ---- theme -------------------------------------------------------------------------------------
-export function applyTheme(value: string | undefined) {
+function applyTheme(value: string | undefined) {
   if (!browser || !value) return;
   const dark = value === 'dark' || (value === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
   document.documentElement.dataset.theme = dark ? 'dark' : 'light';
@@ -59,7 +59,7 @@ export function applyTheme(value: string | undefined) {
 
 // ---- changes -----------------------------------------------------------------------------------
 let asked = false;
-export function act(a: Action) {
+function act(a: Action) {
   const cur = current();
   const next = applyAction(cur, a);
   if (next === cur) return;
@@ -173,8 +173,6 @@ export async function attach(user: { uid: string; getIdToken: (force?: boolean) 
   schedule(2_000);
 }
 
-export function detach() { return attach(null); }
-
 async function refreshToken(force = false) { try { token = (await fbUser?.getIdToken(force)) ?? ''; } catch {} }
 /** The hand-over at close time uses this saved copy (it cannot wait for a refresh), so refresh it when it matters. */
 export const refreshAuthToken = (force = true) => refreshToken(force);
@@ -189,11 +187,10 @@ export type LeaveMessage = { clientId: string; postKey: string; parentId: string
 let leaveSource: (() => LeaveMessage[]) | null = null;
 export const setLeaveSource = (fn: (() => LeaveMessage[]) | null) => { leaveSource = fn; };
 export const getUid = () => uid;
-export const getUser = () => fbUser;
 const beaconed = new Set<string>();
 
 /** Hand unsynced data over while the page is going away. Does not clear anything: the normal sync repeats it harmlessly. */
-export function flushOnLeave() {
+function flushOnLeave() {
   if (!uid || !token || !beaconTo) return;
   const l = current();
   const stateDirty = isDirty(l) && l.rev !== beaconRev;

@@ -2,11 +2,14 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { authMessage, safeNext, useAuth } from '@/lib/auth';
 import { firebaseConfigured, getAuthClient } from '@/lib/firebase';
 
+/** Passwords people try first. Not exhaustive; length is the real protection. */
+const COMMON = new Set(['password', 'password1', 'password123', '1234567890', '12345678910', 'qwertyuiop', 'qwerty12345', 'iloveyou123', 'letmein1234', 'welcome1234', 'admin12345', 'abcdefghij', '0123456789', 'passw0rd123', 'changeme123', 'monkey12345', 'dragon12345', 'football123', 'baseball123', 'princess123']);
+
 type Mode = 'login' | 'register' | 'reset';
 
 const COPY = {
-  login: { title: 'Sign in', lead: 'Bookmark posts, like them and join the comments.', cta: 'Sign in' },
-  register: { title: 'Create account', lead: 'It takes a minute. No password rules to memorise.', cta: 'Create account' },
+  login: { title: 'Sign in', lead: 'Keep your bookmarks on every device and write privately to the author.', cta: 'Sign in' },
+  register: { title: 'Create account', lead: 'It takes a minute. Use a long password, not a clever one.', cta: 'Create account' },
   reset: { title: 'Reset password', lead: 'We will email you a link to choose a new one.', cta: 'Send reset link' },
 } as const;
 
@@ -35,7 +38,12 @@ export default function AuthForm({ mode }: { mode: Mode }) {
     e.preventDefault();
     setError(''); setErrField('');
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) return fail('email', 'Enter a full address, like name@example.com.');
-    if (mode !== 'reset' && password.length < 8) return fail('password', 'Use at least 8 characters.');
+    if (mode === 'login' && password.length < 1) return fail('password', 'Enter your password.');
+    if (mode === 'register') {
+      const name = email.trim().split('@')[0].toLowerCase();
+      if (password.length < 10) return fail('password', 'Use at least 10 characters.');
+      if (COMMON.has(password.toLowerCase()) || /^(.)\1+$/.test(password) || (name.length > 3 && password.toLowerCase().includes(name))) return fail('password', 'That password is too easy to guess. Try a few unrelated words.');
+    }
     if (mode === 'register' && (username.trim().length < 1 || username.trim().length > 40)) return fail('username', 'Pick a name between 1 and 40 characters.');
     setBusy(true);
     try {
@@ -91,7 +99,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
           <div className="field">
             <label htmlFor="a-pass">Password</label>
             <input className="inp" id="a-pass" type="password" autoComplete={mode === 'register' ? 'new-password' : 'current-password'} value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={errField === 'password'} aria-describedby="a-pass-h" />
-            {errField === 'password' ? <span className="err" role="alert" id="a-pass-h">{error}</span> : <span className="hint" id="a-pass-h">{mode === 'register' ? 'At least 8 characters.' : <a href="/reset/" style={{ textDecoration: 'underline' }}>Forgot your password?</a>}</span>}
+            {errField === 'password' ? <span className="err" role="alert" id="a-pass-h">{error}</span> : <span className="hint" id="a-pass-h">{mode === 'register' ? 'At least 10 characters. A few unrelated words is ideal.' : <a href="/reset/" style={{ textDecoration: 'underline' }}>Forgot your password?</a>}</span>}
           </div>
         )}
         {error && !errField && <p className="err" role="alert">{error}</p>}

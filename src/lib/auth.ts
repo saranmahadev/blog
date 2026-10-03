@@ -47,7 +47,7 @@ export function authMessage(err: unknown): string {
       return 'That email and password do not match.';
     case 'auth/invalid-email': return 'Enter a full address, like name@example.com.';
     case 'auth/email-already-in-use': return 'An account with that email may already exist. Try signing in, or reset your password.';
-    case 'auth/weak-password': return 'Use at least 8 characters.';
+    case 'auth/weak-password': return 'Choose a longer password (at least 10 characters).';
     case 'auth/too-many-requests': return 'Too many attempts. Wait a few minutes and try again.';
     case 'auth/network-request-failed': return 'Could not reach the server. Check your connection.';
     case 'auth/requires-recent-login': return 'For your security, sign in again and retry.';

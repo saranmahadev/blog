@@ -184,7 +184,7 @@ let refreshing: Promise<void> | null = null;
 let generation = 0;
 
 /** Asks the server for messages only when the account document says something happened since the cache was filled. */
-export function ensureFresh(force = false): Promise<void> {
+function ensureFresh(force = false): Promise<void> {
   if (refreshing) return refreshing;
   refreshing = refresh(force).finally(() => { refreshing = null; });
   return refreshing;

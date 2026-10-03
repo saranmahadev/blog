@@ -134,6 +134,7 @@ export const postComment = functions.region('asia-south1').runWith({ maxInstance
 
 // ---- reader state: hand-over while a page is closing ----------------------------------------------
 const KEY = /^[a-z0-9~-]{1,120}$/;
+const ALLOWED_ORIGINS = ['https://blog.saranmahadev.in', 'http://localhost:4321', 'http://127.0.0.1:4321'];
 
 /** Turns what a browser sends into a safe Firestore merge. Anything unexpected is ignored, never trusted. */
 export function cleanState(x: any): Record<string, unknown> {
@@ -158,7 +159,10 @@ export function cleanState(x: any): Record<string, unknown> {
  * same field-level writes later, so a duplicate does no harm.
  */
 export const syncBeacon = functions.region('asia-south1').runWith({ maxInstances: 5 }).https.onRequest(async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
+  // Only the site's own pages may call this from a browser (the token is not a cookie, but there is no reason to be open).
+  const origin = req.get('origin') ?? '';
+  if (ALLOWED_ORIGINS.includes(origin)) res.set('Access-Control-Allow-Origin', origin);
+  res.set('Vary', 'Origin');
   if (req.method === 'OPTIONS') { res.set('Access-Control-Allow-Headers', 'content-type').status(204).send(''); return; }
   if (req.method !== 'POST') { res.status(405).send(''); return; }
   try {

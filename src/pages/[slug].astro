@@ -22,7 +22,9 @@ const { post, series } = Astro.props;
 {post && <Article post={post} />}
 {series && (
   <BaseLayout title={series.entry.data.title} description={series.entry.data.description}>
-    <link slot="head" rel="alternate" type="application/rss+xml" title={`${series.entry.data.title} (series)`} href={`${series.url}rss.xml`} />
+    <link slot="head" rel="alternate" type="application/rss+xml" title={`${series.entry.data.title} (RSS)`} href={`${series.url}rss.xml`} />
+    <link slot="head" rel="alternate" type="application/atom+xml" title={`${series.entry.data.title} (Atom)`} href={`${series.url}atom.xml`} />
+    <link slot="head" rel="alternate" type="application/feed+json" title={`${series.entry.data.title} (JSON Feed)`} href={`${series.url}feed.json`} />
     <section data-pagefind-body class:list={['series-hero', `tone-${series.tone}`]}>
       <span hidden data-pagefind-filter="kind:Series"></span>
       <div class:list={['cover', `cv-${series.pattern}`]} style="position:absolute;inset:0;border:0;border-radius:0;opacity:.3" aria-hidden="true"></div>

@@ -8,9 +8,7 @@
 // Slugs contain "/" for posts inside a series; field names use "~" instead ("axon~the-ingestion-pipeline").
 
 export const CAPS = { b: 200, p: 500, s: 8 } as const;
-export const THEMES = ['light', 'dark', 'system'] as const;
 
-export type MapName = 'b' | 'p' | 's';
 export type Local = {
   v: 1;
   b: Record<string, number>;
@@ -30,7 +28,7 @@ export const emptyLocal = (): Local => ({ v: 1, b: {}, p: {}, s: {}, dirty: { b:
 
 export const encKey = (slug: string) => slug.replace(/\//g, '~');
 export const decKey = (key: string) => key.replace(/~/g, '/');
-export const validKey = (key: string) => /^[a-z0-9~-]{1,120}$/.test(key);
+const validKey = (key: string) => /^[a-z0-9~-]{1,120}$/.test(key);
 
 /** Reads whatever was saved, tolerating missing or damaged data. */
 export function parseLocal(raw: string | null): Local {
@@ -56,7 +54,7 @@ function clamp<T extends number | string>(m: Record<string, T>, cap: number, ran
   const keep = keys.sort((a, c) => rank(c, m[c]) - rank(a, m[a])).slice(0, cap);
   return Object.fromEntries(keep.map((k) => [k, m[k]]));
 }
-export function enforceCaps(l: Local): Local {
+function enforceCaps(l: Local): Local {
   return { ...l, b: clamp(l.b, CAPS.b, (_, v) => v), p: clamp(l.p, CAPS.p, (_, v) => v), s: clamp(l.s, CAPS.s, () => 0) };
 }
 

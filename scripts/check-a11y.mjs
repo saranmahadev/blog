@@ -14,7 +14,8 @@ for (const theme of ['light', 'dark']) {
   for (const url of PAGES) {
     await page.goto(base + url, { waitUntil: 'networkidle' });
     // Measure settled colours, not mid-transition ones.
-    await page.addStyleTag({ content: '*, *::before, *::after { transition: none !important; animation: none !important; }' });
+    // A constructed stylesheet, because the page's Content-Security-Policy refuses an injected <style>.
+    await page.evaluate(() => { const s = new CSSStyleSheet(); s.replaceSync('*, *::before, *::after { transition: none !important; animation: none !important; }'); document.adoptedStyleSheets = [...document.adoptedStyleSheets, s]; });
     // Also scan the search dialog once per theme.
     const runs = [{ label: url, setup: async () => {} }];
     if (url === '/') runs.push({ label: '/ (search open)', setup: async () => { await page.click('button.srch'); await page.fill('#site-search', 'vector'); await page.waitForSelector('.sres'); } });

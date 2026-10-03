@@ -20,8 +20,8 @@ export const NAV = [
   { href: '/about/', label: 'About' },
 ] as const;
 
-export const TONES = ['mint', 'lilac', 'sky', 'rose'] as const;
-export const PATTERNS = ['dots', 'rings', 'grid', 'stripes', 'check'] as const;
+const TONES = ['mint', 'lilac', 'sky', 'rose'] as const;
+const PATTERNS = ['dots', 'rings', 'grid', 'stripes', 'check'] as const;
 export type Tone = (typeof TONES)[number];
 export type Pattern = (typeof PATTERNS)[number];
 

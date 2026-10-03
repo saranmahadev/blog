@@ -54,7 +54,11 @@ const jsonLd = {
 
 <BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={ogImage} type="article">
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-  {series && <link slot="head" rel="alternate" type="application/rss+xml" title={`${series.entry.data.title} (series)`} href={`${series.url}rss.xml`} />}
+  {series && <Fragment slot="head">
+    <link rel="alternate" type="application/rss+xml" title={`${series.entry.data.title} (RSS)`} href={`${series.url}rss.xml`} />
+    <link rel="alternate" type="application/atom+xml" title={`${series.entry.data.title} (Atom)`} href={`${series.url}atom.xml`} />
+    <link rel="alternate" type="application/feed+json" title={`${series.entry.data.title} (JSON Feed)`} href={`${series.url}feed.json`} />
+  </Fragment>}
 
   <div class="readbar" aria-hidden="true"><i id="readbar" style="width:0"></i></div>
 

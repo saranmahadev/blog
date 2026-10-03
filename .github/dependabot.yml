@@ -1,0 +1,20 @@
+# Grouped, weekly, so updates arrive as a few small pull requests instead of a flood. Nothing is merged automatically.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+    groups:
+      astro: { patterns: ['astro', '@astrojs/*'] }
+      firebase: { patterns: ['firebase', 'firebase-tools', '@firebase/*'] }
+      tooling: { dependency-type: development, exclude-patterns: ['astro', '@astrojs/*', 'firebase-tools', '@firebase/*'] }
+  - package-ecosystem: npm
+    directory: /functions
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 3
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly, day: monday }
+    groups:
+      actions: { patterns: ['*'] }
