@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth, useRole } from '@/lib/auth';
 import { firebaseConfigured } from '@/lib/firebase';
-import { isNew, loadThreads, type Thread } from '@/lib/inbox';
+import { groupThreads, isNew } from '@/lib/inbox';
 import { getSnapshot, markInboxRead } from '@/lib/sync';
-import { Composer, Item, canReplyTo } from '@/components/comments/parts';
+import { useMessages } from '@/lib/useMessages';
+import { Composer, Item, PendingItem, canReplyTo } from '@/components/comments/parts';
 
 type PostInfo = { key: string; title: string; url: string };
 
@@ -11,37 +12,36 @@ export default function Inbox({ posts }: { posts: PostInfo[] }) {
   const { status, user } = useAuth();
   const role = useRole(user);
   const isAuthor = role === 'admin';
-  const [threads, setThreads] = useState<Thread[] | null>(null);
+  const msgs = useMessages();
   const [freshIds, setFreshIds] = useState<Set<string>>(new Set());
   const [tab, setTab] = useState<'new' | 'all'>('new');
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const marked = useRef(false);
   const byKey = new Map(posts.map((p) => [p.key, p]));
+  const threads = groupThreads(msgs.items);
 
   useEffect(() => {
     if (status === 'out' && firebaseConfigured) location.replace(`/login/?next=${encodeURIComponent('/inbox/')}`);
   }, [status]);
 
-  const load = useCallback(async () => {
-    if (!user || role === null) return;
-    const t = await loadThreads(user, isAuthor).catch(() => []);
-    setThreads(t);
-    if (!marked.current) {
-      marked.current = true;
-      const seen = getSnapshot().local.seenAt; // this device's last visit
-      setFreshIds(new Set(t.filter((x) => isNew(x, isAuthor, seen ? new Date(seen) : null)).map((x) => x.id))); // what was new when you arrived stays listed this visit...
-      markInboxRead(); // ...and the unread count goes back to zero (saved with the rest, a few seconds later)
-    }
-  }, [user, role, isAuthor]);
-  useEffect(() => { load(); }, [load]);
+  // On first sight of the messages: remember which conversations were new when you arrived, then count them as read.
+  useEffect(() => {
+    if (marked.current || !user || role === null || !msgs.ready) return;
+    marked.current = true;
+    const seen = getSnapshot().local.seenAt; // this device's last visit
+    setFreshIds(new Set(threads.filter((x) => isNew(x, isAuthor, seen ? new Date(seen) : null)).map((x) => x.id)));
+    markInboxRead(); // the unread count goes back to zero (saved with the rest, a few seconds later)
+  });
 
   if (!firebaseConfigured) return <p className="serif muted">Accounts are not set up yet.</p>;
-  if (status !== 'in' || !user || threads === null) return <p className="serif muted" role="status">Loading your inbox…</p>;
+  if (status !== 'in' || !user || !msgs.ready) return <p className="serif muted" role="status">Loading your inbox…</p>;
 
   const fresh = threads.filter((t) => freshIds.has(t.id));
   const shown = tab === 'new' ? fresh : threads;
   const canPost = !!user.emailVerified;
+  const myName = user.displayName ?? '';
+  const done = (m: string) => { setReplyTo(null); setNote(m); };
 
   return (
     <div>
@@ -52,6 +52,7 @@ export default function Inbox({ posts }: { posts: PostInfo[] }) {
         </div>
       </div>
       <div role="status" aria-live="polite">{note && <p className="cm-note">{note}</p>}</div>
+      {msgs.error && <p className="hint" role="status">{msgs.error}</p>}
 
       {shown.length === 0 && (
         <p className="serif muted" style={{ marginTop: 28 }}>
@@ -64,6 +65,7 @@ export default function Inbox({ posts }: { posts: PostInfo[] }) {
         const top = t.messages.find((c) => c.id === t.id) ?? t.messages[0];
         // Still waiting on me: it was new on arrival and the other side still has the last word.
         const unread = freshIds.has(t.id) && (isAuthor ? t.last.authorRole !== 'admin' : t.last.authorRole === 'admin');
+        const waiting = msgs.outbox.filter((m) => m.parentId === t.id);
         return (
           <section key={t.id} className={`slab inb${unread ? ' inb-new' : ''}`} aria-label={`Conversation about ${post?.title ?? t.postKey}`}>
             <div className="row inb-head">
@@ -75,15 +77,16 @@ export default function Inbox({ posts }: { posts: PostInfo[] }) {
             {t.messages.map((c) => (
               <div key={c.id}>
                 <div className={c.id === t.id ? '' : 'cm-reply'}>
-                  <Item c={c} me={user.uid} isAuthor={isAuthor} canReply={canReplyTo({ canPost, isAuthor, me: user.uid }, c, top)} onReply={() => setReplyTo(replyTo === c.id ? null : c.id)} onChanged={load} setNote={setNote} />
+                  <Item c={c} me={user.uid} isAuthor={isAuthor} canReply={canReplyTo({ canPost, isAuthor, me: user.uid }, c, top)} onReply={() => setReplyTo(replyTo === c.id ? null : c.id)} setNote={setNote} />
                 </div>
                 {replyTo === c.id && canPost && (
                   <div className="cm-reply">
-                    <Composer postKey={t.postKey} parentId={t.id} replyToId={c.id === t.id ? null : c.id} name={user.displayName ?? ''} email={user.email ?? ''} compact onDone={(m) => { setReplyTo(null); setNote(m); load(); }} />
+                    <Composer postKey={t.postKey} parentId={t.id} replyToId={c.id === t.id ? null : c.id} name={myName} email={user.email ?? ''} compact onDone={done} />
                   </div>
                 )}
               </div>
             ))}
+            {waiting.map((m) => <div className="cm-reply" key={m.clientId}><PendingItem m={m} name={myName || 'You'} /></div>)}
           </section>
         );
       })}

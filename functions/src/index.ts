@@ -29,24 +29,36 @@ const MAX_LINKS = 2;
 const MIN_GAP_MS = 30_000;
 const HOURLY_LIMIT = 10;
 
+type Claims = { uid: string; email_verified?: boolean; role?: unknown; name?: unknown; email?: unknown };
+const fail = functions.https.HttpsError;
+
+let authorCache: { uid: string | null; at: number } | null = null;
+/** Who the author is (written by scripts/set-role.mjs), so a new message can raise their unread count. */
+async function authorUid(): Promise<string | null> {
+  if (authorCache && Date.now() - authorCache.at < 10 * 60_000) return authorCache.uid;
+  const d = await getFirestore().doc('config/author').get();
+  authorCache = { uid: (d.get('uid') as string | undefined) ?? null, at: Date.now() };
+  return authorCache.uid;
+}
+
 /**
- * The only way a comment is created. Comments are private conversations between one reader and the author:
+ * Creates one message. Shared by the callable (normal sends) and the beacon (sends while a page is closing).
+ * Comments are private conversations between one reader and the author:
  *  - a verified reader starts a thread (a top-level comment);
  *  - only the author (role "admin") replies to a thread, and the reader who started it can answer the author's replies;
  *  - every message carries `threadOwnerId` (the reader), and the rules show a thread only to that reader and the author.
  * There is nothing to approve: the author sees every thread on a post right away. Obvious spam is refused here.
+ * Each message has a one-time `clientId`, so repeating a send (retries, beacon plus normal) never duplicates it.
  */
-export const postComment = functions.region('asia-south1').https.onCall(async (data, context) => {
-  const fail = functions.https.HttpsError;
-  if (!context.auth) throw new fail('unauthenticated', 'Sign in to comment.');
-  if (!context.auth.token.email_verified) throw new fail('failed-precondition', 'Verify your email to comment.');
-  const uid = context.auth.uid;
-  const isAuthor = context.auth.token.role === 'admin';
+export async function createComment(claims: Claims, data: any): Promise<{ id: string; duplicate?: boolean }> {
+  if (!claims.email_verified) throw new fail('failed-precondition', 'Verify your email to comment.');
+  const uid = claims.uid;
+  const isAuthor = claims.role === 'admin';
+  const db = getFirestore();
 
-  // A retry after a dropped connection sends the same clientId and gets the original answer instead of a duplicate.
   const clientId = typeof data?.clientId === 'string' && /^[A-Za-z0-9_-]{8,40}$/.test(data.clientId) ? data.clientId : null;
-  const docRef = clientId ? getFirestore().doc(`comments/${uid}_${clientId}`) : null;
-  if (docRef && (await docRef.get()).exists) return { id: docRef.id, duplicate: true };
+  const docRef = clientId ? db.doc(`comments/${uid}_${clientId}`) : db.collection('comments').doc();
+  if (clientId && (await docRef.get()).exists) return { id: docRef.id, duplicate: true };
 
   const postKey = typeof data?.postKey === 'string' ? data.postKey : '';
   if (!/^[a-z0-9-]+(\/[a-z0-9-]+)?$/.test(postKey) || postKey.length > 120) throw new fail('invalid-argument', 'Unknown post.');
@@ -57,7 +69,6 @@ export const postComment = functions.region('asia-south1').https.onCall(async (d
     if (/(.)\1{14,}/s.test(body)) throw new fail('invalid-argument', 'That looks like spam. Please write a normal message.');
   }
 
-  const db = getFirestore();
   let threadId: string | null = null;
   let threadOwnerId = uid;
   let replyToId: string | null = null;
@@ -92,22 +103,30 @@ export const postComment = functions.region('asia-south1').https.onCall(async (d
   }
 
   // The name comes from the sign-in record (no profile document to read).
-  const authorName = String(context.auth.token.name || context.auth.token.email?.split('@')[0] || 'Reader').slice(0, 40);
+  const authorName = String(claims.name || String(claims.email ?? '').split('@')[0] || 'Reader').slice(0, 40);
+  const now = Date.now();
+  const recipient = isAuthor ? threadOwnerId : await authorUid();
 
-  const doc = {
+  // One atomic write: the message, plus a tiny bump on each side's own document so their pages know to look
+  // (no polling): the recipient gets one more unread, and both get the time of the latest message.
+  const batch = db.batch();
+  batch.create(docRef, {
     postKey, parentId: threadId, replyToId, threadOwnerId, authorId: uid, authorName,
     authorRole: isAuthor ? 'admin' : 'user',
     body,
     createdAt: FieldValue.serverTimestamp(),
-  };
-  if (docRef) {
-    try { await docRef.create(doc); } catch (err) { if ((err as { code?: number }).code !== 6) throw err; } // 6 = already created by a parallel retry
-    return { id: docRef.id };
-  }
-  const ref = await db.collection('comments').add(doc);
-  return { id: ref.id };
-});
+    updatedAt: FieldValue.serverTimestamp(), // lets pages ask only for what changed since they last looked
+  });
+  if (recipient && recipient !== uid) batch.set(db.doc(`users/${recipient}`), { n: FieldValue.increment(1), m: now }, { merge: true });
+  batch.set(db.doc(`users/${uid}`), { m: now }, { merge: true });
+  try { await batch.commit(); } catch (err) { if ((err as { code?: number }).code === 6) return { id: docRef.id, duplicate: true }; throw err; } // a parallel send of the same message won
+  return { id: docRef.id };
+}
 
+export const postComment = functions.region('asia-south1').runWith({ maxInstances: 5 }).https.onCall(async (data, context) => {
+  if (!context.auth) throw new fail('unauthenticated', 'Sign in to comment.');
+  return createComment({ ...context.auth.token, uid: context.auth.uid }, data);
+});
 
 // ---- reader state: hand-over while a page is closing ----------------------------------------------
 const KEY = /^[a-z0-9~-]{1,120}$/;
@@ -145,6 +164,11 @@ export const syncBeacon = functions.region('asia-south1').runWith({ maxInstances
     const decoded = await getAuth().verifyIdToken(String(body?.token ?? ''));
     const state = cleanState(body?.state);
     if (Object.keys(state).length) await getFirestore().doc(`users/${decoded.uid}`).set(state, { merge: true });
+    // Unsent messages, in order. One that is refused (rate limit, spam) stays in the browser's queue for the next visit.
+    const messages = Array.isArray(body?.messages) ? body.messages.slice(0, 5) : [];
+    for (const m of messages) {
+      try { await createComment(decoded as unknown as Claims, m); } catch (err) { functions.logger.info('beacon message not sent', { error: String(err) }); }
+    }
     res.status(204).send('');
   } catch (err) {
     functions.logger.warn('syncBeacon rejected', { error: String(err) });

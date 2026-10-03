@@ -287,3 +287,4 @@
 .dm .inb-new { box-shadow: 4px 4px 0 var(--accent); }
 .dm .inb-head { gap: 10px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 1px solid var(--hair); }
 .dm .inb .cmt:last-child { border-bottom: 0; }
+.dm .lib-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 20px; }

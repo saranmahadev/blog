@@ -16,7 +16,7 @@ const REFRESH_MS = 5 * 60_000;
 const TOKEN_MS = 20 * 60_000;
 
 export type SyncStatus = 'local' | 'saved' | 'pending' | 'syncing' | 'offline' | 'error';
-export type Snapshot = { local: Local; status: SyncStatus; signedIn: boolean; unread: number; latestMessageAt: number; persisted: boolean | null; storage: boolean };
+export type Snapshot = { local: Local; status: SyncStatus; signedIn: boolean; unread: number; latestMessageAt: number; pulledAt: number; persisted: boolean | null; storage: boolean };
 
 const key = (uid: string | null) => `drafted:v1:${uid ?? 'anon'}`;
 const browser = typeof window !== 'undefined';
@@ -35,9 +35,9 @@ function remove(k: string) { try { localStorage.removeItem(k); } catch {} memory
 
 // ---- the store ---------------------------------------------------------------------------------
 let uid: string | null = null;
-let fbUser: { getIdToken: () => Promise<string> } | null = null;
+let fbUser: { getIdToken: (force?: boolean) => Promise<string> } | null = null;
 let token = '';
-let snap: Snapshot = { local: parseLocal(browser ? read(key(null)) : null), status: 'local', signedIn: false, unread: 0, latestMessageAt: 0, persisted: null, storage: true };
+let snap: Snapshot = { local: parseLocal(browser ? read(key(null)) : null), status: 'local', signedIn: false, unread: 0, latestMessageAt: 0, pulledAt: 0, persisted: null, storage: true };
 const listeners = new Set<() => void>();
 
 const current = () => parseLocal(read(key(uid)));
@@ -46,7 +46,7 @@ function persist(l: Local) { write(key(uid), JSON.stringify(l)); }
 export const subscribe = (fn: () => void) => { listeners.add(fn); return () => { listeners.delete(fn); }; };
 export const getSnapshot = () => snap;
 /** What the server renders (and the first client render must match): nothing saved yet. */
-const EMPTY: Snapshot = { local: emptyLocal(), status: 'local', signedIn: false, unread: 0, latestMessageAt: 0, persisted: null, storage: true };
+const EMPTY: Snapshot = { local: emptyLocal(), status: 'local', signedIn: false, unread: 0, latestMessageAt: 0, pulledAt: 0, persisted: null, storage: true };
 export const getServerSnapshot = () => EMPTY;
 
 // ---- theme -------------------------------------------------------------------------------------
@@ -151,11 +151,11 @@ async function pull() {
     persist(merged);
     lastPull = Date.now();
     applyTheme(merged.s.t);
-    publish({ unread: merged.dirty.n > 0 ? 0 : Number(server.n) || 0, latestMessageAt: Number(server.m) || 0 });
+    publish({ unread: merged.dirty.n > 0 ? 0 : Number(server.n) || 0, latestMessageAt: Number(server.m) || 0, pulledAt: Date.now() });
   } catch { publish({ status: navigator.onLine === false ? 'offline' : 'error' }); }
 }
 
-export async function attach(user: { uid: string; getIdToken: () => Promise<string> } | null) {
+export async function attach(user: { uid: string; getIdToken: (force?: boolean) => Promise<string> } | null) {
   if ((user?.uid ?? null) === uid && (user ? !!fbUser : true) && snap.signedIn === !!user) return;
   uid = user?.uid ?? null;
   fbUser = user;
@@ -166,7 +166,7 @@ export async function attach(user: { uid: string; getIdToken: () => Promise<stri
     if (Object.keys(anon.b).length + Object.keys(anon.p).length + Object.keys(anon.s).length > 0) { local = mergeAnonymous(local, anon); remove(key(null)); }
   }
   persist(local);
-  publish({ signedIn: !!uid, status: uid ? (isDirty(local) ? 'pending' : 'saved') : 'local', unread: 0, latestMessageAt: 0 });
+  publish({ signedIn: !!uid, status: uid ? (isDirty(local) ? 'pending' : 'saved') : 'local', unread: 0, latestMessageAt: 0, pulledAt: 0 });
   if (!uid) { applyTheme(local.s.t); return; }
   await refreshToken();
   await pull();
@@ -175,20 +175,33 @@ export async function attach(user: { uid: string; getIdToken: () => Promise<stri
 
 export function detach() { return attach(null); }
 
-async function refreshToken() { try { token = (await fbUser?.getIdToken()) ?? ''; } catch {} }
+async function refreshToken(force = false) { try { token = (await fbUser?.getIdToken(force)) ?? ''; } catch {} }
+/** The hand-over at close time uses this saved copy (it cannot wait for a refresh), so refresh it when it matters. */
+export const refreshAuthToken = (force = true) => refreshToken(force);
 
 // ---- leaving the page --------------------------------------------------------------------------
 async function url() { const { beaconUrl } = await import('./firebase'); return beaconUrl(); }
 let beaconTo = '';
 if (browser) url().then((u) => { beaconTo = u; }).catch(() => {});
 
+/** Unsent messages join the hand-over (messages.ts supplies them). Each carries its own one-time id, so a repeat is harmless. */
+export type LeaveMessage = { clientId: string; postKey: string; parentId: string | null; replyToId: string | null; body: string };
+let leaveSource: (() => LeaveMessage[]) | null = null;
+export const setLeaveSource = (fn: (() => LeaveMessage[]) | null) => { leaveSource = fn; };
+export const getUid = () => uid;
+export const getUser = () => fbUser;
+const beaconed = new Set<string>();
+
 /** Hand unsynced data over while the page is going away. Does not clear anything: the normal sync repeats it harmlessly. */
 export function flushOnLeave() {
   if (!uid || !token || !beaconTo) return;
   const l = current();
-  if (!isDirty(l) || l.rev === beaconRev) return;
-  beaconRev = l.rev;
-  const body = JSON.stringify({ token, state: buildPatch(l) });
+  const stateDirty = isDirty(l) && l.rev !== beaconRev;
+  const messages = (leaveSource?.() ?? []).filter((m) => !beaconed.has(m.clientId));
+  if (!stateDirty && messages.length === 0) return;
+  if (stateDirty) beaconRev = l.rev;
+  messages.forEach((m) => beaconed.add(m.clientId));
+  const body = JSON.stringify({ token, ...(stateDirty ? { state: buildPatch(l) } : {}), ...(messages.length ? { messages } : {}) });
   try { if (navigator.sendBeacon?.(beaconTo, new Blob([body], { type: 'text/plain' }))) return; } catch {}
   try { void fetch(beaconTo, { method: 'POST', body, keepalive: true, mode: 'no-cors', headers: { 'content-type': 'text/plain' } }); } catch {}
   // Last resort: it stays queued and goes out on the next visit.
