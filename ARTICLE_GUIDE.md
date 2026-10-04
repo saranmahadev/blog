@@ -114,7 +114,7 @@ A story here means a **scene with a feeling**, not a plot with a villain.
 5. **Dialogue is rare and short.** Use it only to carry a feeling, in quotation marks. In a story, never write dialogue you cannot stand behind; paraphrase instead ("he said something like…").
 6. **Time may be compressed, only if you say so.** "Over the next few weeks" is fine. Merging three real events into one scene is not, unless the article says it did.
 7. **Endings turn to the reader.** The last beat names a pattern, then points at "you" ("If that moment gives you disproportionate happiness, pay attention").
-8. **Length of a beat:** 120 to 250 words of story, then at most one fact moment of one to three sentences and one visual (section 5).
+8. **Length of a beat:** as long as the scene needs. Follow it with at most one fact moment and one visual (section 5). A beat that keeps adding scenes without a new idea should be cut or split, never padded.
 
 ---
 
@@ -146,7 +146,7 @@ There are **no labels** such as "true story" or "note". The honesty rules (secti
 
 ### Anatomy of an explainer
 
-1. **Hook** (80 to 150 words): a moment the reader recognises ("You tapped a link.").
+1. **Hook** (short, usually under 150 words): a moment the reader recognises ("You tapped a link.").
 2. **A map** (optional): a `Scrolly` or `Steps` showing the stops.
 3. **Stops or sections**, each with: what happens, one block that shows it, one "Try it" `Sidenote`, one idea to remember.
 4. **A checklist** the reader can apply ("If you build your own").
@@ -154,8 +154,8 @@ There are **no labels** such as "true story" or "note". The honesty rules (secti
 
 ### Anatomy of a story
 
-1. **Cold open** (a moment, 80 to 150 words), then the question the story is really about.
-2. **Four to seven beats**, each a `##` section: story (120 to 250 words), then at most one fact moment (one to three sentences and one block) **only if the story raised a question the fact answers**, then a reflection line.
+1. **Cold open** (a moment, kept short), then the question the story is really about.
+2. **As many beats as the idea needs**, each a `##` section with a new idea: story, then at most one fact moment (one to three sentences and one block) **only if the story raised a question the fact answers**, then a reflection line.
 3. **The turn** ("So, should you…?") that speaks to "you", and **the close** that names the series idea.
 4. **Never two fact moments back to back**; at most three per article; facts first in the story's own words, block second.
 5. **Cut repetition.** Each section must add a new idea. If a paragraph restates the previous one in different words, delete it. Say a thing once, in the best words.
@@ -187,7 +187,7 @@ Detail is spice. Give the reader one idea at a time.
 
 **Where does the deeper detail go?** If a fact deserves more depth than the beat can hold, put it in a `Sidenote` (short, skippable) or save it for a later post in the series. Never grow the beat.
 
-**Reading time** is computed from the word count at about 220 words a minute. Targets: a story **5 to 8 minutes** (about 1,100 to 1,800 words); an explainer **8 to 12 minutes** (about 1,800 to 2,600 words). Longer is allowed only if every section earns its place.
+**Length is not a target.** There is no minimum or maximum word count. A post is as long as the value it gives: write until the reader has what they came for, then stop. The only test is whether every section earns its place by adding something the reader did not already have. Reading time is computed from the word count (about 220 words a minute) and shown to readers, so a long post is honest about its length. For a long post, make it easy to move through: clear headings that work as the Contents list, one idea per section, a recap line near the top if it belongs to a series, and a takeaway the reader can reuse. If a post grows past what one reading can hold, split it into a series rather than thinning every part.
 
 ---
 
@@ -741,7 +741,7 @@ Posts appear in RSS, Atom and JSON Feed with their **full text**, cleaned for re
 - **The first screen decides.** The opening scene and the first heading are what the reader sees first. Make them the best lines.
 - **Links:** internal links relative and descriptive; external links only where they add something, with the link text saying where it goes.
 - **Dates and updates:** `date` is the publication date; `updated` changes only for material edits.
-- **Length** (section 5): a story 5 to 8 minutes, an explainer 8 to 12.
+- **Length** (section 5): no fixed length. Value decides, and every section must earn its place.
 - **Read it aloud.** If a sentence is hard to say, it is hard to read.
 
 ---
@@ -838,7 +838,7 @@ cover:
 
 ## <Beat 1 heading, a symptom in second person or a plain statement>
 
-<Story: 120 to 250 words. A scene with a feeling. Everything in it happened.>
+<Story: as long as the scene needs. A scene with a feeling. Everything in it happened.>
 
 <One sentence that names the idea the scene raised, only if a fact answers a question the story asked.>
 
@@ -903,8 +903,8 @@ Tick every box. Claude: say which you could not verify.
 - [ ] Read it aloud; every hard-to-say sentence is rewritten.
 
 **Format**
-- [ ] A stranger would learn something they can use. The post does not narrate how the site, a chat or a decision happened.
-- [ ] Four to seven beats; at most five fact moments; none back to back.
+- [ ] A stranger would learn something they can use. The post does not narrate how the site, a chat or a decision happened. Length is whatever that value needs, no more.
+- [ ] Every beat adds a new idea (no fixed number of beats); fact moments within the section 5 limits; none back to back.
 - [ ] Each fact moment answers a question the story just raised, in the story's words first.
 - [ ] No more than two new terms per beat, each defined where it first appears.
 - [ ] At most one loud block per screen; at most one `wide`/`bleed`.
