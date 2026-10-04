@@ -5,7 +5,7 @@
 //   s: settings   { t: "light" | "dark" | "system" }
 //   n: unread messages (the server raises it, the reader can only reset it to 0)
 //
-// Slugs contain "/" for posts inside a series; field names use "~" instead ("building-drafted~save-now-sync-later").
+// Slugs contain "/" for posts inside a series; field names use "~" instead ("dev-universe~building-drafted").
 
 export const CAPS = { b: 200, p: 500, s: 8 } as const;
 

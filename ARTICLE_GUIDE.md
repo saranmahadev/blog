@@ -8,7 +8,7 @@ This guide is written for two readers: **Dev**, as a checklist before publishing
 
 - [Instructions for Claude](#instructions-for-claude)
 - **Part A. Voice** · [1. The voice](#1-the-voice) · [2. Story craft](#2-story-craft)
-- **Part B. The format** · [3. Story with a spine of facts](#3-story-with-a-spine-of-facts) · [4. True story or constructed story](#4-true-story-or-constructed-story) · [5. Never overwhelm the reader](#5-never-overwhelm-the-reader)
+- **Part B. The format** · [3. Knowledge first](#3-knowledge-first) · [4. Honesty](#4-stories-and-explainers-honesty) · [5. Never overwhelm the reader](#5-never-overwhelm-the-reader)
 - **Part C. Imaxt** · [6. Principles](#6-imaxt-principles) · [7. The blocks](#7-the-blocks) · [8. Tones](#8-tones) · [9. Covers](#9-covers) · [10. Diagrams](#10-diagrams) · [11. Code](#11-code) · [12. Patterns that work](#12-patterns-that-work)
 - **Part D. Rules** · [13. Files and URLs](#13-files-and-urls) · [14. Front matter](#14-front-matter) · [15. Series](#15-series) · [16. MDX gotchas](#16-mdx-gotchas) · [17. Accessibility](#17-accessibility) · [18. Performance and security](#18-performance-and-security) · [19. Feeds and search](#19-feeds-and-search) · [20. Privacy and honesty](#20-privacy-and-honesty) · [21. Editorial](#21-editorial)
 - **Part E. Templates** · [22. Skeletons](#22-skeletons) · [23. Worked example](#23-worked-example) · [24. Before you publish](#24-before-you-publish) · [25. When the build fails](#25-when-the-build-fails)
@@ -19,11 +19,11 @@ This guide is written for two readers: **Dev**, as a checklist before publishing
 
 Read this whole file before drafting. Then:
 
-1. **Ask first, draft second.** Before writing, get from Dev: the one idea of the article, whether it is a **True story** or a **Constructed story** (section 4), the beats (the moments, in order), and any real facts to include. If a True-story article has no real moments from Dev, stop and ask. Never fill the gap with invented memories.
-2. **Story beats before fact moments.** Write the story in Dev's voice first (section 1). Only then place fact moments (section 3), each one answering a question the preceding beat raised.
-3. **Never invent facts.** In both modes every factual claim must be true and checkable. In a True story, never invent events, quotes or people. If a claim needs a source, say so in your reply to Dev and keep the post clean (MDX does not allow HTML comments, so leave no markers in the file).
+1. **Ask first, draft second.** Before writing, get from Dev: the one idea of the article, who it is for, and (for a story) the real moments, in order. If a story has no real moments from Dev, stop and ask. Never fill the gap with invented memories.
+2. **Teach first.** Every post must give a stranger something they can use or understand better (section 3). Never narrate how this site was built, how a decision was made, or what was said in a chat. Drafted may appear only as one short aside.
+3. **Never invent facts.** Every factual claim must be true and checkable. In a story, never invent events, quotes or people. If a claim needs a source, say so in your reply to Dev and keep the post clean (MDX does not allow HTML comments, so leave no markers in the file).
 4. **Protect people.** No real person's name, workplace or private detail unless Dev has said it is fine (section 20).
-5. **Output a complete `.mdx` file** with valid front matter, the mode label as the first body element, and only blocks documented in Part C. Use `draft: true`.
+5. **Output a complete `.mdx` file** with valid front matter and only blocks documented in Part C. Use `draft: true`.
 6. **Run the checks** (`pnpm check && pnpm build`, then `pnpm check:dist`) when you can, and report the result honestly. Walk through the checklist in section 24 and say which items you could not verify.
 7. **Do not touch voice for effect.** If a sentence sounds like marketing, rewrite it plainly. When unsure, choose the plainer word.
 
@@ -111,7 +111,7 @@ A story here means a **scene with a feeling**, not a plot with a villain.
 2. **Scene before explanation.** Let the reader see a door, a screen, a classroom, before anything is explained. The idea arrives because the scene asked for it.
 3. **Stakes stay small and true.** A lab exercise, a broken page, a confusing meeting. The pull of the piece comes from honesty, not drama.
 4. **One question per beat.** Every beat should leave the reader with one question (*"Wait, so this is how programming works?"*). The fact moment answers that question and no other.
-5. **Dialogue is rare and short.** Use it only to carry a feeling, in quotation marks. In a True story, never write dialogue you cannot stand behind; paraphrase instead ("he said something like…").
+5. **Dialogue is rare and short.** Use it only to carry a feeling, in quotation marks. In a story, never write dialogue you cannot stand behind; paraphrase instead ("he said something like…").
 6. **Time may be compressed, only if you say so.** "Over the next few weeks" is fine. Merging three real events into one scene is not, unless the article says it did.
 7. **Endings turn to the reader.** The last beat names a pattern, then points at "you" ("If that moment gives you disproportionate happiness, pay attention").
 8. **Length of a beat:** 120 to 250 words of story, then at most one fact moment of one to three sentences and one visual (section 5).
@@ -120,105 +120,64 @@ A story here means a **scene with a feeling**, not a plot with a villain.
 
 # Part B. The format
 
-## 3. Story with a spine of facts
+## 3. Knowledge first
 
-Dev's signature format is a **personal story that quietly teaches real, non-fiction ideas**. The story is the surface. The facts are the spine. They are never merged: invented feeling never passes as fact, and facts never hide inside the story's invention. Yet the reader experiences one piece.
+A post on Drafted earns its place by what the reader **takes away**. Ask of every post: *would a stranger learn something they can use, or understand something better, that they could not get from a headline?* If the honest answer is "it records what we did", it is not ready.
 
-### The two layers
+### The rule
 
-| | **Story layer** | **Fact layer** |
+- **Teach the general idea first.** A post about caching teaches caching, not how this site chose its cache settings.
+- **Never narrate the process.** No "we decided", no chat history, no build diary, no tour of the site's features as if they were the point.
+- **Drafted may appear as one short aside**, in a `Sidenote` or a single sentence ("On this page, …"), only when it helps the reader check the idea for themselves.
+- **Give the reader something to do.** A "Try it" experiment, a checklist, a rule of thumb, a number they can test.
+- **Say when the idea does not apply.** Every technique has a limit; naming it is what separates knowledge from enthusiasm.
+
+### Two kinds of posts
+
+| | **Explainer** | **Story** |
 | --- | --- | --- |
-| **What it is** | Scenes, memories, feelings, reflection | One true idea per moment, explained simply |
-| **Voice** | First person, past tense, warm | Same voice, present tense, precise |
-| **How it looks** | Plain prose in the article's serif | Prose first, then **one** small designed block (an Imaxt block or a diagram) |
-| **Allowed to be invented?** | Only in a Constructed story, and labelled | Never. Every claim is true and checkable |
-| **Rule of thumb** | "What did it feel like?" | "What is actually going on?" |
+| **Purpose** | Teach how something works and when to use it | Show how curiosity or experience led somewhere |
+| **Voice** | Dev's voice, explanatory, present tense | First person, past tense for events, present for reflection |
+| **Facts** | Standard knowledge or checkable on the page | True and checkable; the events really happened |
+| **Structure** | Hook, numbered stops or sections, one block each, "Try it", a short checklist | Cold open, beats, a fact moment only where the story asks a question, the turn to "you", the close |
+| **Invented content** | Never | Never |
 
-The facts are **not** fenced into a separate section or a loud "FACT" label. They appear as small designed moments, right where the story asks for them.
+There are **no labels** such as "true story" or "note". The honesty rules (section 20) apply to everything, so labels are not needed.
 
-### Anatomy of an article
+### Anatomy of an explainer
 
-1. **Mode label** (first body element, section 4).
-2. **Cold open** (a moment, 80 to 150 words).
-3. **The question** (one or two sentences naming what the article is really about, without a thesis statement).
-4. **Four to seven beats**, each a `##` section:
-   1. **Story** (120 to 250 words).
-   2. **Fact moment** (optional; one to three sentences, then one block). Appears only if the story raised a question the facts can answer.
-   3. **Reflection line** (one sentence of "looking back"), ending in a **bold takeaway** at most once per section.
-5. **The turn** ("So, should you…?"): a short section that speaks to "you", lists the pattern in one sentence, and says what to pay attention to.
-6. **The close**: names the series idea, in two to four short lines.
-7. Optional: a one-line teaser of the next part. (The site already adds *Previous* and *Up next* cards under every series post, so do not write a link list.)
+1. **Hook** (80 to 150 words): a moment the reader recognises ("You tapped a link.").
+2. **A map** (optional): a `Scrolly` or `Steps` showing the stops.
+3. **Stops or sections**, each with: what happens, one block that shows it, one "Try it" `Sidenote`, one idea to remember.
+4. **A checklist** the reader can apply ("If you build your own").
+5. **One bold takeaway** at the end.
 
-### Fact moments
+### Anatomy of a story
 
-- **A fact moment always follows a story beat that created its question.** The substitute teacher explains **inheritance** → the reader now wants to see inheritance → a `Compare` shows it in two sides.
-- **Never two fact moments back to back.** Put at least one story paragraph between them.
-- **At most one fact moment per beat and at most five per article.** Many of the best beats have none.
-- **Facts come in the story's own words first, the block second.** The block repeats the idea visually; it must not introduce a new one.
-- **One block per moment.** If a moment seems to need three blocks, it is two moments, or too much.
-- **Pick the block by the shape of the idea** (section 12): a before/after is a `Compare`, a sequence is `Steps` or a diagram, a number is a `Stat`, a thing that changes over time is a `Timeline`.
+1. **Cold open** (a moment, 80 to 150 words), then the question the story is really about.
+2. **Four to seven beats**, each a `##` section: story (120 to 250 words), then at most one fact moment (one to three sentences and one block) **only if the story raised a question the fact answers**, then a reflection line.
+3. **The turn** ("So, should you…?") that speaks to "you", and **the close** that names the series idea.
+4. **Never two fact moments back to back**; at most three per article; facts first in the story's own words, block second.
+5. **Cut repetition.** Each section must add a new idea. If a paragraph restates the previous one in different words, delete it. Say a thing once, in the best words.
 
-### Dev's reading experience goal
-
-A reader should be able to ignore every block and still follow the story, and ignore the story's feelings and still find the facts clearly. Test it: read the article aloud, skipping the blocks. Then read only the blocks and their lead-in sentences. Both should make sense.
-
----
-
-## 4. True story or constructed story
-
-Every article declares which kind it is. The reader should never have to guess.
-
-| | **True story** | **Constructed story** |
-| --- | --- | --- |
-| **Source** | Real events in Dev's life or work | Invented people, scenes and places, built to carry a true idea |
-| **Allowed** | Compression of time (if stated), paraphrase, omission | Invented names, dialogue and scenes |
-| **Not allowed** | Invented events, invented quotes presented as real, composite people unless stated | Presenting the scene as something that really happened; false facts inside the scene |
-| **Facts inside** | True and checkable | True and checkable (the story is invented, the technology is not) |
-| **Label** | `True story` | `Constructed story` |
-
-### The label (required, every article)
-
-The first element of the body is a `Sidenote` carrying the label and one plain sentence. It is part of the design, not a disclaimer to hide.
-
-```mdx
-<Sidenote label="True story">This really happened to me. Where I compressed time, I say so.</Sidenote>
-```
-
-```mdx
-<Sidenote label="Constructed story">The people and the night are invented. The technology in it is real.</Sidenote>
-```
-
-Also add the same words as a **tag** in the front matter (`True story` or `Constructed story`) so the Topics pages group articles by mode.
-
-### Pieces that are not stories
-
-A welcome page, an announcement or a plan is not a story, and should not pretend to be one. Label it honestly instead:
-
-| Piece | Label | The one sentence says |
-| --- | --- | --- |
-| Welcome page, announcement, explainer with no narrative | `Note` | what the piece is ("This is a welcome note, not a story.") |
-| A map of something not built yet (like the Dev Universe overview) | `Plan` | that it is a plan and which parts are only ideas ("Much of it is still an idea, and I say so where that is the case.") |
-
-Use the same word as the tag (`Note` or `Plan`). Everything else in this guide still applies: facts must be true, and nothing is dressed up as finished that is not.
-
-### Honesty rules for both modes
+## 4. Stories and explainers: honesty
 
 1. No invented statistics. If a number is a placeholder, label it **Mock data** (`<Sidenote label="Mock data">…</Sidenote>`).
 2. No real person's name, employer or private detail without Dev's explicit say-so. Prefer "a teacher", "a colleague".
-3. Quotes: if it is in quotation marks and the article is a True story, it is something that was actually said, or it is marked as paraphrase.
+3. Quotes: a quotation mark means something was actually said, or the sentence is marked as paraphrase.
 4. Do not claim a result you did not see. "I think", "as far as I could tell" and "I did not test this" are fine sentences.
-5. A constructed scene must not be a disguised real person. If a reader could recognise a real individual, it is not constructed. Change it.
-
----
+5. A story is real, told well. Do not compose scenes that never happened, and do not disguise a real person.
+6. Plans and ideas that are not built yet are described as ideas, in plain words ("This is a map of what I am building, and much of it is still an idea.").
 
 ## 5. Never overwhelm the reader
 
-Technical detail is spice. The reader came for the story.
+Detail is spice. Give the reader one idea at a time.
 
 | Limit | Value |
 | --- | --- |
-| Fact moments per beat | **1 at most** |
-| Fact moments per article | **5 at most** (3 is typical) |
+| Fact moments per story beat | **1 at most** |
+| Fact moments per story | **3 at most** |
+| Blocks per explainer stop | **1 at most**, plus a "Try it" aside |
 | Sentences before the block | **1 to 3** |
 | New technical terms per beat | **2 at most**, each defined where it first appears |
 | Blocks on screen at once | **1 loud block** (Statement, Stat, PullQuote, Scrolly, Marquee, CurvedText) |
@@ -228,7 +187,7 @@ Technical detail is spice. The reader came for the story.
 
 **Where does the deeper detail go?** If a fact deserves more depth than the beat can hold, put it in a `Sidenote` (short, skippable) or save it for a later post in the series. Never grow the beat.
 
-**Reading time** is computed from the word count at about 220 words a minute. Targets: personal story **6 to 9 minutes** (about 1,300 to 2,000 words); technical story **8 to 12 minutes** (about 1,800 to 2,600 words). Longer is allowed only if every section earns its place.
+**Reading time** is computed from the word count at about 220 words a minute. Targets: a story **5 to 8 minutes** (about 1,100 to 1,800 words); an explainer **8 to 12 minutes** (about 1,800 to 2,600 words). Longer is allowed only if every section earns its place.
 
 ---
 
@@ -277,7 +236,7 @@ All 19 blocks. Each card gives the job, the props, a copy-ready snippet, when to
 - **Use when:** the sentence is the point of the section; at the open of a technical post; at the turn of an essay.
 - **Do not use when:** the sentence is routine, or when it would be the second loud block on screen. Max one per screen, two or three per article.
 - **A11y / feeds:** plain text, full contrast in all tones. Kept as text in feeds.
-- **Story role:** the *reflection line* or the *hook*. Never a fact moment by itself.
+- **Role:** the *reflection line* or the *hook*. Never a fact moment by itself.
 
 ### Stat and StatRow
 **Job:** a number that matters, with its label. `StatRow` lines up two to four stats.
@@ -301,7 +260,7 @@ All 19 blocks. Each card gives the job, the props, a copy-ready snippet, when to
 - **Use when:** a real, sourced number is the fact. A single `Stat` can sit alone.
 - **Do not use when:** the number is invented (label it **Mock data**), or has no unit or label.
 - **A11y / feeds:** the final value is in the HTML; the count-up is skipped for reduced motion. Feeds keep the text.
-- **Story role:** a fact moment ("how big, how fast, how many").
+- **Role:** a fact moment ("how big, how fast, how many").
 
 ### PullQuote
 **Job:** a sentence lifted out in large italic type, optionally attributed.
@@ -316,9 +275,9 @@ All 19 blocks. Each card gives the job, the props, a copy-ready snippet, when to
 ```
 
 - **Use when:** a line from the story deserves a second look, or a real quotation (with attribution).
-- **Do not use when:** it would repeat the previous sentence word for word, or the quote is not real (never put invented words in someone's mouth in a True story).
+- **Do not use when:** it would repeat the previous sentence word for word, or the quote is not real (never put invented words in someone's mouth).
 - **A11y / feeds:** a real `blockquote` in a `figure`. Kept in feeds.
-- **Story role:** reflection line or the inner voice.
+- **Role:** reflection line or the inner voice.
 
 ### Compare and Side
 **Job:** two sides of an idea, before and after, old and new. `Side kind="before"` is the plain side, `kind="after"` is the highlighted side.
@@ -339,7 +298,7 @@ All 19 blocks. Each card gives the job, the props, a copy-ready snippet, when to
 - **Use when:** the fact is a **contrast** (copy the same code everywhere vs inherit it once).
 - **Do not use when:** there is no real contrast, or when you would need more than two sides (use `Steps` or a diagram).
 - **A11y / feeds:** a labelled group; keep each side to a line or two. Kept as text in feeds.
-- **Story role:** the most reliable fact moment: a scene shows a problem, `Compare` shows the fix.
+- **Role:** the most reliable fact moment: a scene shows a problem, `Compare` shows the fix.
 
 ### Steps and Step
 **Job:** an ordered sequence, numbered automatically.
@@ -359,7 +318,7 @@ All 19 blocks. Each card gives the job, the props, a copy-ready snippet, when to
 - **Use when:** the order matters (3 to 6 steps).
 - **Do not use when:** the steps are not really a sequence (use `Compare` or prose), or there are more than six (split the idea).
 - **A11y / feeds:** a real ordered list. Kept in feeds.
-- **Story role:** a fact moment ("what happens when you click a link").
+- **Role:** a fact moment ("what happens when you click a link").
 
 ### Timeline and Event
 **Job:** things in time order, each with a date or label. Good for a journey.
@@ -378,9 +337,9 @@ All 19 blocks. Each card gives the job, the props, a copy-ready snippet, when to
 ```
 
 - **Use when:** the order and the passing of time are the point (a personal journey, a protocol round-trip).
-- **Do not use when:** the items are parallel (use `Compare`), or the dates would be invented in a True story.
+- **Do not use when:** the items are parallel (use `Compare`), or the dates would be invented.
 - **A11y / feeds:** a real ordered list. Kept in feeds.
-- **Story role:** a recap of the story layer, or a fact moment for time-based facts.
+- **Role:** a recap of a journey, or a fact moment for time-based facts.
 
 ### Bars
 **Job:** compare a few measured values as horizontal bars, with printed numbers.
@@ -403,7 +362,7 @@ All 19 blocks. Each card gives the job, the props, a copy-ready snippet, when to
 - **Use when:** three to six comparable measurements.
 - **Do not use when:** the data is invented (label **Mock data**), the values are not comparable, or there is only one value (use `Stat`).
 - **A11y / feeds:** the value is printed beside each bar; bars are decorative. Kept as a list in feeds.
-- **Story role:** a fact moment for "which is bigger".
+- **Role:** a fact moment for "which is bigger".
 
 ### Heatmap
 **Job:** a small grid where cell shade shows the value; every cell also prints its number.
@@ -431,10 +390,10 @@ All 19 blocks. Each card gives the job, the props, a copy-ready snippet, when to
 - **Use when:** the fact is a pattern across two dimensions.
 - **Do not use when:** the grid is bigger than about 6 × 6, or one dimension is meaningless.
 - **A11y / feeds:** a real table with a caption and printed numbers; shading is capped to keep text contrast. Kept as a table in feeds.
-- **Story role:** a fact moment in a technical story.
+- **Role:** a fact moment in a technical story.
 
 ### Sidenote
-**Job:** a short aside, set apart with an accent bar and a small label. It is how this guide labels the **mode** (`True story` / `Constructed story`) and **mock data**.
+**Job:** a short aside, set apart with an accent bar and a small label. Use it for a definition, a "Try it" experiment, a caveat, a **Mock data** warning, or a one-line "On this page" note about how Drafted does something.
 
 | Prop | Values | Default |
 | --- | --- | --- |
@@ -444,12 +403,12 @@ All 19 blocks. Each card gives the job, the props, a copy-ready snippet, when to
 <Sidenote label="Note">Idempotent means doing it twice has the same effect as doing it once.</Sidenote>
 ```
 
-Common labels: `True story`, `Constructed story`, `Mock data`, `Note`, `Definition`, `Going deeper`.
+Common labels: `Try it`, `Definition`, `Mock data`, `On this page`, `Going deeper`.
 
 - **Use when:** a definition, a caveat, or the depth you want to keep out of the main flow. Keep to one to three sentences.
 - **Do not use when:** the aside is essential (put it in the prose), or you would stack two in a row.
 - **A11y / feeds:** an `aside`; text. Kept in feeds.
-- **Story role:** the label that tells the reader what kind of story this is, or a skippable fact.
+- **Role:** a skippable fact or an experiment, never the main point.
 
 ### CodeWalk
 **Job:** a code block with a step-by-step walkthrough; clicking a step highlights the lines it talks about.
@@ -477,7 +436,7 @@ await checkpoint.save(id);
 - **Use when:** each line group has a reason worth explaining. Keep the code to 12 lines or fewer, with a blank line before and after the fence.
 - **Do not use when:** the code is boilerplate, or the story has not yet explained why it matters.
 - **A11y / feeds:** without JavaScript every line stays fully visible; steps are buttons. In feeds the code and the step text remain as text.
-- **Story role:** a fact moment ("the exact lines that do the work").
+- **Role:** a fact moment ("the exact lines that do the work").
 
 ### Marquee
 **Job:** a band of large words sliding across, for rhythm between sections.
@@ -496,7 +455,7 @@ await checkpoint.save(id);
 - **Use when:** once, as a punctuation mark between parts of a technical post.
 - **Do not use when:** in a personal essay, or when the words carry information (the words are read as one comma-separated label).
 - **A11y / feeds:** exposed as a single image with the words as its label; stops under reduced motion. Left out of feeds (its words are decoration).
-- **Story role:** none. It is rhythm only.
+- **Role:** none. It is rhythm only.
 
 ### CurvedText
 **Job:** type bent along an arc, wave or circle, for a stamp or a flourish.
@@ -519,7 +478,7 @@ await checkpoint.save(id);
 - **Use when:** as a closing stamp or a one-off flourish. Add `decorative` when the text repeats nearby content.
 - **Do not use when:** the words matter and are not repeated (curved text is slower to read), or more than once per article.
 - **A11y / feeds:** an SVG with an accessible name; not carried into feeds.
-- **Story role:** none. A signature.
+- **Role:** none. A signature.
 
 ### Scrolly and Beat
 **Job:** an animated, pinned statement beside the prose that swaps as each beat scrolls into view. On narrow screens, and without JavaScript, every beat shows its own heading inline.
@@ -541,7 +500,7 @@ await checkpoint.save(id);
 - **Use when:** a technical process with three to five stages deserves a moment.
 - **Do not use when:** in an essay, with fewer than three beats, or with long beat text (keep each beat to one or two sentences).
 - **A11y / feeds:** the pinned stage is hidden from screen readers (the inline heading carries the meaning). Feeds keep each beat's text.
-- **Story role:** a fact moment for a process, in technical posts only.
+- **Role:** a fact moment for a process, in technical posts only.
 
 ### TypeLab
 **Job:** an interactive font playground (a small React island that loads only when scrolled into view).
@@ -558,7 +517,7 @@ await checkpoint.save(id);
 - **Use when:** the post is about typography. It is a demonstration, not decoration.
 - **Do not use when:** the post is not about type; or more than once.
 - **A11y / feeds:** controls are real buttons and labelled inputs. In feeds it is replaced by a "read it on the site" link.
-- **Story role:** a fact moment you can play with.
+- **Role:** a fact moment you can play with.
 
 ## 8. Tones
 
@@ -651,7 +610,7 @@ flowchart LR
 - **Reserved slugs** cannot be used: `about`, `imaxt`, `projects`, `blog`, `series`, `tags`, `search`, `login`, `register`, `reset`, `profile`, `inbox`, `admin`, `security`, `privacy`, `api`, `archive`, `topics`, `rss`, `rss.xml`, `atom.xml`, `feed.json`, `feed.xsl`, `sitemap`, `404`, `_astro`, `images`, `fonts`, `icons`, `favicon.svg`, `robots.txt`.
 - Use `.mdx` when a post uses any Imaxt block; use `.md` for plain prose and code.
 - A series post whose series `index.md` is missing or a draft is **not published**.
-- The live series show every pattern in this guide: *Building Drafted* (decisions as True stories, features as Notes), *Dev Universe* (the map, a Plan), *Building Dev Universe* (one Plan post per part, plus *How Drafted started* as a True story) and *Curious to Coder* (a Constructed story and a True story). Read one before drafting a similar post.
+- Live examples to read before drafting: *Symptoms That You Should Pursue Coding* (a story), *What Happens When You Open a Blog Post* (an explainer with "Try it" stops) and the *Dev Universe* map (an idea, described as one).
 
 ## 14. Front matter
 
@@ -664,7 +623,7 @@ description: "A substitute teacher, a first webpage and a bug I celebrated: how 
 date: 2026-10-04
 updated: 2026-10-10        # optional; shown to search engines as the last-modified date
 author: Dev                # optional, defaults to Dev
-tags: [Curious to Coder, True story]
+tags: [Curious to Coder, Technology]
 draft: true                # true hides it from production; flip to false to publish
 featured: false            # the newest featured post becomes the Home lead story
 cover:
@@ -682,7 +641,7 @@ order: 1                   # series posts only: position in the series
 | `date` | yes | `YYYY-MM-DD`. Posts are sorted newest first. |
 | `updated` | no | Set when you change a published post materially, and say so at the end of the post. |
 | `author` | no | Defaults to `Dev`. |
-| `tags` | no | A list. Title Case, reuse existing tags (check `/topics/`), two to four per post. Include the **mode tag** (`True story` or `Constructed story`). |
+| `tags` | no | A list. Title Case, reuse existing tags (check `/topics/`), two to four per post. |
 | `draft` | no | Keep `true` until the checklist in section 24 is done. |
 | `featured` | no | Only for the post you want as the Home lead. |
 | `cover` | no | See section 9. |
@@ -705,7 +664,7 @@ draft: false
 ---
 ```
 
-- **The opener's job:** make the promise and name the series idea. It is usually a story that proves the idea. (In *Curious to Coder*, the first post, *The Software You Stopped Noticing*, opens the world; the second, *Symptoms That You Should Pursue Coding*, ends "Welcome to **Curious to Coder**" and names the series idea.)
+- **The opener's job:** make the promise and name the series idea. It is usually a story that proves the idea. (In *Curious to Coder*, *Symptoms That You Should Pursue Coding* ends "Welcome to **Curious to Coder**" and names the series idea.)
 - **Each middle post:** one story, one idea. Do not rely on readers having read the previous post; add a one-sentence recap.
 - **The finale's job:** close the loop. Return to the opener's image or question, and say what the reader can now do.
 - **Order** with `order: 1, 2, 3…`. The site adds *Previous* and *Up next* cards and a progress bar; do not write your own link list.
@@ -734,7 +693,7 @@ CI scans every key page with axe (WCAG 2.1 A and AA) in light and dark, and fail
 
 1. **Headings.** The post title is the page's only `h1`. Use `##` for sections, `###` for sub-parts, and never skip a level. Sections show in the **Contents** rail, so write them to make sense alone.
 2. **Diagrams** need `accTitle` and `accDescr` (section 10).
-3. **Links** have meaningful text ("the Firebase docs", not "click here"). Internal links are relative (`/building-drafted/rss-is-enough/`).
+3. **Links** have meaningful text ("the Firebase docs", not "click here"). Internal links are relative (`/dev-universe/building-drafted/`).
 4. **Colour** is never the only carrier of meaning. Tones are tested for contrast; do not hard-code colours.
 5. **Motion** respects reduced-motion settings. Do not describe a block only by its animation.
 6. **Tables** (and `Heatmap`) have a caption.
@@ -782,7 +741,7 @@ Posts appear in RSS, Atom and JSON Feed with their **full text**, cleaned for re
 - **The first screen decides.** The opening scene and the first heading are what the reader sees first. Make them the best lines.
 - **Links:** internal links relative and descriptive; external links only where they add something, with the link text saying where it goes.
 - **Dates and updates:** `date` is the publication date; `updated` changes only for material edits.
-- **Length** (section 5): personal story 6 to 9 minutes, technical story 8 to 12.
+- **Length** (section 5): a story 5 to 8 minutes, an explainer 8 to 12.
 - **Read it aloud.** If a sentence is hard to say, it is hard to read.
 
 ---
@@ -793,7 +752,57 @@ Posts appear in RSS, Atom and JSON Feed with their **full text**, cleaned for re
 
 Copy a skeleton, replace the angle-bracketed parts, keep the structure. Each starts with `draft: true`.
 
-### A. True story (stand-alone)
+### A. Explainer (stand-alone or series post)
+
+`src/content/posts/<slug>.mdx`
+
+````mdx
+---
+title: "<What the reader will understand, as a sentence they would click>"
+description: "<The question the post answers, in 200 characters or fewer.>"
+date: 2026-10-04
+tags: [<Topic>, <Topic>]
+draft: true
+featured: false
+cover:
+  kind: quote
+  text: "<The best line, 70 characters or fewer>"
+---
+
+<The hook: a moment the reader recognises, in 80 to 150 words.>
+
+## <Stop or section 1: a plain statement of the idea>
+
+<What happens, in plain words. Define each new term where it first appears.>
+
+<Compare>
+  <Side kind="before" label="<Before>"><one line></Side>
+  <Side label="<After>"><one line></Side>
+</Compare>
+
+<Sidenote label="Try it"><A two-step experiment the reader can run in their own browser or terminal.></Sidenote>
+
+## <Stop or section 2>
+
+<What happens. One idea to remember.>
+
+<Steps>
+  <Step title="<One>"><short></Step>
+  <Step title="<Two>"><short></Step>
+  <Step title="<Three>"><short></Step>
+</Steps>
+
+## <A checklist the reader can apply>
+
+<Steps>
+  <Step title="<Habit one>"><one line></Step>
+  <Step title="<Habit two>"><one line></Step>
+</Steps>
+
+**<One bold takeaway sentence.>**
+````
+
+### B. Story (stand-alone)
 
 `src/content/posts/<slug>.mdx`
 
@@ -802,7 +811,7 @@ Copy a skeleton, replace the angle-bracketed parts, keep the structure. Each sta
 title: "<A sentence the reader would click>"
 description: "<The scene or the question, in 200 characters or fewer.>"
 date: 2026-10-04
-tags: [<Topic>, True story]
+tags: [<Topic>]
 draft: true
 featured: false
 cover:
@@ -810,42 +819,24 @@ cover:
   text: "<The best line, 70 characters or fewer>"
 ---
 
-<Sidenote label="True story">This really happened to me. Where I compressed time, I say so.</Sidenote>
+<The cold open: a real moment, a place, a belief, in plain words. 80 to 150 words.>
 
-<The cold open: a moment, a place, a belief, in plain words. 80 to 150 words.>
-
-<The question: one or two sentences about what this is really about, without a thesis statement.>
+<The question: one or two sentences about what this is really about.>
 
 ## <Beat 1 heading, a symptom in second person or a plain statement>
 
-<Story: 120 to 250 words. A scene with a feeling.>
+<Story: 120 to 250 words. A scene with a feeling. Everything in it happened.>
 
-<One sentence that names the idea the scene raised.>
+<One sentence that names the idea the scene raised, only if a fact answers a question the story asked.>
 
 <Compare>
   <Side kind="before" label="<Before>"><one line></Side>
   <Side label="<After>"><one line></Side>
 </Compare>
 
-<One reflection line that begins with "Looking back".> **<One bold takeaway sentence.>**
-
 ## <Beat 2 heading>
 
-<Story: 120 to 250 words. No fact moment in this beat; not every beat needs one.>
-
-If <the feeling from the scene> sounds familiar, pay attention.
-
-## <Beat 3 heading>
-
-<Story.>
-
-<One sentence that names the idea.>
-
-<Steps>
-  <Step title="<One>"><short></Step>
-  <Step title="<Two>"><short></Step>
-  <Step title="<Three>"><short></Step>
-</Steps>
+<Story. No fact moment here; not every beat needs one. Say a new thing, not the last thing again.>
 
 ## <The turn: "So, should you…?" or similar>
 
@@ -854,54 +845,7 @@ If <the feeling from the scene> sounds familiar, pay attention.
 <The close: two to four short lines naming the series idea.>
 ````
 
-### B. Constructed story (stand-alone)
-
-`src/content/posts/<slug>.mdx`
-
-````mdx
----
-title: "<A sentence the reader would click>"
-description: "<The scene or the question, in 200 characters or fewer.>"
-date: 2026-10-04
-tags: [<Topic>, Constructed story]
-draft: true
-featured: false
-cover:
-  kind: word
-  text: "<One word>"
-  sub: "<optional, 40 characters or fewer>"
----
-
-<Sidenote label="Constructed story">The people and the night are invented. The technology in it is real.</Sidenote>
-
-<The cold open: an invented moment, in plain words. Name nobody real.>
-
-## <Beat 1 heading>
-
-<Story: the invented scene, 120 to 250 words. Small stakes, one question.>
-
-<One true sentence that explains the idea the scene needed. Define the term here.>
-
-```mermaid caption="<What the diagram shows>"
-flowchart LR
-  accTitle: <Short title>
-  accDescr: <A full sentence that explains what happens in the diagram.>
-  A[<Start>] --> B[<Middle>]
-  B --> C[<End>]
-```
-
-<One reflection line.> **<One bold takeaway sentence.>**
-
-## <Beat 2 heading>
-
-<Story.>
-
-## <The turn>
-
-<What is true outside the story. Anything the reader should check, link, or try, in the real world.> **<The line to keep.>**
-````
-
-### C. Series opener
+### C. Series
 
 `src/content/series/<series>/index.md`
 
@@ -914,61 +858,26 @@ pattern: "<dots | rings | grid | stripes | check>"
 ---
 ```
 
-`src/content/series/<series>/<opener>.mdx` (a true or constructed story as above, with `order: 1`, ending as follows):
-
-````mdx
-## <The turn>
-
-<The pattern, in one sentence, then what to pay attention to.>
-
-<The welcome line: say "Welcome to", then the series title in bold, then what the series is and is not about, in three short sentences.>
-
-<CurvedText text="<Series title>" shape="circle" mark="<one letter>" tone="<series tone>" spin decorative />
-````
-
-### D. A later series post
-
-````mdx
----
-title: "<Title>"
-description: "<200 characters or fewer>"
-date: 2026-10-11
-order: 2
-tags: [<Topic>, <True story | Constructed story>]
-draft: true
-cover:
-  kind: stack
-  text: "<Title, trimmed>"
----
-
-<Sidenote label="<True story | Constructed story>"><One plain sentence.></Sidenote>
-
-<Open in a moment. One sentence that recaps the previous post, for readers who skipped it.>
-
-## <Beat>
-
-<Story, fact moment, reflection, as in the skeletons above.>
-````
+Each post in the series is a story or an explainer from the skeletons above, with `order: 1`, `order: 2` and so on. The first post makes the promise and names the series idea; the last returns to it.
 
 ## 23. Worked example
 
-Dev's essay *Symptoms That You Should Pursue Coding* is a **True story** and the second post of *Curious to Coder*. Here is how it maps onto the format, beat by beat. Dev's own words are kept; the table shows where facts naturally arrive and which block carries them. It is a demonstration of the method, not a rewrite.
+Dev's essay *Symptoms That You Should Pursue Coding* is a story, and the first post of *Curious to Coder*. The first draft ran to about 2,300 words, and the same point (curiosity is worth following) came back in three closing sections and after almost every symptom. The rewrite is about 1,300 words. Here is what changed, and why. It shows the method: **one new idea per section, say it once, keep the best lines.**
 
-| Beat (heading) | Story layer | Fact moment | Block | Note |
-| --- | --- | --- | --- | --- |
-| *(Cold open)* | The IPS plan: "There was a time when I was quite certain…" | none | none | The label `True story` goes first. |
-| **The First Spark** | The substitute teacher explains **inheritance** with doors and movement. | Inheritance: a child class gets what its parent already has, instead of copying the code. | `Compare`: *Before:* "Copy the same code into every class." *After:* "Inherit it once from a parent." | The scene created the question; the block answers it. |
-| **You Don't Just Use Technology. You Wonder About It.** | "How was the page created?…" then the first HTML page on localhost. | What happens when you click a link: the browser asks a server for a page, gets HTML back, and draws it. | `Steps` with three steps: *Ask, Answer, Draw.* | The "I could make something" line stays as the bold takeaway. |
-| **You Start Building Before You Know Enough to Build** | `clrscr`, `getch`, pages connecting. | none | none | **Knowledge was turning into creation.** carries it; no block needed. |
-| **You See a Product and Immediately Think You Could Make It Better** | The meal-tracking app. | none | `PullQuote`: "What could exist instead." | The question in the essay becomes the quote. |
-| **You Celebrate When the Bug Finally Dies** | The lab exercise, the dance. | none | none | Pure story; the feeling is the point. |
-| **Technology Slowly Stops Feeling Like Work** | Watching tech videos for fun. | none | none | |
-| **You Get Annoyed by Things That Could Be Automated** | "Why am I doing this manually?" | none | `Statement`: *Why am I doing this manually?* | A hook set large, not a fact. |
-| **You Start Asking Questions Nobody Asked You to Ask** | The microphone in the meeting. | How a voice travels: a microphone turns sound into an electrical signal, a computer turns that into data, the network carries it, and a speaker turns it back into sound. | Mermaid `flowchart LR` with five nodes and `accTitle`/`accDescr`. | One fact the story literally asks for. |
-| **So, Should You Pursue Coding?** | The turn to "you". | none | none | The bold line: **Your curiosity might be pointing somewhere.** |
-| **Who Is a Coder?** and **Curious to Coder** | The definition, then "Welcome to Curious to Coder." | none | `CurvedText` circle stamp, `decorative`. | Closes on the series idea. |
+| Section | What it does | Fact moment | Cut |
+| --- | --- | --- | --- |
+| Open | The IPS plan, the realisation "a plan without knowing what I was naturally curious about." | none | A third of the opening detail |
+| The First Spark | The substitute teacher and inheritance; "a question I **wanted** answered." | `Compare` (copy the code vs inherit it) | A second paragraph repeating "signs for years" |
+| You Wonder How It Works | HTML on localhost; "I could make something." | `Steps` (ask, answer, draw) | The repeated "worth noticing" nudge |
+| You Build Before You Know Enough | `clrscr`, `getch`; **Knowledge was turning into creation.** | none | The curriculum paragraph |
+| You Think You Could Make It Better | The meal-tracking app; what could exist instead. | none | The list of rhetorical questions |
+| You Celebrate When the Bug Dies | The lab exercise and the dance. | none | The second reflection paragraph |
+| You Get Annoyed by What Could Be Automated | "Why am I doing this manually?" | `Statement` | A paragraph restating the question |
+| You Ask Questions Nobody Asked You to Ask | The microphone in a meeting. | Mermaid diagram | The closing paragraph |
+| So, Should You Pursue Coding? | One turn: the pattern, the bold line, "a coder is someone curious enough to see a problem and courageous enough to do something about it." | none | The separate "Who Is a Coder?" section |
+| Curious to Coder | The welcome and the last two lines. | none | The repeated "curiosity" restatements |
 
-**What the count shows:** nine beats, only **three** fact moments (inheritance, the click, the microphone), never back to back. That is the target density. The essay's `#` headings become `##`, and the italic inner questions stay exactly as written.
+Seven sections, one new idea each. Four fact moments, none back to back.
 
 ## 24. Before you publish
 
@@ -981,17 +890,18 @@ Tick every box. Claude: say which you could not verify.
 - [ ] Read it aloud; every hard-to-say sentence is rewritten.
 
 **Format**
-- [ ] The **mode label** `Sidenote` (`True story`, `Constructed story`, `Note` or `Plan`) is the first body element, and the same word is a tag in the front matter.
+- [ ] A stranger would learn something they can use. The post does not narrate how the site, a chat or a decision happened.
 - [ ] Four to seven beats; at most five fact moments; none back to back.
 - [ ] Each fact moment answers a question the story just raised, in the story's words first.
 - [ ] No more than two new terms per beat, each defined where it first appears.
 - [ ] At most one loud block per screen; at most one `wide`/`bleed`.
-- [ ] In a True story, nothing invented; in a Constructed story, nothing real is disguised; every fact is true and checkable.
+- [ ] Nothing invented, nothing real disguised, every fact true and checkable. Plans are described as ideas.
+- [ ] Each section adds a new idea. No paragraph restates the one before it.
 
 **Front matter and files**
 - [ ] File is in the right folder; slug is valid and not reserved; `.mdx` if blocks are used.
 - [ ] `description` is 200 characters or fewer; `cover.text` is 70 or fewer; `cover.sub` is 40 or fewer.
-- [ ] `tags` are reused, Title Case, include the mode tag. Series posts have `order`.
+- [ ] `tags` are reused, Title Case, Series posts have `order`.
 
 **Safety and accessibility**
 - [ ] Every diagram has `accTitle` and `accDescr`; every table or `Heatmap` has a caption.
@@ -1001,7 +911,7 @@ Tick every box. Claude: say which you could not verify.
 **Build**
 - [ ] `pnpm check && pnpm build` passes.
 - [ ] `pnpm check:dist` passes (links, feeds, policy, accessibility, Lighthouse), after `pnpm build`.
-- [ ] Preview the page: contents rail makes sense, covers read well, diagrams show in light and dark, the mode label is first.
+- [ ] Preview the page: contents rail makes sense, covers read well, diagrams show in light and dark.
 - [ ] Set `draft: false`, open a pull request, add the `build` label, wait for green, merge, and watch the deploy.
 - [ ] After deploy, check the post, its series page and `/rss.xml`.
 
