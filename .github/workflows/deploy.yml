@@ -188,6 +188,9 @@ jobs:
       - name: Advertise page builder (prices, image checks, request email)
         if: needs.changes.outputs.ads == 'true'
         run: pnpm check:advertise
+      - name: Banner rotation (reload, time, pause, reduced motion)
+        if: needs.changes.outputs.ads == 'true'
+        run: pnpm check:rotation
       - name: Content Security Policy (no violations in a real browser)
         if: needs.changes.outputs.browser == 'true'
         run: pnpm check:csp

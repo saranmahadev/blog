@@ -1,20 +1,23 @@
 ---
 // Shows the banner chosen for this page and slot, or nothing. Used by Article.astro for the end and rail slots, and by the
 // inline slot, which a small remark plugin inserts after the introduction of .mdx posts.
+// A paid booking is shown as bought: one banner, no animation. Otherwise our own banners rotate (HouseRotator).
 import Banner from './Banner.tsx';
+import HouseRotator from './HouseRotator.astro';
 import { getContent } from '@/lib/content';
-import { sponsorFor } from '@/lib/sponsors-data';
+import { houseBannersFor, sponsorFor } from '@/lib/sponsors-data';
 import { labelFor, type Slot } from '@/lib/sponsors';
 
 interface Props { size: Slot; postKey: string }
 const { size, postKey } = Astro.props;
 const { posts } = await getContent();
 const post = posts.find((p) => p.key === postKey);
-const sponsor = post && post.data.sponsors !== false
-  ? await sponsorFor(size, { key: post.key, series: post.seriesSlug, tags: post.data.tags })
-  : undefined;
+const page = post && post.data.sponsors !== false ? { key: post.key, series: post.seriesSlug, tags: post.data.tags } : undefined;
+const sponsor = page ? await sponsorFor(size, page) : undefined;
+const house = sponsor?.house && page ? await houseBannersFor(size, page) : [];
 ---
 
-{sponsor && (
-  <Banner slot={size} kind={sponsor.kind} href={sponsor.href} label={labelFor(sponsor)} house={sponsor.house} image={sponsor.image} image2x={sponsor.image2x} mobileImage={sponsor.mobileImage} alt={sponsor.alt} headline={sponsor.headline} line={sponsor.line} cta={sponsor.cta} tone={sponsor.tone} />
+{sponsor && house.length > 0 && <HouseRotator size={size} banners={house} />}
+{sponsor && !sponsor.house && (
+  <Banner slot={size} kind={sponsor.kind} href={sponsor.href} label={labelFor(sponsor)} house={false} image={sponsor.image} image2x={sponsor.image2x} mobileImage={sponsor.mobileImage} alt={sponsor.alt} headline={sponsor.headline} line={sponsor.line} cta={sponsor.cta} tone={sponsor.tone} />
 )}

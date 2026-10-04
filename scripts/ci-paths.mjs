@@ -12,7 +12,7 @@ const AREAS = {
   // UI code, styles, layouts and dependencies: not just articles.
   code: [/^scripts\/check-/, /^src\/(components|layouts|pages|styles|lib|plugins)\//, /^src\/content\.config\.ts$/, /^astro\.config\.mjs$/, /^package\.json$/, /^pnpm-lock\.yaml$/, /^tsconfig\.json$/, /^\.nvmrc$/, /^scripts\/(build-|csp-hashes)/, /^firebase\.json$/],
   feeds: [/^src\/content\/(posts|series)\//, /^scripts\/(build-feeds|check-feeds)/, /^src\/pages\/.*\.(xml|json)\.ts$/, /^src\/pages\/(rss|atom|feed)/, /^src\/lib\/content\.ts$/, /^package\.json$/, /^pnpm-lock\.yaml$/],
-  ads: [/^src\/content\/sponsors\//, /^public\/sponsors\//, /^src\/components\/sponsor\//, /^src\/lib\/(sponsors|ad-prices|mailto|ads)/, /^src\/pages\/advertise\.astro$/, /^src\/styles\//, /^scripts\/check-(sponsors|advertise)/, /^package\.json$/, /^pnpm-lock\.yaml$/],
+  ads: [/^src\/content\/sponsors\//, /^public\/sponsors\//, /^src\/components\/sponsor\//, /^src\/lib\/(sponsors|rotate|ad-prices|mailto|ads)/, /^src\/pages\/advertise\.astro$/, /^src\/styles\//, /^scripts\/check-(sponsors|advertise|rotation)/, /^package\.json$/, /^pnpm-lock\.yaml$/],
   rules: [/^firestore\.rules$/, /^firestore\.indexes\.json$/, /^firebase-tests\//, /^vitest\.config\.ts$/, /^package\.json$/, /^pnpm-lock\.yaml$/],
   functions: [/^functions\/(?!lib\/|node_modules\/)/],
   signedin: [/^src\/(components\/(auth|inbox|comments|sync|library)|lib\/(firebase|sync|auth)|styles|layouts)/, /^scripts\/check-signed-in/, /^firebase\.json$/, /^firestore\.rules$/, /^package\.json$/, /^pnpm-lock\.yaml$/],

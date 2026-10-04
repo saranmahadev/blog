@@ -1,0 +1,21 @@
+{
+  "name": "Curious to Coder series",
+  "house": true,
+  "href": "/curious-to-coder/",
+  "kind": "text",
+  "sizes": [
+    "inline",
+    "end",
+    "rail"
+  ],
+  "headline": "Curious to Coder",
+  "line": "A series for anyone who wonders if coding is for them.",
+  "cta": "Start the series",
+  "tone": "mint",
+  "motion": "grid",
+  "posts": "all",
+  "exclude": [
+    "curious-to-coder"
+  ],
+  "active": true
+}

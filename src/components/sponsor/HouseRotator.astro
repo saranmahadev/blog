@@ -1,0 +1,81 @@
+---
+// Our own (Dev Universe) banners for one slot, rotating on the page. Paid banners never come here: they are shown as bought,
+// unanimated, by Banner.tsx. Without JavaScript the first banner shows and the rest stay out of the page.
+import Banner from './Banner.tsx';
+import { labelFor, type Slot, type Sponsor } from '@/lib/sponsors';
+
+interface Props { size: Slot; banners: Sponsor[] }
+const { size, banners } = Astro.props;
+const offset = { inline: 0, end: 1, rail: 2 }[size];
+const many = banners.length > 1;
+---
+
+<aside class={`sponsor sponsor-${size} sponsor-rot`} aria-label="Sponsored" data-sponsor data-pagefind-ignore data-rot data-offset={offset} data-count={banners.length}>
+  <div class="rot-head">
+    <span class="sponsor-tag">Sponsored</span>
+    {many && (
+      <span class="rot-ctl" hidden>
+        <button type="button" class="rot-pp" aria-pressed="false" aria-label="Pause banner rotation">Pause</button>
+        {banners.map((b, i) => <button type="button" class="rot-dot" aria-label={`Show banner ${i + 1} of ${banners.length}: ${b.headline ?? b.name}`}><span aria-hidden="true"></span></button>)}
+      </span>
+    )}
+  </div>
+  <div class="rot-stage">
+    {banners.map((b, i) => (
+      <div class:list={['rot-slide', i > 0 && 'rot-off']} inert={i > 0} aria-hidden={i > 0 ? 'true' : undefined}>
+        <Banner bare slot={size} kind={b.kind} href={b.href} label={labelFor(b)} house image={b.image} image2x={b.image2x} mobileImage={b.mobileImage} alt={b.alt} headline={b.headline} line={b.line} cta={b.cta} tone={b.tone} motion={b.motion} />
+      </div>
+    ))}
+  </div>
+</aside>
+
+<script>
+  import { nextCounter, indexFor } from '@/lib/rotate';
+
+  const PERIOD = 9000;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  let counter: number | null = null;
+  try {
+    const raw = sessionStorage.getItem('du-banner');
+    const last = raw === null ? null : Number(raw);
+    const max = Math.max(...[...document.querySelectorAll<HTMLElement>('[data-rot]')].map((r) => Number(r.dataset.count) || 1), 1);
+    counter = nextCounter(last, max);
+    sessionStorage.setItem('du-banner', String(counter)); // this tab only; nothing is sent anywhere
+  } catch { counter = nextCounter(null, 99); }
+
+  document.querySelectorAll<HTMLElement>('[data-rot]').forEach((root) => {
+    const slides = [...root.querySelectorAll<HTMLElement>('.rot-slide')];
+    const n = slides.length;
+    const offset = Number(root.dataset.offset) || 0;
+    let i = indexFor(counter ?? 0, offset, n);
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('.rot-dot')];
+    const pp = root.querySelector<HTMLButtonElement>('.rot-pp');
+    const ctl = root.querySelector<HTMLElement>('.rot-ctl');
+
+    const show = (to: number) => {
+      i = (to + n) % n;
+      slides.forEach((s, k) => { const on = k === i; s.classList.toggle('rot-off', !on); s.toggleAttribute('inert', !on); on ? s.removeAttribute('aria-hidden') : s.setAttribute('aria-hidden', 'true'); });
+      dots.forEach((d, k) => (k === i ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+    };
+    show(i);
+    if (n < 2 || !ctl || !pp) return;
+    ctl.hidden = false;
+
+    let playing = !reduced.matches; // people who ask for less motion get no automatic rotation
+    let hover = false, visible = true, timer = 0;
+    const label = () => { pp.textContent = playing ? 'Pause' : 'Play'; pp.setAttribute('aria-pressed', String(!playing)); pp.setAttribute('aria-label', playing ? 'Pause banner rotation' : 'Play banner rotation'); };
+    const tick = () => { window.clearInterval(timer); if (playing && !hover && visible && !document.hidden && !root.contains(document.activeElement)) timer = window.setInterval(() => show(i + 1), PERIOD); };
+    label();
+
+    pp.addEventListener('click', () => { playing = !playing; label(); tick(); });
+    dots.forEach((d, k) => d.addEventListener('click', () => { show(k); tick(); }));
+    root.addEventListener('mouseenter', () => { hover = true; tick(); });
+    root.addEventListener('mouseleave', () => { hover = false; tick(); });
+    root.addEventListener('focusin', tick);
+    root.addEventListener('focusout', () => setTimeout(tick, 0));
+    document.addEventListener('visibilitychange', tick);
+    reduced.addEventListener('change', () => { playing = !reduced.matches; label(); tick(); });
+    new IntersectionObserver((e) => { visible = e[0].isIntersecting; tick(); }).observe(root);
+    tick();
+  });
+</script>

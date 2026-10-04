@@ -442,6 +442,58 @@ button.srch { cursor: pointer; font: inherit; font-size: 14px; text-align: left;
 }
 @media (max-width: 1100px) { .sponsor-rail { display: none; } }
 
+/* Our own banners rotate and may animate. Paid banners never do. */
+.rot-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; margin: 0 0 4px; }
+.rot-head .sponsor-tag { margin: 0; }
+.rot-ctl { display: inline-flex; align-items: center; gap: 2px; }
+.rot-ctl[hidden] { display: none; }
+.rot-pp { font: 10px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: none; border: 0; padding: 0 8px; min-height: 24px; cursor: pointer; }
+.rot-pp:hover { color: var(--text); }
+.rot-dot { width: 24px; height: 24px; display: inline-grid; place-items: center; background: none; border: 0; padding: 0; cursor: pointer; }
+.rot-dot span { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--muted); transition: background-color 0.2s, transform 0.2s; }
+.rot-dot[aria-current='true'] span { background: var(--text); border-color: var(--text); transform: scale(1.25); }
+.rot-stage { display: grid; }
+.rot-slide { grid-area: 1 / 1; transition: opacity 0.5s, transform 0.5s, visibility 0s; }
+.rot-off { opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity 0.5s, transform 0.5s, visibility 0s 0.5s; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .rot-slide, .rot-off { transition: none; transform: none; } }
+
+.sponsor-fx { position: relative; overflow: hidden; isolation: isolate; --fx-a: 0.5; }
+.sponsor-fx[data-tone='ink'] { --fx-a: 0.14; }
+.sponsor-fx > * { position: relative; z-index: 1; }
+.sponsor-fx::before, .sponsor-fx::after { content: ''; position: absolute; z-index: 0; pointer-events: none; }
+/* aurora: soft light drifting behind the text */
+.fx-aurora::before { inset: -50%; background: radial-gradient(40% 40% at 25% 40%, rgb(255 255 255 / var(--fx-a)), transparent 62%), radial-gradient(35% 35% at 78% 62%, rgb(255 255 255 / calc(var(--fx-a) * 0.7)), transparent 62%); }
+/* orbit: two thin rings turning in opposite directions */
+.fx-orbit::before { width: 190px; height: 190px; right: -50px; top: 50%; margin-top: -95px; border-radius: 50%; border: 2px dashed currentColor; opacity: 0.22; }
+.fx-orbit::after { width: 120px; height: 120px; right: -15px; top: 50%; margin-top: -60px; border-radius: 50%; border: 2px dotted currentColor; opacity: 0.22; }
+/* pulse: rings spreading from the button */
+.fx-pulse::before, .fx-pulse::after { width: 70px; height: 70px; right: 40px; top: 50%; margin-top: -35px; border-radius: 50%; border: 2px solid currentColor; opacity: 0; }
+/* sweep: a band of light crossing the banner */
+.fx-sweep::before { inset: 0; background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / var(--fx-a)) 50%, transparent 62%); transform: translateX(-120%); }
+/* grid: a field of dots moving slowly */
+.fx-grid::before { inset: 0; background-image: radial-gradient(currentColor 1.2px, transparent 1.4px); background-size: 16px 16px; opacity: 0.16; }
+.sponsor-fx .sponsor-cta { background-image: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.28) 50%, transparent 70%); background-size: 250% 100%; background-position: 120% 0; background-repeat: no-repeat; }
+.sponsor-fx .sponsor-cta [aria-hidden] { display: inline-block; }
+@media (prefers-reduced-motion: no-preference) {
+  .fx-aurora::before { animation: fx-drift 16s ease-in-out infinite alternate; }
+  .fx-orbit::before { animation: fx-spin 26s linear infinite; }
+  .fx-orbit::after { animation: fx-spin 18s linear infinite reverse; }
+  .fx-pulse::before { animation: fx-ping 3.4s ease-out infinite; }
+  .fx-pulse::after { animation: fx-ping 3.4s ease-out 1.7s infinite; }
+  .fx-sweep::before { animation: fx-sweep 6s ease-in-out infinite; }
+  .fx-grid::before { animation: fx-dots 14s linear infinite; }
+  .sponsor-fx .sponsor-cta { animation: fx-shine 4.5s ease-in-out infinite; }
+  .sponsor-fx .sponsor-cta [aria-hidden] { animation: fx-nudge 1.8s ease-in-out infinite; }
+  .sponsor-fx:hover .sponsor-cta [aria-hidden] { animation-duration: 0.8s; }
+}
+@keyframes fx-drift { from { transform: translate(-6%, -4%) rotate(0deg); } to { transform: translate(6%, 5%) rotate(14deg); } }
+@keyframes fx-spin { to { transform: rotate(360deg); } }
+@keyframes fx-ping { 0% { transform: scale(0.4); opacity: 0.45; } 100% { transform: scale(2.6); opacity: 0; } }
+@keyframes fx-sweep { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+@keyframes fx-dots { to { background-position: 16px 16px; } }
+@keyframes fx-shine { 0%, 60% { background-position: 120% 0; } 100% { background-position: -40% 0; } }
+@keyframes fx-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+
 /* Advertise page and its builder */
 .adv { display: grid; gap: 40px; margin-top: 24px; max-width: 980px; }
 .adv-set { border: 0; padding: 0; margin: 0; display: grid; gap: 16px; min-width: 0; }
