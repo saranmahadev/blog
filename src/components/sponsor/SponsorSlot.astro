@@ -1,0 +1,20 @@
+---
+// Shows the banner chosen for this page and slot, or nothing. Used by Article.astro for the end and rail slots, and by the
+// inline slot, which a small remark plugin inserts after the introduction of .mdx posts.
+import Banner from './Banner.tsx';
+import { getContent } from '@/lib/content';
+import { sponsorFor } from '@/lib/sponsors-data';
+import { labelFor, type Slot } from '@/lib/sponsors';
+
+interface Props { size: Slot; postKey: string }
+const { size, postKey } = Astro.props;
+const { posts } = await getContent();
+const post = posts.find((p) => p.key === postKey);
+const sponsor = post && post.data.sponsors !== false
+  ? await sponsorFor(size, { key: post.key, series: post.seriesSlug, tags: post.data.tags })
+  : undefined;
+---
+
+{sponsor && (
+  <Banner slot={size} kind={sponsor.kind} href={sponsor.href} label={labelFor(sponsor)} house={sponsor.house} image={sponsor.image} image2x={sponsor.image2x} mobileImage={sponsor.mobileImage} alt={sponsor.alt} headline={sponsor.headline} line={sponsor.line} cta={sponsor.cta} tone={sponsor.tone} />
+)}

@@ -12,6 +12,9 @@ export const SITE = {
  */
 export const AUTHOR_EMAIL = 'mail@saranmahadev.in';
 
+/** The public repository: the source of every article is here, and it is where AI agents are pointed to read the content. */
+export const REPO = { url: 'https://github.com/saranmahadev/blog', branch: 'main' } as const;
+
 export const NAV = [
   { href: '/', label: 'Home' },
   { href: '/series/', label: 'Series' },

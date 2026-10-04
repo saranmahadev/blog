@@ -4,7 +4,7 @@ import { patternFor, toneFor, type Pattern, type Tone } from './site';
 /** Top-level paths owned by fixed pages/assets; content may not use them. */
 const RESERVED_SLUGS = new Set([
   'about', 'imaxt', 'projects', 'blog', 'series', 'tags', 'search', 'login', 'register', 'reset', 'profile', 'inbox', 'admin',
-  'security', 'privacy', 'terms', 'accessibility', 'contact', 'api', 'archive', 'topics', 'rss', 'rss.xml', 'atom.xml', 'feed.json', 'feed.xsl', 'sitemap', '404', '_astro', 'images', 'fonts', 'icons',
+  'security', 'privacy', 'source', 'github', 'content', 'llms.txt', 'terms', 'accessibility', 'contact', 'advertise', 'api', 'archive', 'topics', 'rss', 'rss.xml', 'atom.xml', 'feed.json', 'feed.xsl', 'sitemap', '404', '_astro', 'images', 'fonts', 'icons',
   'favicon.svg', 'robots.txt',
 ]);
 

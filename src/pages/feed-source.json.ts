@@ -17,6 +17,8 @@ export async function GET() {
     tags: p.data.tags,
     series: p.seriesTitle,
     image: isImageCover(p.data.cover) ? p.data.cover.image : `/og/${p.key}.png`,
+    /** Path of the Markdown/MDX source in the repository. */
+    source: p.entry.filePath,
   });
   return Response.json({
     site: { title: SITE.title, byline: SITE.byline, description: SITE.description, author: SITE.author },

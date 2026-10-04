@@ -1,19 +1,47 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { SITE } from '@/lib/site';
+import { AUTHOR_EMAIL } from '@/lib/site';
+
+const skills = [
+  { group: 'Generative AI and agents', items: ['Agentic AI', 'MCP', 'Multi-agent systems', 'Tool calling', 'Workflow orchestration', 'Memory management', 'Prompt and context engineering', 'Claude, Gemini, OpenAI, GLM, Kimi, Qwen'] },
+  { group: 'LLM frameworks', items: ['LangChain', 'LangGraph', 'LlamaIndex', 'CrewAI', 'AutoGen', 'Semantic Kernel', 'Hugging Face Transformers', 'OpenAI SDK'] },
+  { group: 'RAG and vector databases', items: ['Enterprise RAG', 'Hybrid and semantic search', 'Embeddings', 'Semantic chunking', 'Cross-encoder reranking', 'Pinecone', 'ChromaDB', 'FAISS', 'Weaviate', 'Qdrant'] },
+  { group: 'ML and computer vision', items: ['PyTorch', 'TensorFlow', 'Model training and fine-tuning', 'Transfer learning', 'Model evaluation', 'OpenCV', 'Image processing'] },
+  { group: 'Languages and backend', items: ['Python', 'SQL', 'JavaScript', 'C++', 'Go', 'FastAPI', 'Flask', 'REST APIs', 'Streamlit'] },
+  { group: 'Cloud, DevOps and LLMOps', items: ['AWS', 'Google Cloud', 'Docker', 'Kubernetes', 'Git', 'GitHub Actions', 'CI/CD', 'PostgreSQL', 'MySQL', 'SQLite', 'MongoDB', 'Redis', 'LangSmith', 'Langfuse', 'MLflow', 'Observability'] },
+];
 ---
 
-<BaseLayout title="About" description={`About ${SITE.title}, ${SITE.byline.toLowerCase()}.`}>
+<BaseLayout title="About" description="About Saran Mahadev (Dev): a creator, engineer, educator, builder and entrepreneur working on Generative AI, agentic systems and open source.">
   <section class="wrap" style="padding-top:56px;padding-bottom:32px">
     <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / About</div>
-    <h1 class="disp" style="font-size:clamp(72px,12vw,180px)">About</h1>
+    <h1 class="disp" style="font-size:clamp(72px,12vw,180px)">About me</h1>
   </section>
   <div class="wrap" style="padding-bottom:80px">
     <div class="prose" style="margin-left:0">
-      <p>{SITE.title} is the writing and thinking layer of {SITE.author}'s work: software engineering, AI and technology, productivity, systems, entrepreneurship, careers, project lessons, experiments and long-form technical writing.</p>
-      <p>{SITE.author} is a creator, engineer, educator, builder and entrepreneur. {SITE.title} is one part of a larger system called <a href="/dev-universe/a-connected-ecosystem/">Dev Universe</a>, where learning, creating, teaching, sharing and building are meant to work together instead of apart.</p>
-      <p>You can also find {SITE.author} on <a href="https://www.youtube.com/@saranmahadev">YouTube</a> and <a href="https://www.instagram.com/everything.by.dev">Instagram</a>.</p>
-      <p>To write to {SITE.author}, open any post and use the private message box. Only the two of you can see it. See <a href="/security/">Security and privacy</a> for how that works.</p>
+      <h2 id="who-i-am">Who I am</h2>
+      <p>I am Saran Mahadev, and I go by Dev. I am a creator, engineer, educator, builder and entrepreneur.</p>
+      <p>I build intelligent systems that ship. My focus is Generative AI, agentic AI systems, RAG, computer vision, LLM orchestration and open source.</p>
+
+      <h2 id="what-i-am-building">What I am building</h2>
+      <ul>
+        <li><strong>Stride:</strong> an open-source, spec-driven agent runtime built on the Claude Code SDK.</li>
+        <li><strong>Axon:</strong> a framework-agnostic memory abstraction layer for semantic retrieval across vector databases.</li>
+        <li><strong>LifeOS:</strong> an AI-powered productivity platform built with Go and SQLite.</li>
+        <li><strong><a href="/dev-universe/a-connected-ecosystem/">Dev Universe</a>:</strong> the system around my work, where learning, creating, teaching, sharing and building connect.</li>
+        <li><strong>This site:</strong> where I think in writing.</li>
+      </ul>
+
+      <h2 id="skills-and-tools">Skills and tools</h2>
+      {skills.map((s) => (
+        <>
+          <h3>{s.group}</h3>
+          <p>{s.items.join(' · ')}</p>
+        </>
+      ))}
+
+      <h2 id="say-hello">Say hello</h2>
+      <p>Write to <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a>, or see the <a href="/contact/">contact page</a>.</p>
     </div>
   </div>
 </BaseLayout>

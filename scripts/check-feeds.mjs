@@ -69,6 +69,19 @@ for (const f of feedFiles) {
   } else bad(rel, 'neither RSS nor Atom');
 }
 
+// llms.txt points AI agents at the repository, and lists every article that is built.
+const llms = path.join(dist, 'llms.txt');
+if (!fs.existsSync(llms)) bad('llms.txt', 'is missing');
+else {
+  const t = fs.readFileSync(llms, 'utf8');
+  if (!t.includes('https://github.com/saranmahadev/blog')) bad('llms.txt', 'does not point to the GitHub repository');
+  const feed = JSON.parse(fs.readFileSync(path.join(dist, 'feed.json'), 'utf8'));
+  for (const it of feed.items) if (!t.includes(it.title)) bad('llms.txt', `does not list "${it.title}"`);
+}
+const robots = fs.readFileSync(path.join(dist, 'robots.txt'), 'utf8');
+for (const ua of ['GPTBot', 'ClaudeBot', 'PerplexityBot']) if (!robots.includes(`User-agent: ${ua}`)) bad('robots.txt', `does not address ${ua}`);
+if (!/Allow: \/llms\.txt/.test(robots)) bad('robots.txt', 'does not leave /llms.txt readable for agents');
+
 if (problems.length) {
   console.error(problems.join('\n'));
   process.exit(1);

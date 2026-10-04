@@ -78,6 +78,10 @@
           {
             "key": "Permissions-Policy",
             "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()"
+          },
+          {
+            "key": "Link",
+            "value": "</llms.txt>; rel=\"alternate\"; type=\"text/plain\"; title=\"AI agents: read the content on GitHub\""
           }
         ]
       },
@@ -176,6 +180,32 @@
             "value": "text/plain; charset=utf-8"
           }
         ]
+      },
+      {
+        "source": "/llms.txt",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/plain; charset=utf-8"
+          }
+        ]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/source",
+        "destination": "https://github.com/saranmahadev/blog",
+        "type": 302
+      },
+      {
+        "source": "/github",
+        "destination": "https://github.com/saranmahadev/blog",
+        "type": 302
+      },
+      {
+        "source": "/content",
+        "destination": "https://github.com/saranmahadev/blog/tree/main/src/content",
+        "type": 302
       }
     ]
   },

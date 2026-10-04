@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import { serve, chromePath } from './serve.mjs';
 
-const PAGES = ['/', '/archive/', '/topics/', '/topics/dev-universe/', '/series/', '/welcome-to-drafted/', '/dev-universe/', '/dev-universe/a-connected-ecosystem/', '/dev-universe/building-drafted/', '/curious-to-coder/', '/curious-to-coder/symptoms-that-you-should-pursue-coding/', '/imaxt/', '/about/', '/security/', '/privacy/', '/terms/', '/accessibility/', '/contact/', '/login/', '/register/', '/reset/', '/inbox/', '/404.html'];
+const PAGES = ['/', '/archive/', '/topics/', '/topics/dev-universe/', '/series/', '/welcome-to-drafted/', '/dev-universe/', '/dev-universe/a-connected-ecosystem/', '/curious-to-coder/', '/curious-to-coder/symptoms-that-you-should-pursue-coding/', '/imaxt/', '/about/', '/security/', '/privacy/', '/terms/', '/accessibility/', '/contact/', '/advertise/', '/login/', '/register/', '/reset/', '/inbox/', '/404.html'];
 const { base, close } = await serve();
 const browser = await chromium.launch({ executablePath: chromePath() });
 let failures = 0;

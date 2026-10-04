@@ -10,8 +10,8 @@ This guide is written for two readers: **Dev**, as a checklist before publishing
 - **Part A. Voice** · [1. The voice](#1-the-voice) · [2. Story craft](#2-story-craft)
 - **Part B. The format** · [3. Knowledge first](#3-knowledge-first) · [4. Honesty](#4-stories-and-explainers-honesty) · [5. Never overwhelm the reader](#5-never-overwhelm-the-reader)
 - **Part C. Imaxt** · [6. Principles](#6-imaxt-principles) · [7. The blocks](#7-the-blocks) · [8. Tones](#8-tones) · [9. Covers](#9-covers) · [10. Diagrams](#10-diagrams) · [11. Code](#11-code) · [12. Patterns that work](#12-patterns-that-work)
-- **Part D. Rules** · [13. Files and URLs](#13-files-and-urls) · [14. Front matter](#14-front-matter) · [15. Series](#15-series) · [16. MDX gotchas](#16-mdx-gotchas) · [17. Accessibility](#17-accessibility) · [18. Performance and security](#18-performance-and-security) · [19. Feeds and search](#19-feeds-and-search) · [20. Privacy and honesty](#20-privacy-and-honesty) · [21. Editorial](#21-editorial)
-- **Part E. Templates** · [22. Skeletons](#22-skeletons) · [23. Worked example](#23-worked-example) · [24. Before you publish](#24-before-you-publish) · [25. When the build fails](#25-when-the-build-fails)
+- **Part D. Rules** · [13. Files and URLs](#13-files-and-urls) · [14. Front matter](#14-front-matter) · [15. Series](#15-series) · [16. MDX gotchas](#16-mdx-gotchas) · [17. Accessibility](#17-accessibility) · [18. Performance and security](#18-performance-and-security) · [19. Feeds and search](#19-feeds-and-search) · [20. Privacy and honesty](#20-privacy-and-honesty) · [21. Editorial](#21-editorial) · [22. Sponsors and banners](#22-sponsors-and-banners)
+- **Part E. Templates** · [23. Skeletons](#23-skeletons) · [24. Worked example](#24-worked-example) · [25. Before you publish](#25-before-you-publish) · [26. When the build fails](#26-when-the-build-fails)
 
 ---
 
@@ -24,7 +24,7 @@ Read this whole file before drafting. Then:
 3. **Never invent facts.** Every factual claim must be true and checkable. In a story, never invent events, quotes or people. If a claim needs a source, say so in your reply to Dev and keep the post clean (MDX does not allow HTML comments, so leave no markers in the file).
 4. **Protect people.** No real person's name, workplace or private detail unless Dev has said it is fine (section 20).
 5. **Output a complete `.mdx` file** with valid front matter and only blocks documented in Part C. Use `draft: true`.
-6. **Run the checks** (`pnpm check && pnpm build`, then `pnpm check:dist`) when you can, and report the result honestly. Walk through the checklist in section 24 and say which items you could not verify.
+6. **Run the checks** (`pnpm check && pnpm build`, then `pnpm check:dist`) when you can, and report the result honestly. Walk through the checklist in section 25 and say which items you could not verify.
 7. **Do not touch voice for effect.** If a sentence sounds like marketing, rewrite it plainly. When unsure, choose the plainer word.
 
 ---
@@ -610,7 +610,7 @@ flowchart LR
 - **Reserved slugs** cannot be used: `about`, `imaxt`, `projects`, `blog`, `series`, `tags`, `search`, `login`, `register`, `reset`, `profile`, `inbox`, `admin`, `security`, `privacy`, `api`, `archive`, `topics`, `rss`, `rss.xml`, `atom.xml`, `feed.json`, `feed.xsl`, `sitemap`, `404`, `_astro`, `images`, `fonts`, `icons`, `favicon.svg`, `robots.txt`.
 - Use `.mdx` when a post uses any Imaxt block; use `.md` for plain prose and code.
 - A series post whose series `index.md` is missing or a draft is **not published**.
-- Live examples to read before drafting: *Symptoms That You Should Pursue Coding* (a story), *What Happens When You Open a Blog Post* (an explainer with "Try it" stops) and the *Dev Universe* map (an idea, described as one).
+- Live examples to read before drafting: *Symptoms That You Should Pursue Coding* (a story) and the *Dev Universe* map (an idea, described as one).
 
 ## 14. Front matter
 
@@ -642,7 +642,7 @@ order: 1                   # series posts only: position in the series
 | `updated` | no | Set when you change a published post materially, and say so at the end of the post. |
 | `author` | no | Defaults to `Dev`. |
 | `tags` | no | A list. Title Case, reuse existing tags (check `/topics/`), two to four per post. |
-| `draft` | no | Keep `true` until the checklist in section 24 is done. |
+| `draft` | no | Keep `true` until the checklist in section 25 is done. |
 | `featured` | no | Only for the post you want as the Home lead. |
 | `cover` | no | See section 9. |
 | `canonical` | no | A URL, only if the post was first published elsewhere. |
@@ -693,7 +693,7 @@ CI scans every key page with axe (WCAG 2.1 A and AA) in light and dark, and fail
 
 1. **Headings.** The post title is the page's only `h1`. Use `##` for sections, `###` for sub-parts, and never skip a level. Sections show in the **Contents** rail, so write them to make sense alone.
 2. **Diagrams** need `accTitle` and `accDescr` (section 10).
-3. **Links** have meaningful text ("the Firebase docs", not "click here"). Internal links are relative (`/dev-universe/building-drafted/`).
+3. **Links** have meaningful text ("the Firebase docs", not "click here"). Internal links are relative (`/dev-universe/a-connected-ecosystem/`).
 4. **Colour** is never the only carrier of meaning. Tones are tested for contrast; do not hard-code colours.
 5. **Motion** respects reduced-motion settings. Do not describe a block only by its animation.
 6. **Tables** (and `Heatmap`) have a caption.
@@ -746,9 +746,22 @@ Posts appear in RSS, Atom and JSON Feed with their **full text**, cleaned for re
 
 ---
 
+## 22. Sponsors and banners
+
+Banners are **automatic and data-driven**. Authors never write them and never need to think about them, except to keep them out of the wrong places.
+
+- **Placement:** an *inline* banner (720 x 90) after the introduction and before the first `##` heading of an `.mdx` post; an *end* banner (720 x 200) after the last paragraph, before the series cards and the message box; a *rail* banner (300 x 250) in the right column on wide screens. One banner per slot per page. Plain `.md` posts get the end and rail banners only.
+- **Write so the first heading comes after a real introduction.** The inline banner sits just before it, so a post with no introduction paragraph gets no inline banner, and a one-line introduction followed at once by a banner reads badly.
+- **Opt a post out** with `sponsors: false` in its front matter. Do this for a personal story where a banner would break the mood, and for any post about a sponsor or competitor.
+- **Never** write a banner, a sponsor name or a "sponsored" sentence into a post. Do not link to a sponsor from the text as if it were editorial.
+- **Labels:** a paid banner says *Sponsored* and its link is marked `rel="sponsored"`. Our own banners say *Dev Universe*. Never mix them up.
+- **Adding or retiring a banner:** add `src/content/sponsors/<name>.json` (copy `example.json`), put any image in `public/sponsors/` at the exact size, set `start` and `end` dates, and run `pnpm check:sponsors`. To retire one, set `"active": false` or let its `end` date pass. Paid banners come before our own; our own fill every slot that is not booked.
+- **Our own banners promote only things that exist.** Add a banner for a new part of Dev Universe when it launches, not before.
+- **Prices** live in `src/lib/ad-prices.ts` and nowhere else.
+
 # Part E. Templates
 
-## 22. Skeletons
+## 23. Skeletons
 
 Copy a skeleton, replace the angle-bracketed parts, keep the structure. Each starts with `draft: true`.
 
@@ -860,7 +873,7 @@ pattern: "<dots | rings | grid | stripes | check>"
 
 Each post in the series is a story or an explainer from the skeletons above, with `order: 1`, `order: 2` and so on. The first post makes the promise and names the series idea; the last returns to it.
 
-## 23. Worked example
+## 24. Worked example
 
 Dev's essay *Symptoms That You Should Pursue Coding* is a story, and the first post of *Curious to Coder*. The first draft ran to about 2,300 words, and the same point (curiosity is worth following) came back in three closing sections and after almost every symptom. The rewrite is about 1,300 words. Here is what changed, and why. It shows the method: **one new idea per section, say it once, keep the best lines.**
 
@@ -879,7 +892,7 @@ Dev's essay *Symptoms That You Should Pursue Coding* is a story, and the first p
 
 Seven sections, one new idea each. Four fact moments, none back to back.
 
-## 24. Before you publish
+## 25. Before you publish
 
 Tick every box. Claude: say which you could not verify.
 
@@ -915,7 +928,7 @@ Tick every box. Claude: say which you could not verify.
 - [ ] Set `draft: false`, open a pull request, add the `build` label, wait for green, merge, and watch the deploy.
 - [ ] After deploy, check the post, its series page and `/rss.xml`.
 
-## 25. When the build fails
+## 26. When the build fails
 
 | You see | Cause | Fix |
 | --- | --- | --- |

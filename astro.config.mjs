@@ -4,6 +4,7 @@ import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import { unified } from '@astrojs/markdown-remark';
 import { rehypeImaxtDiagram } from './src/plugins/rehype-imaxt-diagram.mjs';
+import { remarkSponsorSlot } from './src/plugins/remark-sponsor-slot.mjs';
 
 // Production origin; override with SITE_URL in CI.
 const site = process.env.SITE_URL || 'https://blog.saranmahadev.in';
@@ -45,6 +46,6 @@ export default defineConfig({
     // Mermaid fences are handled by the diagram plugin, not the code highlighter.
     syntaxHighlight: { type: 'shiki', excludeLangs: ['mermaid'] },
     shikiConfig: { theme: 'github-dark' },
-    processor: unified({ rehypePlugins: [rehypeImaxtDiagram] }),
+    processor: unified({ remarkPlugins: [remarkSponsorSlot], rehypePlugins: [rehypeImaxtDiagram] }),
   },
 });

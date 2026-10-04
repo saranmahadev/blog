@@ -2,7 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": ["/index.html", "/dev-universe/building-drafted/index.html", "/dev-universe/a-connected-ecosystem/index.html"],
+      "url": ["/index.html", "/curious-to-coder/symptoms-that-you-should-pursue-coding/index.html", "/dev-universe/a-connected-ecosystem/index.html"],
       "numberOfRuns": 1,
       "settings": { "chromeFlags": "--no-sandbox", "preset": "desktop" }
     },
