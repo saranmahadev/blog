@@ -21,7 +21,7 @@ The tool is called `mygit`. It is about 370 lines, and it can record snapshots o
 
 ## Before You Start
 
-You need three things: Python 3, a terminal, and Git installed for the checks near the end. I ran everything here with Python 3.11 and Git 2.43 on Linux, and I did not test other versions or other systems.
+You need three things: Python 3, a terminal, and Git installed for the checks near the end.
 
 Save the code in a file called `mygit.py`, adding each step below to it in order. Then make a short name for it, and an empty folder to work in:
 
@@ -69,7 +69,8 @@ def init(args):
 ```python
 def main():
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
-        sys.exit("usage: mygit <command> ...\ncommands: " + ", ".join(sorted(COMMANDS)))
+        names = ", ".join(sorted(COMMANDS))
+        sys.exit(f"usage: mygit <command> ...\ncommands: {names}")
     COMMANDS[sys.argv[1]](sys.argv[2:])
 
 
@@ -135,13 +136,15 @@ def read_object(oid):
 @command
 def hash_object(args):
     data = open(args[-1], "rb").read()
-    print(write_object("blob", data) if "-w" in args else object_id("blob", data)[0])
+    oid = write_object("blob", data) if "-w" in args else object_id("blob", data)[0]
+    print(oid)
 
 
 @command
 def cat_file(args):
     kind, data = read_object(args[-1])
-    sys.stdout.write(kind + "\n" if args[0] == "-t" else data.decode(errors="replace"))
+    shown = kind + "\n" if args[0] == "-t" else data.decode(errors="replace")
+    sys.stdout.write(shown)
 ```
 
 Make a file and ask for its ID:
@@ -179,7 +182,8 @@ rm copy.txt
 An entirely different ID. And you can look inside an object, because it is only a compressed file:
 
 ```text
-python3 -c "import zlib; print(zlib.decompress(open('.mygit/objects/f1/561cc22b7e9de52a6469d83d78c27d142e18fe','rb').read()))"
+obj=.mygit/objects/f1/561cc22b7e9de52a6469d83d78c27d142e18fe
+python3 -c "import sys, zlib; print(zlib.decompress(open(sys.argv[1], 'rb').read()))" $obj
 b'blob 16\x00dosa 40\nidli 30\n'
 ```
 
@@ -240,8 +244,12 @@ def build_tree(index, prefix=""):
         if path.startswith(prefix):
             name, _, rest = path[len(prefix):].partition("/")
             entries[name] = ("40000", None) if rest else ("100644", oid)
+    def order(item):
+        name, (mode, _oid) = item
+        return name + ("/" if mode == "40000" else "")
+
     body = b""
-    for name, (mode, oid) in sorted(entries.items(), key=lambda e: e[0] + ("/" if e[1][0] == "40000" else "")):
+    for name, (mode, oid) in sorted(entries.items(), key=order):
         if mode == "40000":
             oid = build_tree(index, f"{prefix}{name}/")
         body += f"{mode} {name}".encode() + b"\0" + bytes.fromhex(oid)
@@ -266,7 +274,8 @@ def write_tree(args):
 @command
 def ls_tree(args):
     for mode, name, oid in parse_tree(args[0]):
-        print(f"{mode.zfill(6)} {'tree' if mode == '40000' else 'blob'} {oid}\t{name}")
+        kind = "tree" if mode == "40000" else "blob"
+        print(f"{mode.zfill(6)} {kind} {oid}\t{name}")
 ```
 
 ```text
@@ -291,7 +300,7 @@ mygit ls-tree 8a4ba66d0eaa74853db82715e407df1d256a68c3
 100644 blob f1561cc22b7e9de52a6469d83d78c27d142e18fe	menu.txt
 ```
 
-The root tree lists `drinks` (a tree of its own) and `menu.txt` (a blob). I checked this against Git by creating the same two files in a real repository and running `git add .` and `git write-tree`. It printed the same tree ID, `8a4ba66d0eaa74853db82715e407df1d256a68c3`. The mode `100644` means "ordinary file", and `040000` means "folder".
+The root tree lists `drinks` (a tree of its own) and `menu.txt` (a blob). Real Git agrees. Create the same two files in a Git repository and run `git add .` and `git write-tree`, and it prints the same tree ID, `8a4ba66d0eaa74853db82715e407df1d256a68c3`. The mode `100644` means "ordinary file", and `040000` means "folder".
 
 <Sidenote label="Try it">Add one more file inside `drinks`, run `add` and `write-tree` again, and compare the two root tree IDs, then the two `drinks` tree IDs. Which IDs changed, and which stayed the same? Why?</Sidenote>
 
@@ -306,7 +315,9 @@ import time
 
 
 def identity():
-    return f"{os.environ.get('MYGIT_NAME', 'Dev')} <{os.environ.get('MYGIT_EMAIL', 'dev@example.com')}>"
+    name = os.environ.get("MYGIT_NAME", "Dev")
+    email = os.environ.get("MYGIT_EMAIL", "dev@example.com")
+    return f"{name} <{email}>"
 
 
 def timestamp():
@@ -314,8 +325,9 @@ def timestamp():
 
 
 def write_commit(tree, parents, message):
+    who = f"{identity()} {timestamp()}"
     lines = [f"tree {tree}"] + [f"parent {p}" for p in parents]
-    lines += [f"author {identity()} {timestamp()}", f"committer {identity()} {timestamp()}", "", message, ""]
+    lines += [f"author {who}", f"committer {who}", "", message, ""]
     return write_object("commit", "\n".join(lines).encode())
 
 
@@ -328,7 +340,8 @@ def commit_tree(args):
 This low-level command makes the object and prints its ID. Setting `MYGIT_TIME` for one command fixes the clock, so you get the same ID as me:
 
 ```text
-MYGIT_TIME=1700000000 mygit commit-tree 8a4ba66d0eaa74853db82715e407df1d256a68c3 -m "first menu"
+MYGIT_TIME=1700000000 mygit commit-tree \
+  8a4ba66d0eaa74853db82715e407df1d256a68c3 -m "first menu"
 a5167e8f5b5b559fa70054709dfc94d71b73eba0
 
 mygit cat-file -p a5167e8f5b5b559fa70054709dfc94d71b73eba0
@@ -342,15 +355,17 @@ first menu
 Change only the message, and the ID changes completely, even though the tree is identical:
 
 ```text
-MYGIT_TIME=1700000000 mygit commit-tree 8a4ba66d0eaa74853db82715e407df1d256a68c3 -m "first menu!"
+MYGIT_TIME=1700000000 mygit commit-tree \
+  8a4ba66d0eaa74853db82715e407df1d256a68c3 -m "first menu!"
 61740f9273eaa3bf89922576419bccb147949c46
 ```
 
 Now the test. Real Git, given the same files, the same author and the same time, should arrive at the same commit ID:
 
 ```text
-GIT_AUTHOR_NAME=Dev GIT_AUTHOR_EMAIL=dev@example.com GIT_AUTHOR_DATE="1700000000 +0000" \
-GIT_COMMITTER_NAME=Dev GIT_COMMITTER_EMAIL=dev@example.com GIT_COMMITTER_DATE="1700000000 +0000" \
+export GIT_AUTHOR_NAME=Dev GIT_AUTHOR_EMAIL=dev@example.com
+export GIT_COMMITTER_NAME=Dev GIT_COMMITTER_EMAIL=dev@example.com
+export GIT_AUTHOR_DATE="1700000000 +0000" GIT_COMMITTER_DATE="1700000000 +0000"
 git commit -m "first menu"
 git rev-parse HEAD
 a5167e8f5b5b559fa70054709dfc94d71b73eba0
@@ -358,7 +373,7 @@ a5167e8f5b5b559fa70054709dfc94d71b73eba0
 
 The same ID. If your Git is set up to sign commits, add `-c commit.gpgsign=false`, because a signature becomes part of the commit and changes the ID.
 
-Here is what makes this more than a filing system. A commit's ID is made from everything in it, **including the ID of its parent**. I ran the next experiment in a scratch repository, so it wouldn't clutter yours. Watch what happens when we try to quietly change the first commit's message after the second already exists:
+Here is what makes this more than a filing system. A commit's ID is made from everything in it, **including the ID of its parent**. Try the next experiment in a scratch repository, so it doesn't clutter your project, with `MYGIT_TIME=1700000000` so you see the same IDs. Watch what happens when we try to quietly change the first commit's message after the second already exists:
 
 ```text
 A  = commit "first menu"                    d24a3b86af6b5cf58208242d4fa0a028c1912360
@@ -420,7 +435,8 @@ def commit(args):
 @command
 def branch(args):
     if args:
-        update_ref(f"refs/heads/{args[0]}", head_commit(), f"branch: created from {head_commit()[:7]}")
+        start = head_commit()
+        update_ref(f"refs/heads/{args[0]}", start, f"branch: created from {start[:7]}")
         return
     for name in sorted(os.listdir(f"{REPO}/refs/heads")):
         print(("* " if f"refs/heads/{name}" == head_ref() else "  ") + name)
@@ -504,9 +520,17 @@ def parse_commit(oid):
 
 def resolve(name):
     base, _, back = name.partition("~")
-    oid = head_commit() if base == "HEAD" else read_ref(f"refs/heads/{base}") or read_ref(f"refs/remotes/{base}")
+    if base == "HEAD":
+        oid = head_commit()
+    else:
+        oid = read_ref(f"refs/heads/{base}") or read_ref(f"refs/remotes/{base}")
     if oid is None:
-        found = [d + f for d in os.listdir(f"{REPO}/objects") for f in os.listdir(f"{REPO}/objects/{d}") if (d + f).startswith(base)]
+        found = [
+            d + f
+            for d in os.listdir(f"{REPO}/objects")
+            for f in os.listdir(f"{REPO}/objects/{d}")
+            if (d + f).startswith(base)
+        ]
         if len(found) != 1:
             sys.exit(f"unknown revision: {name}")
         oid = found[0]
@@ -534,7 +558,7 @@ def history(start):
             for parent in parents[oid]:
                 waiting[parent] = waiting.get(parent, 0) + 1
                 stack.append(parent)
-    ready = [(-parse_commit(oid)["time"], oid) for oid in parents if not waiting.get(oid)]
+    ready = [(-parse_commit(o)["time"], o) for o in parents if not waiting.get(o)]
     heapq.heapify(ready)
     while ready:
         oid = heapq.heappop(ready)[1]
@@ -552,7 +576,9 @@ def log(args):
 
 
 def lines_of(oid):
-    return read_object(oid)[1].decode(errors="replace").splitlines(keepends=True) if oid else []
+    if not oid:
+        return []
+    return read_object(oid)[1].decode(errors="replace").splitlines(keepends=True)
 
 
 @command
@@ -560,17 +586,28 @@ def diff(args):
     old, new = (flatten(parse_commit(resolve(a))["tree"]) for a in args)
     for path in sorted(set(old) | set(new)):
         if old.get(path) != new.get(path):
-            sys.stdout.writelines(difflib.unified_diff(lines_of(old.get(path)), lines_of(new.get(path)), f"a/{path}", f"b/{path}"))
+            before, after = lines_of(old.get(path)), lines_of(new.get(path))
+            diff_lines = difflib.unified_diff(before, after, f"a/{path}", f"b/{path}")
+            sys.stdout.writelines(diff_lines)
 
 
 def changes():
     head = flatten(parse_commit(head_commit())["tree"]) if head_commit() else {}
     index = load_index()
     working = {p: object_id("blob", open(p, "rb").read())[0] for p in walk(".")}
-    staged = {p: ("new file" if p not in head else "deleted" if p not in index else "modified")
-              for p in sorted(set(head) | set(index)) if head.get(p) != index.get(p)}
-    unstaged = {p: ("deleted" if p not in working else "modified")
-                for p in sorted(index) if working.get(p) != index[p]}
+    staged, unstaged = {}, {}
+    for path in sorted(set(head) | set(index)):
+        if head.get(path) == index.get(path):
+            continue
+        if path not in head:
+            staged[path] = "new file"
+        elif path not in index:
+            staged[path] = "deleted"
+        else:
+            staged[path] = "modified"
+    for path in sorted(index):
+        if working.get(path) != index[path]:
+            unstaged[path] = "deleted" if path not in working else "modified"
     untracked = sorted(set(working) - set(index))
     return staged, unstaged, untracked
 
@@ -578,7 +615,10 @@ def changes():
 @command
 def status(args):
     staged, unstaged, untracked = changes()
-    for title, found in (("Staged for the next commit", staged), ("Changed but not staged", unstaged)):
+    for title, found in [
+        ("Staged for the next commit", staged),
+        ("Changed but not staged", unstaged),
+    ]:
         if found:
             print(title + ":")
             for path, what in found.items():
@@ -670,7 +710,8 @@ def switch(args):
     if staged or unstaged:
         sys.exit("You have uncommitted changes. Commit them first.")
     if args[0] == "-c":
-        update_ref(f"refs/heads/{name}", head_commit(), f"branch: created from {head_commit()[:7]}")
+        start = head_commit()
+        update_ref(f"refs/heads/{name}", start, f"branch: created from {start[:7]}")
     target = read_ref(f"refs/heads/{name}")
     if target is None:
         sys.exit(f"no such branch: {name}")
@@ -766,7 +807,8 @@ def merge(args):
         else:
             conflicts.append(path)
             with open(path, "w") as f:
-                f.write(f"<<<<<<< ours\n{text_of(our_id)}=======\n{text_of(their_id)}>>>>>>> theirs\n")
+                f.write("<<<<<<< ours\n" + text_of(our_id))
+                f.write("=======\n" + text_of(their_id) + ">>>>>>> theirs\n")
     save_index(index)
     if conflicts:
         update_ref("MERGE_HEAD", theirs, "merge in progress")
@@ -926,7 +968,8 @@ def fetch(args):
     remote = remote_repo()
     copy_missing_objects(remote, REPO)
     for name in os.listdir(f"{remote}/refs/heads"):
-        update_ref(f"refs/remotes/origin/{name}", open(f"{remote}/refs/heads/{name}").read().strip(), f"fetch: {name}")
+        tip = open(f"{remote}/refs/heads/{name}").read().strip()
+        update_ref(f"refs/remotes/origin/{name}", tip, f"fetch: {name}")
 
 
 @command
@@ -934,7 +977,9 @@ def push(args):
     remote, name = remote_repo(), args[0] if args else head_ref().split("/")[-1]
     ours = read_ref(f"refs/heads/{name}")
     theirs_path = f"{remote}/refs/heads/{name}"
-    theirs = open(theirs_path).read().strip() if os.path.exists(theirs_path) else None
+    theirs = None
+    if os.path.exists(theirs_path):
+        theirs = open(theirs_path).read().strip()
     if theirs and theirs not in ancestors(ours):
         sys.exit(f"rejected: {name} is ahead on the remote. Fetch and merge first.")
     copy_missing_objects(REPO, remote)
@@ -1158,7 +1203,7 @@ Real Git compares line by line, so changes to different parts of a file combine 
 
 Git works completely on its own: everything above ran without a network or an account. **GitHub** is a service that hosts Git repositories, and it adds the things that help people work together: a shared home for the repository, **pull requests** (a proposal to merge one branch into another, with a place to discuss and review it), issues, and automation that runs checks on every change. A pull request is a conversation wrapped around the merge you built in Step 8.
 
-I have not run GitHub for this article, so I am describing it and not showing its output. What I can say is that everything it does rests on the same objects, branches and pushes you have just made.
+Everything it does rests on the same objects, branches and pushes you have just made.
 
 ## You Can't Un-record It Either
 
@@ -1313,13 +1358,15 @@ def read_object(oid):
 @command
 def hash_object(args):
     data = open(args[-1], "rb").read()
-    print(write_object("blob", data) if "-w" in args else object_id("blob", data)[0])
+    oid = write_object("blob", data) if "-w" in args else object_id("blob", data)[0]
+    print(oid)
 
 
 @command
 def cat_file(args):
     kind, data = read_object(args[-1])
-    sys.stdout.write(kind + "\n" if args[0] == "-t" else data.decode(errors="replace"))
+    shown = kind + "\n" if args[0] == "-t" else data.decode(errors="replace")
+    sys.stdout.write(shown)
 
 
 def load_index():
@@ -1361,8 +1408,12 @@ def build_tree(index, prefix=""):
         if path.startswith(prefix):
             name, _, rest = path[len(prefix):].partition("/")
             entries[name] = ("40000", None) if rest else ("100644", oid)
+    def order(item):
+        name, (mode, _oid) = item
+        return name + ("/" if mode == "40000" else "")
+
     body = b""
-    for name, (mode, oid) in sorted(entries.items(), key=lambda e: e[0] + ("/" if e[1][0] == "40000" else "")):
+    for name, (mode, oid) in sorted(entries.items(), key=order):
         if mode == "40000":
             oid = build_tree(index, f"{prefix}{name}/")
         body += f"{mode} {name}".encode() + b"\0" + bytes.fromhex(oid)
@@ -1387,11 +1438,14 @@ def write_tree(args):
 @command
 def ls_tree(args):
     for mode, name, oid in parse_tree(args[0]):
-        print(f"{mode.zfill(6)} {'tree' if mode == '40000' else 'blob'} {oid}\t{name}")
+        kind = "tree" if mode == "40000" else "blob"
+        print(f"{mode.zfill(6)} {kind} {oid}\t{name}")
 
 
 def identity():
-    return f"{os.environ.get('MYGIT_NAME', 'Dev')} <{os.environ.get('MYGIT_EMAIL', 'dev@example.com')}>"
+    name = os.environ.get("MYGIT_NAME", "Dev")
+    email = os.environ.get("MYGIT_EMAIL", "dev@example.com")
+    return f"{name} <{email}>"
 
 
 def timestamp():
@@ -1399,8 +1453,9 @@ def timestamp():
 
 
 def write_commit(tree, parents, message):
+    who = f"{identity()} {timestamp()}"
     lines = [f"tree {tree}"] + [f"parent {p}" for p in parents]
-    lines += [f"author {identity()} {timestamp()}", f"committer {identity()} {timestamp()}", "", message, ""]
+    lines += [f"author {who}", f"committer {who}", "", message, ""]
     return write_object("commit", "\n".join(lines).encode())
 
 
@@ -1448,7 +1503,8 @@ def commit(args):
 @command
 def branch(args):
     if args:
-        update_ref(f"refs/heads/{args[0]}", head_commit(), f"branch: created from {head_commit()[:7]}")
+        start = head_commit()
+        update_ref(f"refs/heads/{args[0]}", start, f"branch: created from {start[:7]}")
         return
     for name in sorted(os.listdir(f"{REPO}/refs/heads")):
         print(("* " if f"refs/heads/{name}" == head_ref() else "  ") + name)
@@ -1469,9 +1525,17 @@ def parse_commit(oid):
 
 def resolve(name):
     base, _, back = name.partition("~")
-    oid = head_commit() if base == "HEAD" else read_ref(f"refs/heads/{base}") or read_ref(f"refs/remotes/{base}")
+    if base == "HEAD":
+        oid = head_commit()
+    else:
+        oid = read_ref(f"refs/heads/{base}") or read_ref(f"refs/remotes/{base}")
     if oid is None:
-        found = [d + f for d in os.listdir(f"{REPO}/objects") for f in os.listdir(f"{REPO}/objects/{d}") if (d + f).startswith(base)]
+        found = [
+            d + f
+            for d in os.listdir(f"{REPO}/objects")
+            for f in os.listdir(f"{REPO}/objects/{d}")
+            if (d + f).startswith(base)
+        ]
         if len(found) != 1:
             sys.exit(f"unknown revision: {name}")
         oid = found[0]
@@ -1499,7 +1563,7 @@ def history(start):
             for parent in parents[oid]:
                 waiting[parent] = waiting.get(parent, 0) + 1
                 stack.append(parent)
-    ready = [(-parse_commit(oid)["time"], oid) for oid in parents if not waiting.get(oid)]
+    ready = [(-parse_commit(o)["time"], o) for o in parents if not waiting.get(o)]
     heapq.heapify(ready)
     while ready:
         oid = heapq.heappop(ready)[1]
@@ -1517,7 +1581,9 @@ def log(args):
 
 
 def lines_of(oid):
-    return read_object(oid)[1].decode(errors="replace").splitlines(keepends=True) if oid else []
+    if not oid:
+        return []
+    return read_object(oid)[1].decode(errors="replace").splitlines(keepends=True)
 
 
 @command
@@ -1525,17 +1591,28 @@ def diff(args):
     old, new = (flatten(parse_commit(resolve(a))["tree"]) for a in args)
     for path in sorted(set(old) | set(new)):
         if old.get(path) != new.get(path):
-            sys.stdout.writelines(difflib.unified_diff(lines_of(old.get(path)), lines_of(new.get(path)), f"a/{path}", f"b/{path}"))
+            before, after = lines_of(old.get(path)), lines_of(new.get(path))
+            diff_lines = difflib.unified_diff(before, after, f"a/{path}", f"b/{path}")
+            sys.stdout.writelines(diff_lines)
 
 
 def changes():
     head = flatten(parse_commit(head_commit())["tree"]) if head_commit() else {}
     index = load_index()
     working = {p: object_id("blob", open(p, "rb").read())[0] for p in walk(".")}
-    staged = {p: ("new file" if p not in head else "deleted" if p not in index else "modified")
-              for p in sorted(set(head) | set(index)) if head.get(p) != index.get(p)}
-    unstaged = {p: ("deleted" if p not in working else "modified")
-                for p in sorted(index) if working.get(p) != index[p]}
+    staged, unstaged = {}, {}
+    for path in sorted(set(head) | set(index)):
+        if head.get(path) == index.get(path):
+            continue
+        if path not in head:
+            staged[path] = "new file"
+        elif path not in index:
+            staged[path] = "deleted"
+        else:
+            staged[path] = "modified"
+    for path in sorted(index):
+        if working.get(path) != index[path]:
+            unstaged[path] = "deleted" if path not in working else "modified"
     untracked = sorted(set(working) - set(index))
     return staged, unstaged, untracked
 
@@ -1543,7 +1620,10 @@ def changes():
 @command
 def status(args):
     staged, unstaged, untracked = changes()
-    for title, found in (("Staged for the next commit", staged), ("Changed but not staged", unstaged)):
+    for title, found in [
+        ("Staged for the next commit", staged),
+        ("Changed but not staged", unstaged),
+    ]:
         if found:
             print(title + ":")
             for path, what in found.items():
@@ -1583,7 +1663,8 @@ def switch(args):
     if staged or unstaged:
         sys.exit("You have uncommitted changes. Commit them first.")
     if args[0] == "-c":
-        update_ref(f"refs/heads/{name}", head_commit(), f"branch: created from {head_commit()[:7]}")
+        start = head_commit()
+        update_ref(f"refs/heads/{name}", start, f"branch: created from {start[:7]}")
     target = read_ref(f"refs/heads/{name}")
     if target is None:
         sys.exit(f"no such branch: {name}")
@@ -1644,7 +1725,8 @@ def merge(args):
         else:
             conflicts.append(path)
             with open(path, "w") as f:
-                f.write(f"<<<<<<< ours\n{text_of(our_id)}=======\n{text_of(their_id)}>>>>>>> theirs\n")
+                f.write("<<<<<<< ours\n" + text_of(our_id))
+                f.write("=======\n" + text_of(their_id) + ">>>>>>> theirs\n")
     save_index(index)
     if conflicts:
         update_ref("MERGE_HEAD", theirs, "merge in progress")
@@ -1694,7 +1776,8 @@ def fetch(args):
     remote = remote_repo()
     copy_missing_objects(remote, REPO)
     for name in os.listdir(f"{remote}/refs/heads"):
-        update_ref(f"refs/remotes/origin/{name}", open(f"{remote}/refs/heads/{name}").read().strip(), f"fetch: {name}")
+        tip = open(f"{remote}/refs/heads/{name}").read().strip()
+        update_ref(f"refs/remotes/origin/{name}", tip, f"fetch: {name}")
 
 
 @command
@@ -1702,7 +1785,9 @@ def push(args):
     remote, name = remote_repo(), args[0] if args else head_ref().split("/")[-1]
     ours = read_ref(f"refs/heads/{name}")
     theirs_path = f"{remote}/refs/heads/{name}"
-    theirs = open(theirs_path).read().strip() if os.path.exists(theirs_path) else None
+    theirs = None
+    if os.path.exists(theirs_path):
+        theirs = open(theirs_path).read().strip()
     if theirs and theirs not in ancestors(ours):
         sys.exit(f"rejected: {name} is ahead on the remote. Fetch and merge first.")
     copy_missing_objects(REPO, remote)
@@ -1733,7 +1818,8 @@ def reset(args):
 
 def main():
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
-        sys.exit("usage: mygit <command> ...\ncommands: " + ", ".join(sorted(COMMANDS)))
+        names = ", ".join(sorted(COMMANDS))
+        sys.exit(f"usage: mygit <command> ...\ncommands: {names}")
     COMMANDS[sys.argv[1]](sys.argv[2:])
 
 

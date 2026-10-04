@@ -30,7 +30,7 @@ Each section picks one language and explains one idea through it:
 - **Java** for objects and functions, and for the runtime, because it has both styles and a famous virtual machine.
 - **Go** for generics, concurrency and performance, because it is small and its tools are built in.
 
-Everything in this article was run, and the output shown is the real output. I ran it on one machine: Python 3.11, Node 22, Java 21, Go 1.24, Rust 1.97 and GCC 13, on an Intel Xeon at 2.1 GHz with four cores. I did not test other versions or other computers, and a few results depend on the version, so I say so where it matters. A few outputs change every time you run them, such as memory addresses, race results and timings; those are from one run.
+A few outputs change every time you run them, such as memory addresses, race results and timings. The ones shown are from a single run, so yours will differ in those details.
 
 You don't need all six installed. Reading is useful, but running a sample teaches more, and each section asks you to **predict the output before reading it**. A wrong prediction is the most useful thing that can happen here.
 
@@ -683,7 +683,7 @@ Traceback (most recent call last):
 ValueError: invalid literal for int() with base 10: 'abc'
 ```
 
-I shortened the file paths and removed the marker lines Python adds under each line. Nothing handled the failure, so it climbed through each function that called `int` until it reached the top and the program stopped. The **traceback** is the list of calls it climbed through, and it is the best map you will get to what went wrong. Read it from the bottom up: the last line says what, and the lines above say where.
+Your file paths will be longer, and Python adds a row of `^` markers under each line, which I have left out. Nothing handled the failure, so it climbed through each function that called `int` until it reached the top and the program stopped. The **traceback** is the list of calls it climbed through, and it is the best map you will get to what went wrong. Read it from the bottom up: the last line says what, and the lines above say where.
 
 ### Turn a low-level failure into a useful one
 
@@ -1214,7 +1214,7 @@ Read it carefully, because it says several things at once:
 - **Growth matters more than speed.** Ten times more numbers made the slow version about 83 times slower (4,045 ns to 337,693 ns), and the next ten times made it about 103 times slower (to 34.7 million ns), because it compares every pair. The fast version grew about ten times at each step. At 10,000 numbers, the slow one took about 35 ms and the fast one about 0.5 ms. This is what people mean by **complexity**: how the work grows as the input grows.
 - **For small inputs, the "slow" one is not slower.** At 100 numbers, the slow version (4,045 ns) was a little *faster* than the fast one (4,597 ns). The fast version pays to build a table. "Faster" depends on how much data you have.
 - **Speed is bought with memory.** The slow version allocated nothing. The fast one allocated about 295 KB at 10,000 numbers. Almost every optimisation is a trade.
-- **The numbers are noisy.** I ran the whole set twice, and the 10,000-number results moved from 34.7 ms to 39.5 ms and from 503 µs to 457 µs. Differences of a few percent are not information.
+- **The numbers are noisy.** Run the same benchmark twice and the results move: the slow version at 10,000 numbers took 34.7 ms in one run and 39.5 ms in another, and the fast version 503 µs and 457 µs. Differences of a few percent are not information.
 
 ### Where does the time go?
 
