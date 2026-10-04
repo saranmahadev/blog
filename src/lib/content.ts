@@ -1,11 +1,12 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { patternFor, toneFor, type Pattern, type Tone } from './site';
+import { DRAFTS_ROOT, draftUrl, parseDraftsToken } from './drafts';
 
 /** Top-level paths owned by fixed pages/assets; content may not use them. */
 const RESERVED_SLUGS = new Set([
   'about', 'imaxt', 'projects', 'blog', 'series', 'tags', 'search', 'login', 'register', 'reset', 'profile', 'inbox', 'admin',
   'security', 'privacy', 'source', 'github', 'content', 'llms.txt', 'terms', 'accessibility', 'contact', 'advertise', 'api', 'archive', 'topics', 'rss', 'rss.xml', 'atom.xml', 'feed.json', 'feed.xsl', 'sitemap', '404', '_astro', 'images', 'fonts', 'icons',
-  'favicon.svg', 'robots.txt',
+  'favicon.svg', 'robots.txt', DRAFTS_ROOT,
 ]);
 
 const isPublished = ({ data }: { data: { draft: boolean } }) => import.meta.env.DEV || !data.draft;
@@ -22,6 +23,8 @@ export type Post = {
   pattern: Pattern;
   entry: CollectionEntry<'posts'> | CollectionEntry<'seriesPosts'>;
   data: CollectionEntry<'posts'>['data'] & { order?: number };
+  /** True for a draft served from the secret folder (see drafts.ts). Published posts leave it unset. */
+  draft?: boolean;
 };
 
 export type Series = {
@@ -108,6 +111,58 @@ async function load() {
   posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
   return { posts, series };
+}
+
+/**
+ * Drafts, for the secret folder. Empty unless DRAFTS_TOKEN is set at build time, and always empty in dev (dev shows every
+ * draft as an ordinary page). `series` holds each series that has a draft, with its published posts and drafts together so
+ * Previous and Up next work; a draft links to other drafts inside the secret folder.
+ */
+let draftCache: Promise<{ token?: string; posts: Post[]; series: Series[] }> | undefined;
+
+export function getDrafts() {
+  draftCache ??= loadDrafts();
+  return draftCache;
+}
+
+async function loadDrafts() {
+  const token = parseDraftsToken(process.env.DRAFTS_TOKEN);
+  if (!token || import.meta.env.DEV) return { token, posts: [] as Post[], series: [] as Series[] };
+
+  const [standalone, seriesEntries, seriesPostEntries] = await Promise.all([
+    getCollection('posts'),
+    getCollection('series'),
+    getCollection('seriesPosts'),
+  ]);
+
+  const posts: Post[] = [];
+  for (const entry of standalone.filter((e) => e.data.draft)) {
+    assertSlug(entry.id, 'post');
+    posts.push({ key: entry.id, url: draftUrl(token, entry.id), slug: entry.id, pattern: patternFor(entry.id), entry, data: entry.data, draft: true });
+  }
+
+  const series: Series[] = [];
+  for (const entry of seriesEntries) {
+    const slug = seriesSlugOf(entry.id);
+    const own = seriesPostEntries.filter((e) => e.id.split('/')[0] === slug);
+    if (!own.some((e) => e.data.draft)) continue;
+    const tone = entry.data.tone ?? toneFor(slug);
+    const pattern = entry.data.pattern ?? patternFor(slug);
+    const s: Series = { slug, url: `/${slug}/`, tone, pattern, entry, posts: [] };
+    for (const e of own) {
+      const key = e.id;
+      const post: Post = {
+        key, url: e.data.draft ? draftUrl(token, key) : `/${key}/`, slug: key.split('/')[1], seriesSlug: slug,
+        seriesTitle: entry.data.title, tone, pattern, entry: e, data: e.data, draft: e.data.draft,
+      };
+      s.posts.push(post);
+      if (e.data.draft) posts.push(post);
+    }
+    s.posts.sort((a, b) => (a.data.order ?? Infinity) - (b.data.order ?? Infinity) || a.data.date.valueOf() - b.data.date.valueOf());
+    series.push(s);
+  }
+  posts.sort((a, b) => a.key.localeCompare(b.key));
+  return { token, posts, series };
 }
 
 /** Posts that share the most tags with `post`, newest first on ties. */

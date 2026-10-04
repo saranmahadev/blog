@@ -1,0 +1,31 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getDrafts } from '@/lib/content';
+import { formatDate } from '@/lib/site';
+
+// Built only when DRAFTS_TOKEN is set. The folder name is the secret; nothing on the site links here.
+export const getStaticPaths = (async () => {
+  const { token } = await getDrafts();
+  return token ? [{ params: { token } }] : [];
+}) satisfies GetStaticPaths;
+
+const { posts } = await getDrafts();
+---
+
+<BaseLayout title="Drafts" description="Drafts that are not published yet." noindex>
+  <div class="wrap" style="padding-block:48px">
+    <p class="mono">Only people with this link can see these pages. They are not in search, feeds or the series lists.</p>
+    <h1 class="disp art-h" style="margin-top:12px">Drafts</h1>
+    {posts.length === 0 && <p class="serif" style="margin-top:24px">No drafts right now.</p>}
+    <ul style="margin-top:32px;max-width:720px">
+      {posts.map((p) => (
+        <li style="padding:18px 0;border-top:1px solid var(--hair)">
+          <a class="head" style="font-size:24px" href={p.url}>{p.data.title}</a>
+          <div class="meta" style="margin-top:4px">{p.seriesTitle ? `${p.seriesTitle} · ` : ''}{formatDate(p.data.date)}</div>
+          <p class="serif" style="margin-top:8px">{p.data.description}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>

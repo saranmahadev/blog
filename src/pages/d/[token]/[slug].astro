@@ -1,0 +1,15 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getDrafts } from '@/lib/content';
+import Article from '@/components/blog/Article.astro';
+
+export const getStaticPaths = (async () => {
+  const { token, posts } = await getDrafts();
+  if (!token) return [];
+  return posts.filter((p) => !p.seriesSlug).map((post) => ({ params: { token, slug: post.slug }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+---
+
+<Article post={post} />
