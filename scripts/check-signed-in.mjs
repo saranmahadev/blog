@@ -9,7 +9,7 @@ import { serve, chromePath } from './serve.mjs';
 const PROJECT = 'demo-drafted';
 const AUTH = 'http://127.0.0.1:9099';
 const FS = `http://127.0.0.1:8080/v1/projects/${PROJECT}/databases/(default)/documents`;
-const POST = 'dev-universe/building-drafted';
+const POST = 'curious-to-coder/symptoms-that-you-should-pursue-coding';
 const PASSWORD = 'correct-horse-battery';
 const owner = { 'content-type': 'application/json', authorization: 'Bearer owner' };
 

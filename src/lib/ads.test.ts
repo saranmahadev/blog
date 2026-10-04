@@ -4,7 +4,7 @@ import { buildRequest, slotsOf, type Request } from './mailto';
 import { pickSponsor, labelFor, isLive, type Sponsor } from './sponsors';
 
 const s = (over: Partial<Sponsor>): Sponsor => ({ id: 'a', name: 'A', house: false, href: 'https://example.com', kind: 'text', sizes: ['inline'], posts: 'all', exclude: [], active: true, ...over });
-const page = { key: 'dev-universe/building-drafted', series: 'dev-universe', tags: ['Web'] };
+const page = { key: 'curious-to-coder/symptoms', series: 'dev-universe', tags: ['Web'] };
 
 describe('prices', () => {
   it('has every tier in every currency, and longer terms cost a little less per day', () => {

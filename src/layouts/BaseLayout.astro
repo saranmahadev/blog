@@ -45,6 +45,7 @@ const imageUrl = new URL(image ?? '/og/default.png', Astro.site).href;
     <link rel="alternate" type="application/atom+xml" title={`${SITE.title} (Atom)`} href="/atom.xml" />
     <link rel="alternate" type="application/feed+json" title={`${SITE.title} (JSON Feed)`} href="/feed.json" />
     <link rel="sitemap" href="/sitemap.xml" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="AI agents: read the content on GitHub" />
     <slot name="head" />
     <script is:inline>
       // Apply the saved or system theme before first paint to avoid a flash.

@@ -610,7 +610,7 @@ flowchart LR
 - **Reserved slugs** cannot be used: `about`, `imaxt`, `projects`, `blog`, `series`, `tags`, `search`, `login`, `register`, `reset`, `profile`, `inbox`, `admin`, `security`, `privacy`, `api`, `archive`, `topics`, `rss`, `rss.xml`, `atom.xml`, `feed.json`, `feed.xsl`, `sitemap`, `404`, `_astro`, `images`, `fonts`, `icons`, `favicon.svg`, `robots.txt`.
 - Use `.mdx` when a post uses any Imaxt block; use `.md` for plain prose and code.
 - A series post whose series `index.md` is missing or a draft is **not published**.
-- Live examples to read before drafting: *Symptoms That You Should Pursue Coding* (a story), *What Happens When You Open a Blog Post* (an explainer with "Try it" stops) and the *Dev Universe* map (an idea, described as one).
+- Live examples to read before drafting: *Symptoms That You Should Pursue Coding* (a story) and the *Dev Universe* map (an idea, described as one).
 
 ## 14. Front matter
 
@@ -693,7 +693,7 @@ CI scans every key page with axe (WCAG 2.1 A and AA) in light and dark, and fail
 
 1. **Headings.** The post title is the page's only `h1`. Use `##` for sections, `###` for sub-parts, and never skip a level. Sections show in the **Contents** rail, so write them to make sense alone.
 2. **Diagrams** need `accTitle` and `accDescr` (section 10).
-3. **Links** have meaningful text ("the Firebase docs", not "click here"). Internal links are relative (`/dev-universe/building-drafted/`).
+3. **Links** have meaningful text ("the Firebase docs", not "click here"). Internal links are relative (`/dev-universe/a-connected-ecosystem/`).
 4. **Colour** is never the only carrier of meaning. Tones are tested for contrast; do not hard-code colours.
 5. **Motion** respects reduced-motion settings. Do not describe a block only by its animation.
 6. **Tables** (and `Heatmap`) have a caption.

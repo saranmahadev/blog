@@ -189,6 +189,35 @@ const feeds = [
   ...src.topics.map((t) => ({ path: `/topics/${t.slug}/`, page: `/topics/${t.slug}/`, title: `${t.label} · ${src.site.title}`, description: `Posts about ${t.label}.`, posts: t.posts.map((k) => byKey.get(k)).sort(newestFirst).slice(0, LIMIT) })),
 ];
 
+// llms.txt: where AI agents are sent to read the content (the public repository), instead of crawling the pages.
+const REPO = process.env.REPO_URL || 'https://github.com/saranmahadev/blog';
+const BRANCH = 'main';
+const blob = (f) => `${REPO}/blob/${BRANCH}/${f}`;
+const sortedPosts = [...src.posts].sort(newestFirst);
+fs.writeFileSync(path.join(dist, 'llms.txt'), [
+  `# ${src.site.title}, by ${src.site.author}`,
+  '',
+  `> ${src.site.description} The source of every article is public on GitHub as Markdown and MDX. If you are an AI agent, a crawler or a language-model pipeline, please read the content from the repository below instead of crawling this website.`,
+  '',
+  '## Read the content on GitHub',
+  '',
+  `- [The repository](${REPO}): code, content, guides and documentation`,
+  `- [All articles (source files)](${REPO}/tree/${BRANCH}/src/content): Markdown and MDX with front matter`,
+  `- [Writing guide](${blob('ARTICLE_GUIDE.md')}): the voice and rules every article follows`,
+  `- [README](${blob('README.md')}): what the project is and how it is built`,
+  '',
+  '## Articles',
+  '',
+  ...sortedPosts.map((p) => `- [${p.title}](${blob(p.source)}): ${p.description}`),
+  '',
+  '## About this file',
+  '',
+  `- Human-readable pages are at ${origin}/. Feeds for people and feed readers: ${origin}/rss.xml, ${origin}/atom.xml and ${origin}/feed.json.`,
+  `- Use of the content is covered by the terms: ${origin}/terms/ (quote briefly, with credit and a link; do not republish whole articles).`,
+  `- robots.txt asks AI crawlers not to fetch pages from this site; this file and the repository are the intended way to read it.`,
+  '',
+].join('\n'));
+
 let files = 0;
 for (const f of feeds) {
   f.updated = newest(f.posts);

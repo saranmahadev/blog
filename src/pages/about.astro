@@ -1,19 +1,36 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { SITE } from '@/lib/site';
+import { AUTHOR_EMAIL, SITE } from '@/lib/site';
 ---
 
-<BaseLayout title="About" description={`About ${SITE.title}, ${SITE.byline.toLowerCase()}.`}>
+<BaseLayout title="About" description="About Saran Mahadev (Dev): creator, engineer, educator, builder and entrepreneur, and the person behind Drafted and Dev Universe.">
   <section class="wrap" style="padding-top:56px;padding-bottom:32px">
     <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / About</div>
-    <h1 class="disp" style="font-size:clamp(72px,12vw,180px)">About</h1>
+    <h1 class="disp" style="font-size:clamp(72px,12vw,180px)">About me</h1>
   </section>
   <div class="wrap" style="padding-bottom:80px">
     <div class="prose" style="margin-left:0">
-      <p>{SITE.title} is the writing and thinking layer of {SITE.author}'s work: software engineering, AI and technology, productivity, systems, entrepreneurship, careers, project lessons, experiments and long-form technical writing.</p>
-      <p>{SITE.author} is a creator, engineer, educator, builder and entrepreneur. {SITE.title} is one part of a larger system called <a href="/dev-universe/a-connected-ecosystem/">Dev Universe</a>, where learning, creating, teaching, sharing and building are meant to work together instead of apart.</p>
-      <p>You can also find {SITE.author} on <a href="https://www.youtube.com/@saranmahadev">YouTube</a> and <a href="https://www.instagram.com/everything.by.dev">Instagram</a>.</p>
-      <p>To write to {SITE.author}, open any post and use the private message box. Only the two of you can see it. See <a href="/security/">Security and privacy</a> for how that works.</p>
+      <p>I am Saran Mahadev, and I go by Dev. I am a creator, engineer, educator, builder and entrepreneur.</p>
+
+      <h2 id="what-i-do">What I do</h2>
+      <p>I write about software engineering, AI and technology, productivity, systems, entrepreneurship and careers, and I build things that put those ideas to work. {SITE.title} is where I think in writing: the place for deep thinking and written knowledge.</p>
+
+      <h2 id="how-i-got-here">How I got here</h2>
+      <p>I once planned to prepare for UPSC and become an IPS officer. A substitute teacher explaining inheritance in a Computer Science class changed what I was curious about, and the rest followed from there. I tell that story in <a href="/curious-to-coder/symptoms-that-you-should-pursue-coding/">Symptoms That You Should Pursue Coding</a>.</p>
+
+      <h2 id="dev-universe">Dev Universe</h2>
+      <p>Learning, creating, teaching, sharing and building should not be disconnected activities. <a href="/dev-universe/a-connected-ecosystem/">Dev Universe</a> is the system I am building around that idea, and {SITE.title} is one part of it.</p>
+
+      <h2 id="elsewhere">Elsewhere</h2>
+      <ul>
+        <li><a href="https://www.youtube.com/@saranmahadev">Saran Mahadev on YouTube</a>: technology, AI, software engineering, projects and tutorials.</li>
+        <li><a href="https://www.instagram.com/everything.by.dev">Everything.by.Dev</a>: what is happening across Dev Universe.</li>
+        <li><a href="https://www.instagram.com/lyf.as.dev">Lyf as Dev</a>: the personal side, who I am and how I live.</li>
+        <li><a href="https://github.com/saranmahadev/blog">GitHub</a>: the source of every article on this site.</li>
+      </ul>
+
+      <h2 id="say-hello">Say hello</h2>
+      <p>Write to <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a>, or open any post and send a private message. See the <a href="/contact/">contact page</a> for everything else.</p>
     </div>
   </div>
 </BaseLayout>
