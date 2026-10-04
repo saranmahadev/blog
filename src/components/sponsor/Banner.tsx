@@ -25,7 +25,7 @@ export type BannerProps = {
 export default function Banner(p: BannerProps) {
   const size = SLOTS[p.slot];
   const external = /^https?:\/\//.test(p.href);
-  const rel = p.house ? 'noopener' : 'sponsored noopener';
+  const rel = 'sponsored noopener';
   const link = p.preview ? { href: '#', onClick: (e: { preventDefault: () => void }) => e.preventDefault(), 'aria-disabled': true as const } : { href: p.href, rel: external ? rel : undefined };
   return (
     <aside className={`sponsor sponsor-${p.slot}`} aria-label={p.label} data-sponsor data-pagefind-ignore>
