@@ -10,7 +10,7 @@ export async function getStaticPaths() {
 const { topic } = Astro.props;
 ---
 
-<BaseLayout title={`${topic.label}`} description={`Posts about ${topic.label}.`}>
+<BaseLayout title={`Posts on ${topic.label}`} description={`Every post on Drafted about ${topic.label}, newest first, with series and reading time for each.`}>
   <link slot="head" rel="alternate" type="application/rss+xml" title={`${topic.label} (RSS)`} href={`/topics/${topic.slug}/rss.xml`} />
     <link slot="head" rel="alternate" type="application/atom+xml" title={`${topic.label} (Atom)`} href={`/topics/${topic.slug}/atom.xml`} />
     <link slot="head" rel="alternate" type="application/feed+json" title={`${topic.label} (JSON Feed)`} href={`/topics/${topic.slug}/feed.json`} />

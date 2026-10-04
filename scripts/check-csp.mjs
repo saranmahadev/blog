@@ -2,8 +2,9 @@
 // adds an unhashed inline script or a blocked request is caught before deploy.
 import { chromium } from 'playwright';
 import { serve, chromePath } from './serve.mjs';
+import { pagesFor } from './pages.mjs';
 
-const PAGES = ['/', '/archive/', '/topics/dev-universe/', '/welcome-to-drafted/', '/dev-universe/', '/curious-to-coder/symptoms-that-you-should-pursue-coding/', '/imaxt/', '/about/', '/privacy/', '/advertise/', '/login/', '/register/', '/reset/', '/profile/', '/inbox/', '/404.html'];
+const PAGES = pagesFor(['/', '/archive/', '/topics/dev-universe/', '/welcome-to-drafted/', '/dev-universe/', '/curious-to-coder/symptoms-that-you-should-pursue-coding/', '/imaxt/', '/about/', '/privacy/', '/advertise/', '/login/', '/register/', '/reset/', '/profile/', '/inbox/', '/404.html']);
 const { base, close } = await serve();
 const browser = await chromium.launch({ executablePath: chromePath() });
 const page = await browser.newPage();

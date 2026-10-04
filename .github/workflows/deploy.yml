@@ -1,23 +1,30 @@
 name: Build and deploy
 
 # Never runs on every commit. It runs when:
-#   - a commit lands on main (build + deploy to production)
-#   - the "build" label is added to a pull request (build and checks only)
-#   - the "deploy-preview" label is added to a pull request (build, then a temporary preview URL)
-#   - someone starts it by hand from the Actions tab (build only; deploys only if run on main)
+#   - a commit lands on main (build, check and deploy only what changed)
+#   - the "build" label is added to a pull request (checks only)
+#   - the "deploy-preview" label is added to a pull request (checks, then a temporary preview URL)
+#   - someone starts it by hand from the Actions tab (a full run; deploys only if run on main)
+#   - weekly (a full run with no deploy, which catches any drift the skip rules below might miss)
 # To re-run for a PR after new commits, remove and re-add the label, or run it by hand.
+#
+# What runs depends on which files changed (scripts/ci-paths.mjs, tested in scripts/ci-paths.test.mjs):
+# docs-only changes run nothing heavy, an article edit checks only that article, a Cloud Functions or rules change
+# skips the site build and browser checks, and a dependency or workflow change runs everything.
 on:
   push:
     branches: [main]
   pull_request:
     types: [labeled]
   workflow_dispatch:
+  schedule:
+    - cron: '41 3 * * 1'
 
-# One deploy at a time; never cancel one that is already running. Pull request runs have their own group so a labelled
-# pull request (including bot update PRs) can never queue behind, or replace, a deploy waiting on main.
+# One deploy at a time; never cancel one that is already running. Pull request runs have their own group, and a newer
+# labelled run replaces an older one for the same pull request.
 concurrency:
   group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'deploy-main' }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # Least privilege: jobs only read the repository. Only the jobs that publish also get an OIDC token (below).
 permissions:
@@ -28,8 +35,50 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # silences the Node 20 deprecation notice for the actions below
 
 jobs:
-  build:
+  # Decides, from the changed files, which of the jobs and steps below can be affected. Cheap: no install.
+  changes:
     if: github.event_name != 'pull_request' || contains(fromJSON('["build","deploy-preview"]'), github.event.label.name)
+    runs-on: ubuntu-latest
+    outputs:
+      docsOnly: ${{ steps.paths.outputs.docsOnly }}
+      build: ${{ steps.paths.outputs.build }}
+      typecheck: ${{ steps.paths.outputs.typecheck }}
+      unit: ${{ steps.paths.outputs.unit }}
+      code: ${{ steps.paths.outputs.code }}
+      browser: ${{ steps.paths.outputs.browser }}
+      feeds: ${{ steps.paths.outputs.feeds }}
+      ads: ${{ steps.paths.outputs.ads }}
+      lighthouse: ${{ steps.paths.outputs.lighthouse }}
+      backend: ${{ steps.paths.outputs.backend }}
+      rules: ${{ steps.paths.outputs.rules }}
+      functions: ${{ steps.paths.outputs.functions }}
+      signedin: ${{ steps.paths.outputs.signedin }}
+      slugs: ${{ steps.paths.outputs.slugs }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - id: paths
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+        run: |
+          # Manual and weekly runs are always full. An unknown change set (first push, force push) is full too.
+          case "$EVENT" in
+            pull_request) node scripts/ci-paths.mjs "$PR_BASE" "$PR_HEAD" ;;
+            push)         node scripts/ci-paths.mjs "$PUSH_BEFORE" "$SHA" ;;
+            *)            node scripts/ci-paths.mjs "" "$SHA" full ;;
+          esac
+
+  build:
+    needs: changes
+    if: needs.changes.outputs.build == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -41,7 +90,15 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Check Chrome (renders Mermaid diagrams at build time)
         run: google-chrome --version
-      - run: pnpm check
+      # Cheapest first, so a mistake fails before the build starts.
+      - name: CI skip rules (unit tests)
+        run: pnpm exec vitest run scripts
+      - name: Type check
+        if: needs.changes.outputs.typecheck == 'true'
+        run: pnpm check
+      - name: Unit tests
+        if: needs.changes.outputs.unit == 'true'
+        run: pnpm exec vitest run src
       - run: pnpm build
         env:
           SITE_URL: ${{ vars.SITE_URL }}
@@ -54,12 +111,13 @@ jobs:
         with:
           name: dist
           path: dist
-          retention-days: 7
+          retention-days: 3
           include-hidden-files: true # .well-known/security.txt
 
-  # Firestore security rules and Cloud Functions compile. Rules run against the local emulator.
+  # Firestore rules, Cloud Functions and the signed-in screens, against local emulators. Each step runs only if its files changed.
   backend:
-    if: github.event_name != 'pull_request' || contains(fromJSON('["build","deploy-preview"]'), github.event.label.name)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -74,12 +132,15 @@ jobs:
           java-version: 21
       - run: pnpm install --frozen-lockfile
       - name: Firestore rules tests
+        if: needs.changes.outputs.rules == 'true'
         run: pnpm test:rules
       - name: Cloud Functions compile
+        if: needs.changes.outputs.functions == 'true'
         run: cd functions && npm ci --no-audit --no-fund && npx tsc --noEmit
-      # Signed-in screens against the local emulators: sign in through the real form, scan with axe in light and dark,
-      # and fail on any Content-Security-Policy violation. Uses a throwaway build pointed at the emulators.
+      # Sign in through the real form, scan with axe in light and dark, and fail on any Content-Security-Policy violation.
+      # Uses a throwaway build pointed at the emulators (the slowest step, so it runs only when the UI or rules it uses changed).
       - name: Signed-in screens (accessibility, policy, inbox)
+        if: needs.changes.outputs.signedin == 'true'
         run: |
           pnpm build
           pnpm check:signed-in
@@ -91,10 +152,15 @@ jobs:
           PUBLIC_FIREBASE_APP_ID: 1:1:web:1
           CHROME_PATH: /usr/bin/google-chrome
 
-  # Quality gates run on the built site. A failure here blocks both deploy and preview.
+  # Quality gates on the built site, cheapest first. A failure blocks both deploy and preview.
   gates:
-    needs: build
+    needs: [changes, build]
+    if: needs.build.result == 'success'
     runs-on: ubuntu-latest
+    env:
+      CHROME_PATH: /usr/bin/google-chrome
+      # When only articles changed, the browser checks visit the home page and those articles instead of every page.
+      CHECK_SLUGS: ${{ needs.changes.outputs.slugs }}
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -109,41 +175,49 @@ jobs:
           path: dist
       - name: Internal links and anchors
         run: pnpm check:links
+      - name: Privacy (no third-party fonts, analytics or session replay)
+        run: pnpm check:privacy
+      - name: Search basics (titles, descriptions, canonicals, structured data)
+        run: pnpm check:seo
       - name: Feeds (RSS, Atom, JSON Feed)
+        if: needs.changes.outputs.feeds == 'true'
         run: pnpm check:feeds
       - name: Sponsored banners (sizes, labels, links)
+        if: needs.changes.outputs.ads == 'true'
         run: pnpm check:sponsors
       - name: Advertise page builder (prices, image checks, request email)
+        if: needs.changes.outputs.ads == 'true'
         run: pnpm check:advertise
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
       - name: Content Security Policy (no violations in a real browser)
+        if: needs.changes.outputs.browser == 'true'
         run: pnpm check:csp
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
       - name: Accessibility (axe, light and dark)
+        if: needs.changes.outputs.browser == 'true'
         run: pnpm check:a11y
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
       - name: Keyboard and alt text
+        if: needs.changes.outputs.browser == 'true'
         run: pnpm check:keyboard
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
+      # Performance only moves when code, styles, fonts or dependencies do, not when an article's words change.
       - name: Lighthouse budgets
+        if: needs.changes.outputs.lighthouse == 'true'
         run: pnpm check:lighthouse
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
       - uses: actions/upload-artifact@v7
-        if: always()
+        if: always() && needs.changes.outputs.lighthouse == 'true'
         with:
           name: lighthouse
           path: .lighthouseci
-          retention-days: 7
+          retention-days: 3
 
   deploy:
-    needs: [build, gates, backend]
-    # Only from main, and skipped until the repository variable below is configured.
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.FIREBASE_PROJECT_ID != ''
+    needs: [changes, build, gates, backend]
+    # Only from main (a push or a manual run, never the weekly check), only when nothing failed, and only the parts that changed.
+    # Skipped until the repository variable below is configured.
+    if: >-
+      always() && github.ref == 'refs/heads/main' && contains(fromJSON('["push","workflow_dispatch"]'), github.event_name)
+      && vars.FIREBASE_PROJECT_ID != ''
+      && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+      && needs.changes.result == 'success'
+      && (needs.build.result == 'success' || (vars.DEPLOY_BACKEND == 'true' && (needs.changes.outputs.rules == 'true' || needs.changes.outputs.functions == 'true')))
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -151,6 +225,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
+        if: needs.build.result == 'success'
         with:
           name: dist
           path: dist
@@ -167,15 +242,18 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Deploy Firestore rules, indexes and Cloud Functions
-        if: vars.DEPLOY_BACKEND == 'true'
+      - name: Deploy Firestore rules and indexes
+        if: vars.DEPLOY_BACKEND == 'true' && needs.changes.outputs.rules == 'true'
+        run: pnpm exec firebase deploy --only "firestore:rules,firestore:indexes" --project "$FIREBASE_PROJECT" --non-interactive
+      - name: Deploy Cloud Functions
+        if: vars.DEPLOY_BACKEND == 'true' && needs.changes.outputs.functions == 'true'
         run: |
           # Only the functions defined in this repo are deployed (never the rest of a shared project).
           FUNCS=$(grep -oP '^export const \K\w+' functions/src/index.ts | sed 's/^/functions:/' | paste -sd, -)
-          echo "Deploying: firestore:rules,firestore:indexes,$FUNCS"
-          pnpm exec firebase deploy --only "firestore:rules,firestore:indexes,$FUNCS" --project "$FIREBASE_PROJECT" --non-interactive
+          echo "Deploying: $FUNCS"
+          pnpm exec firebase deploy --only "$FUNCS" --project "$FIREBASE_PROJECT" --non-interactive
       - name: Remove retired Cloud Functions
-        if: vars.DEPLOY_BACKEND == 'true'
+        if: vars.DEPLOY_BACKEND == 'true' && needs.changes.outputs.functions == 'true'
         run: |
           # Functions this repo used to have and no longer does. Listed by name so nothing else in a shared project is touched;
           # already-deleted ones are skipped. Add a name here when you remove a function from functions/src/index.ts.
@@ -183,11 +261,15 @@ jobs:
             pnpm exec firebase functions:delete "$F" --region asia-south1 --project "$FIREBASE_PROJECT" --force || echo "$F: nothing to delete"
           done
       - name: Deploy to Firebase Hosting
+        if: needs.build.result == 'success'
         run: pnpm exec firebase deploy --only hosting --project "$FIREBASE_PROJECT"
 
   preview:
-    needs: [build, gates, backend]
-    if: github.event_name == 'pull_request' && github.event.label.name == 'deploy-preview' && vars.FIREBASE_PROJECT_ID != ''
+    needs: [changes, build, gates, backend]
+    if: >-
+      always() && github.event_name == 'pull_request' && github.event.label.name == 'deploy-preview' && vars.FIREBASE_PROJECT_ID != ''
+      && needs.build.result == 'success' && needs.gates.result == 'success'
+      && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -210,3 +292,15 @@ jobs:
           service_account: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
       - name: Deploy preview channel (expires in 7 days)
         run: pnpm exec firebase hosting:channel:deploy "pr-${{ github.event.pull_request.number }}" --expires 7d --project "$FIREBASE_PROJECT"
+
+  # The one status to require in branch protection. Skipped jobs count as fine; a failed or cancelled one does not.
+  ci-ok:
+    if: always() && needs.changes.result != 'skipped'
+    needs: [changes, build, backend, gates]
+    runs-on: ubuntu-latest
+    steps:
+      - name: A job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
+      - name: Everything that ran passed
+        run: echo ok

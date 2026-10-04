@@ -1,8 +1,9 @@
 // Keyboard and text-alternative checks on the built site: alt text, skip link, tab order, visible focus, no traps.
 import { chromium } from 'playwright';
 import { serve, chromePath } from './serve.mjs';
+import { pagesFor } from './pages.mjs';
 
-const PAGES = ['/', '/archive/', '/welcome-to-drafted/', '/dev-universe/a-connected-ecosystem/', '/curious-to-coder/symptoms-that-you-should-pursue-coding/', '/imaxt/', '/about/', '/privacy/', '/terms/', '/contact/', '/advertise/', '/login/', '/register/', '/reset/'];
+const PAGES = pagesFor(['/', '/archive/', '/welcome-to-drafted/', '/dev-universe/a-connected-ecosystem/', '/curious-to-coder/symptoms-that-you-should-pursue-coding/', '/imaxt/', '/about/', '/privacy/', '/terms/', '/contact/', '/advertise/', '/login/', '/register/', '/reset/']);
 const { base, close } = await serve();
 const browser = await chromium.launch({ executablePath: chromePath() });
 const problems = [];

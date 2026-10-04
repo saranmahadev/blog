@@ -53,7 +53,7 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={ogImage} type="article">
+<BaseLayout title={data.title} description={data.description} canonical={data.canonical} image={ogImage} type="article" published={data.date} modified={data.updated ?? data.date} tags={data.tags}>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   {series && <Fragment slot="head">
     <link rel="alternate" type="application/rss+xml" title={`${series.entry.data.title} (RSS)`} href={`${series.url}rss.xml`} />

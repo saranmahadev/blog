@@ -13,10 +13,15 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
+  published?: Date;
+  modified?: Date;
+  tags?: string[];
 }
 
-const { title, description = SITE.description, canonical, image, type = 'website', noindex } = Astro.props;
-const fullTitle = title ? `${title} · ${SITE.title}` : `${SITE.title}, ${SITE.byline.toLowerCase()}`;
+const { title, description = SITE.description, canonical, image, type = 'website', noindex, published, modified, tags = [] } = Astro.props;
+const withSite = title ? `${title} · ${SITE.title}` : '';
+// Search results cut long titles, so a long article title keeps its own words and drops the site suffix.
+const fullTitle = title ? (withSite.length > 70 ? title : withSite) : `${SITE.title}, ${SITE.byline.toLowerCase()}`;
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).href;
 const imageUrl = new URL(image ?? '/og/default.png', Astro.site).href;
 ---
@@ -30,9 +35,19 @@ const imageUrl = new URL(image ?? '/og/default.png', Astro.site).href;
     <meta name="description" content={description} />
     {!noindex && <link rel="canonical" href={canonicalUrl} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#f4f1e8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1c1c1c" media="(prefers-color-scheme: dark)" />
+    <meta name="author" content={SITE.author} />
     {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:site_name" content={SITE.title} />
     <meta property="og:type" content={type} />
+    <meta property="og:locale" content="en_IN" />
+    {type === 'article' && published && <meta property="article:published_time" content={published.toISOString()} />}
+    {type === 'article' && (modified ?? published) && <meta property="article:modified_time" content={(modified ?? published)!.toISOString()} />}
+    {type === 'article' && <meta property="article:author" content={SITE.author} />}
+    {type === 'article' && tags.map((t) => <meta property="article:tag" content={t} />)}
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
