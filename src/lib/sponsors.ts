@@ -39,8 +39,8 @@ export type Sponsor = {
 
 export type PageInfo = { key: string; series?: string; tags: string[] };
 
-/** The label shown on a banner: paid banners say Sponsored; our own say Dev Universe, because self-promotion is not sponsorship. */
-export const labelFor = (s: Pick<Sponsor, 'house'>) => (s.house ? 'Dev Universe' : 'Sponsored');
+/** Every banner, paid or our own, says Sponsored. */
+export const labelFor = (_s: Pick<Sponsor, 'house'>) => 'Sponsored';
 
 const day = (d: Date) => d.toISOString().slice(0, 10);
 

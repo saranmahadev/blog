@@ -14,7 +14,7 @@ Banners are the only ad format. They come in three fixed sizes, are hosted on th
 | End | 720 x 200 | after the last paragraph, before the message box |
 | Rail | 300 x 250 | right column, wide screens only |
 
-- **Data, not code.** Each banner is a file in `src/content/sponsors/` (shape in `example.json`; images in `public/sponsors/`). Paid sponsors take priority; our own Dev Universe banners fill every slot that is not booked. Our own banners say *Dev Universe*; paid ones say *Sponsored* and use `rel="sponsored"`. A post can opt out with `sponsors: false`.
+- **Data, not code.** Each banner is a file in `src/content/sponsors/` (shape in `example.json`; images in `public/sponsors/`). Paid sponsors take priority; our own Dev Universe banners fill every slot that is not booked. Every banner, ours or paid, says *Sponsored* and uses `rel="sponsored"`. A post can opt out with `sponsors: false`.
 - **Prices** (tiers, currencies, terms) are in `src/lib/ad-prices.ts`. The Advertise page, its builder and the booking email all read that one file. There are no permanent slots: the longest term is 90 days.
 - **Advertise page** (`/advertise/`): specimens, rules, prices with a currency selector, and a builder that previews an Imaxt text banner or the visitor's own image and writes a `mailto:` request. Nothing is uploaded or stored; there is no database.
 - **Checks**: `pnpm check:sponsors` (sizes, labels, links, file budget) and `pnpm check:advertise` (the builder in a real browser). Both run in CI.

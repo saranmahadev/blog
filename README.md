@@ -50,7 +50,8 @@ pnpm install
 pnpm dev          # http://localhost:4321
 pnpm check        # type-check
 pnpm build        # builds dist/ (pages, share images, feeds, search index)
-pnpm check:dist   # links, feeds, sponsors, advertise, CSP, accessibility, Lighthouse
+pnpm check:dist   # links, privacy, SEO, feeds, sponsors, advertise, CSP, accessibility, keyboard, Lighthouse
+pnpm test         # unit tests, including the CI skip rules
 ```
 
 Node 22 and pnpm 10 are required. Chrome is used at build time to render diagrams and share images (set `CHROME_PATH` if it is not in a standard place). Copy `.env.example` to `.env` to connect your own Firebase project, or leave it empty and the site builds without accounts.
@@ -104,4 +105,4 @@ Found a vulnerability? Please email **mail@saranmahadev.in** before sharing it p
 
 ## Contributing and licence
 
-This is a personal publication, so pull requests that change articles or design are not expected; fixes to the code are welcome as issues. The articles, diagrams and design are © Dev, all rights reserved; short quotations with credit and a link are welcome, and code snippets in the articles may be used freely with no warranty (see the [terms](https://blog.saranmahadev.in/terms/)). The repository carries no open-source licence for the site's code or content unless a file says otherwise.
+This is a personal publication, so pull requests that change articles or design are not expected; fixes to the code are welcome as issues. All rights reserved: see [LICENSE](LICENSE). Short quotations with credit and a link are welcome, and code snippets in the articles may be used freely with no warranty (see the [terms](https://blog.saranmahadev.in/terms/)).

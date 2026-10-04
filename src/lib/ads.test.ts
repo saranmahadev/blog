@@ -48,7 +48,7 @@ describe('choosing a banner', () => {
     expect(pickSponsor(list, 'inline', page)?.id).toBe(pickSponsor([...list].reverse(), 'inline', page)?.id);
   });
   it('labels our banners honestly', () => {
-    expect(labelFor({ house: true })).toBe('Dev Universe');
+    expect(labelFor({ house: true })).toBe('Sponsored');
     expect(labelFor({ house: false })).toBe('Sponsored');
   });
 });

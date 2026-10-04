@@ -39,6 +39,14 @@ for (const slug of slugs) {
   fs.mkdirSync(path.dirname(out), { recursive: true });
   await page.screenshot({ path: out, clip: { x: 0, y: 0, width: 1200, height: 630 } });
 }
+// App icons from the favicon, so phones and bookmarks get a crisp square instead of a screenshot.
+const svg = fs.readFileSync(path.join(path.resolve('public'), 'favicon.svg'), 'utf8');
+for (const [name, size] of [['apple-touch-icon.png', 180], ['icon-192.png', 192], ['icon-512.png', 512]]) {
+  const icon = await browser.newPage({ viewport: { width: size, height: size } });
+  await icon.setContent(`<body style="margin:0;background:#f4f1e8;display:grid;place-items:center;height:100vh"><div style="width:${size}px;height:${size}px">${svg.replace('<svg ', `<svg width="${size}" height="${size}" `)}</div></body>`);
+  await icon.screenshot({ path: path.join(dist, name) });
+  await icon.close();
+}
 await browser.close();
 server.close();
 fs.rmSync(cardDir, { recursive: true });

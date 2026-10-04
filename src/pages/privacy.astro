@@ -16,6 +16,7 @@ import { AUTHOR_EMAIL, SITE } from '@/lib/site';
 
       <h2 id="who">Who is responsible</h2>
       <p>{SITE.author} (the author of this site) decides what data is collected and why. Contact: <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a>. The same address is the contact for questions, requests and complaints about your data.</p>
+      <p>This policy follows India's <strong>Digital Personal Data Protection Act, 2023</strong> (DPDP Act). Under that Act the author is the <em>Data Fiduciary</em> and you are the <em>Data Principal</em>. By ticking the box at sign-up you give your consent to the collection and use described here, for the purposes listed below. You can withdraw that consent at any time by deleting your account.</p>
 
       <h2 id="collected">What is collected</h2>
       <h3>If you only read</h3>
@@ -51,11 +52,17 @@ import { AUTHOR_EMAIL, SITE } from '@/lib/site';
       <ul>
         <li><strong>See and correct:</strong> your name and email are visible on your profile page, where you can change your name.</li>
         <li><strong>Delete:</strong> use <em>Delete my account</em> on your profile page. It erases everything described above.</li>
-        <li><strong>Anything else:</strong> ask by email and I will answer within a reasonable time, normally within thirty days. You may also complain to the data protection authority in your country.</li>
+        <li><strong>Access, correction and erasure:</strong> you may ask what data is held about you, ask for it to be corrected or erased, and withdraw consent.</li>
+        <li><strong>Nominate someone:</strong> you may nominate another person to exercise these rights for you if you die or cannot act.</li>
+        <li><strong>Grievances:</strong> write to the Grievance Officer at <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a> (see the <a href="/contact/#grievance">contact page</a>). I will acknowledge within 24 hours and resolve within 15 days. If you are not satisfied, you may complain to the <strong>Data Protection Board of India</strong>.</li>
+        <li><strong>Breaches:</strong> if a personal data breach affects you, I will tell you and the Board as the law requires.</li>
       </ul>
 
       <h2 id="children">Children</h2>
-      <p>{SITE.title} is not directed at children. If you are under 18, please create an account only with the permission of a parent or guardian.</p>
+      <p>{SITE.title} is for adults. You must be 18 or older to create an account, and the sign-up form asks you to confirm it. Under the DPDP Act a person under 18 is a child, and handling a child's data needs verifiable parental consent, so accounts are for adults only. I do not knowingly collect personal information from anyone under 18, and the site never tracks or shows targeted advertising to anyone. If you believe a minor has created an account, <a href="/contact/">tell me</a> and I will delete it and its data. Reading the site needs no account.</p>
+
+      <h2 id="third-parties">Third parties and tracking</h2>
+      <p>Fonts are served from this site, not from Google Fonts or any other font service. There are no advertising trackers, analytics scripts, or session-replay or keystroke-recording tools. Signed-in pages talk to Google's Firebase services, which can see your IP address as part of the request; that is the only third-party connection.</p>
 
       <h2 id="security">Security</h2>
       <p>Data is encrypted in transit, the database denies access by default, and the site is checked before every release. The details are on the <a href="/security/">security page</a>.</p>

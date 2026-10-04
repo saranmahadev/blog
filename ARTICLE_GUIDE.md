@@ -754,7 +754,7 @@ Banners are **automatic and data-driven**. Authors never write them and never ne
 - **Write so the first heading comes after a real introduction.** The inline banner sits just before it, so a post with no introduction paragraph gets no inline banner, and a one-line introduction followed at once by a banner reads badly.
 - **Opt a post out** with `sponsors: false` in its front matter. Do this for a personal story where a banner would break the mood, and for any post about a sponsor or competitor.
 - **Never** write a banner, a sponsor name or a "sponsored" sentence into a post. Do not link to a sponsor from the text as if it were editorial.
-- **Labels:** a paid banner says *Sponsored* and its link is marked `rel="sponsored"`. Our own banners say *Dev Universe*. Never mix them up.
+- **Labels:** every banner, paid or our own, says *Sponsored* and its link is marked `rel="sponsored"`.
 - **Adding or retiring a banner:** add `src/content/sponsors/<name>.json` (copy `example.json`), put any image in `public/sponsors/` at the exact size, set `start` and `end` dates, and run `pnpm check:sponsors`. To retire one, set `"active": false` or let its `end` date pass. Paid banners come before our own; our own fill every slot that is not booked.
 - **Our own banners promote only things that exist.** Add a banner for a new part of Dev Universe when it launches, not before.
 - **Prices** live in `src/lib/ad-prices.ts` and nowhere else.

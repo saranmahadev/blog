@@ -2,7 +2,7 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-const imageCover = z.object({ image: z.string(), alt: z.string() });
+const imageCover = z.object({ image: z.string(), alt: z.string().min(1, 'Describe the image in the alt text') });
 // Typographic cover: a giant word, number, quote or stacked title set in the post's series colour.
 const imaxtCover = z.object({
   kind: z.enum(['word', 'stat', 'quote', 'stack']),
@@ -37,7 +37,7 @@ const series = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().max(200),
-    cover: z.object({ image: z.string(), alt: z.string() }).optional(),
+    cover: z.object({ image: z.string(), alt: z.string().min(1, 'Describe the image in the alt text') }).optional(),
     // Optional look of the series; falls back to a stable choice derived from its slug.
     tone: z.enum(['mint', 'lilac', 'sky', 'rose']).optional(),
     pattern: z.enum(['dots', 'rings', 'grid', 'stripes', 'check']).optional(),

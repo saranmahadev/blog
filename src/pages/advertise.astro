@@ -42,13 +42,13 @@ const mailto = `mailto:${AUTHOR_EMAIL}?subject=${encodeURIComponent('Banner requ
         <li><strong>Sizes:</strong> {SLOT_KEYS.map((s) => `${SLOTS[s].label} ${SLOTS[s].w} x ${SLOTS[s].h}`).join(' · ')}. On narrower screens a banner scales down in proportion (the side rail is hidden below 1100 px). Inline and article-end banners may also have a 320 x 100 phone version.</li>
         <li><strong>Your own image:</strong> exactly the size above, or double (for example 1440 x 180); {IMAGE_TYPES.map((t) => t.replace('image/', '').replace('svg+xml', 'svg').toUpperCase()).join(', ')}; up to {MAX_IMAGE_BYTES / 1024} KB; with alt text. Images are hosted on this site, so nothing loads from anywhere else.</li>
         <li><strong>Built with Imaxt:</strong> a headline (up to {LIMITS.headline} characters), one line (up to {LIMITS.line}), button text (up to {LIMITS.cta}) and a colour. We draw it in the site's own style, so it suits both the light and the dark theme.</li>
-        <li><strong>One banner per placement at a time.</strong> If a placement is not booked, readers see a banner for one of our own channels, labelled Dev Universe.</li>
+        <li><strong>One banner per placement at a time.</strong> If a placement is not booked, readers see a banner for one of our own channels, labelled Sponsored like every other banner.</li>
       </ul>
 
       <h2 id="rules">What we show, and what we do not</h2>
       <ul>
         <li><strong>We show:</strong> tools, courses, books, events and services that are relevant to developers and learners, with an honest message.</li>
-        <li><strong>We do not show:</strong> misleading or exaggerated claims, adult content, gambling, get-rich-quick or investment schemes, anything unlawful, or anything that tracks readers.</li>
+        <li><strong>We do not show:</strong> misleading or exaggerated claims, adult content, gambling, get-rich-quick or investment schemes, anything unlawful or banned under Indian law, anything that breaks the ASCI advertising code, or anything that tracks readers.</li>
         <li><strong>How it is shown:</strong> labelled <em>Sponsored</em>, with the link marked as sponsored. No pop-ups, no autoplay, no scripts, no pixels. A banner never appears on legal, sign-in or account pages.</li>
         <li><strong>Our right:</strong> we may decline a banner, and may pause or remove one that breaks these rules. You are refunded for any days it was not shown.</li>
       </ul>
@@ -105,6 +105,7 @@ const mailto = `mailto:${AUTHOR_EMAIL}?subject=${encodeURIComponent('Banner requ
       <h2 id="terms">The terms in brief</h2>
       <ul>
         <li>Payment in advance. If a banner is not shown for part of the term, that part is refunded.</li>
+        <li>Prices are as shown. I am not currently registered for GST, so none is charged; if that changes, GST will be added and shown before you pay.</li>
         <li>The start date is agreed by email. Banners are not shown before it.</li>
         <li>Banners do not imply that {SITE.author} endorses the product. They are advertising.</li>
         <li>These points are part of the <a href="/terms/#advertising">terms of use</a>. Questions: <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a> or the <a href="/contact/">contact page</a>.</li>
