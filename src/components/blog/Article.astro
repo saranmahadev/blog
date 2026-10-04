@@ -2,7 +2,7 @@
 import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getContent, getRelated, slugifyTag, type Post, type Series } from '@/lib/content';
-import { formatDate, readingTime } from '@/lib/site';
+import { AUTHOR_URL, formatDate, readingTime } from '@/lib/site';
 import Pill from './Pill.astro';
 import Comments from '@/components/comments/Comments.tsx';
 import BookmarkButton from '@/components/library/BookmarkButton.tsx';
@@ -38,7 +38,7 @@ const jsonLd = {
       '@type': 'Article',
       headline: data.title,
       description: data.description,
-      author: { '@type': 'Person', name: data.author },
+      author: { '@type': 'Person', name: data.author, url: AUTHOR_URL },
       datePublished: data.date.toISOString(),
       dateModified: (data.updated ?? data.date).toISOString(),
       image: abs(ogImage),
