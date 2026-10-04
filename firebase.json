@@ -189,6 +189,23 @@
             "value": "text/plain; charset=utf-8"
           }
         ]
+      },
+      {
+        "source": "/d/**",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-store"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "no-referrer"
+          }
+        ]
       }
     ],
     "redirects": [

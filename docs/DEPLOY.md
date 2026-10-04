@@ -13,6 +13,16 @@ CI (`.github/workflows/deploy.yml`) builds on demand and deploys from `main`. De
 
 The workflow runs on commits to `main` (build + deploy), when the `build` label is added to a pull request (build and checks only), when `deploy-preview` is added (build plus a temporary preview URL that expires in 7 days), or by hand from the Actions tab. Ordinary PR commits do not run it; to re-check a PR, re-add the label. The Firebase project is set in `.firebaserc`.
 
+### Reading drafts as real pages
+
+A post with `draft: true` is left out of the public site. To read it as a finished page, set one more GitHub secret, `DRAFTS_TOKEN`, to a long random string of letters and digits (16 to 128; for example the output of `openssl rand -hex 16`). When it is set, every build also writes each draft to `/d/<DRAFTS_TOKEN>/<series>/<post>/`, with a list at `/d/<DRAFTS_TOKEN>/`. Bookmark that list.
+
+- **The secret folder name is the only protection.** It is a link, not a login: anyone who has it can read the drafts. Treat a leaked link like a leaked password: change the secret and redeploy, and the old link stops working. If the secret is not set, nothing is built.
+- **The drafts are only as private as the repository.** This repository is public, so a draft merged into `main` can already be read on GitHub. The secret link is a convenience for reading drafts as pages, not a way to hide them.
+- **Hidden from everything else.** Draft pages are `noindex`, are sent with `X-Robots-Tag: noindex, nofollow`, `Cache-Control: no-store` and `Referrer-Policy: no-referrer`, are left out of search, feeds, the sitemap and the topic pages, have no comments, bookmarks, read tracking or banners, and nothing on the public site links to them.
+- **It ends when the post is published.** Set `draft: false` and merge: the next deploy builds the post at its normal address and the secret copy is no longer built, so its old link stops working.
+- A draft is only built once it is on `main`. Locally, `pnpm dev` shows every draft as an ordinary page, with or without the secret.
+
 ### What runs for which change
 
 The workflow looks at the changed files first (`scripts/ci-paths.mjs`, with its rules tested in `scripts/ci-paths.test.mjs`) and skips what a change cannot affect:
