@@ -18,6 +18,10 @@ export type BannerProps = {
   line?: string;
   cta?: string;
   tone?: string;
+  /** House banners only: the animation behind the banner. */
+  motion?: string;
+  /** Draw only the banner, with no wrapper or label (inside the rotator, which supplies both). */
+  bare?: boolean;
   /** In the builder, the banner is shown but cannot be followed. */
   preview?: boolean;
 };
@@ -27,9 +31,8 @@ export default function Banner(p: BannerProps) {
   const external = /^https?:\/\//.test(p.href);
   const rel = 'sponsored noopener';
   const link = p.preview ? { href: '#', onClick: (e: { preventDefault: () => void }) => e.preventDefault(), 'aria-disabled': true as const } : { href: p.href, rel: external ? rel : undefined };
-  return (
-    <aside className={`sponsor sponsor-${p.slot}`} aria-label={p.label} data-sponsor data-pagefind-ignore>
-      <span className="sponsor-tag">{p.label}</span>
+  const content = (
+    <>
       {p.kind === 'image' && p.image ? (
         <a className="sponsor-box sponsor-img" {...link}>
           <picture>
@@ -38,7 +41,7 @@ export default function Banner(p: BannerProps) {
           </picture>
         </a>
       ) : (
-        <a className="sponsor-box sponsor-text" data-tone={p.tone ?? 'mint'} {...link}>
+        <a className={`sponsor-box sponsor-text${p.motion ? ` sponsor-fx fx-${p.motion}` : ''}`} data-tone={p.tone ?? 'mint'} {...link}>
           <span className="sponsor-copy">
             <strong className="sponsor-head">{(p.headline ?? '').slice(0, LIMITS.headline)}</strong>
             {p.line ? <span className="sponsor-line">{p.line.slice(0, LIMITS.line)}</span> : null}
@@ -46,6 +49,13 @@ export default function Banner(p: BannerProps) {
           <span className="sponsor-cta">{(p.cta ?? 'Learn more').slice(0, LIMITS.cta)} <span aria-hidden="true">→</span></span>
         </a>
       )}
+    </>
+  );
+  if (p.bare) return content;
+  return (
+    <aside className={`sponsor sponsor-${p.slot}`} aria-label={p.label} data-sponsor data-pagefind-ignore>
+      <span className="sponsor-tag">{p.label}</span>
+      {content}
     </aside>
   );
 }

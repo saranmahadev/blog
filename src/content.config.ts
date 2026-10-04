@@ -77,6 +77,8 @@ const sponsors = defineCollection({
     line: z.string().max(90).optional(),
     cta: z.string().max(24).optional(),
     tone: z.enum(['mint', 'lilac', 'sky', 'rose', 'accent', 'ink']).optional(),
+    // Our own (house) banners may animate; paid banners never do.
+    motion: z.enum(['aurora', 'orbit', 'pulse', 'sweep', 'grid']).optional(),
     start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
     end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
     posts: z.union([z.literal('all'), z.array(z.string())]).default('all'),

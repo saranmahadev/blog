@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { CURRENCY_KEYS, TERMS, TIER_IDS, priceFor } from './ad-prices';
 import { buildRequest, slotsOf, type Request } from './mailto';
-import { pickSponsor, labelFor, isLive, type Sponsor } from './sponsors';
+import { pickSponsor, houseFor, labelFor, isLive, type Sponsor } from './sponsors';
+import { nextCounter, indexFor } from './rotate';
 
 const s = (over: Partial<Sponsor>): Sponsor => ({ id: 'a', name: 'A', house: false, href: 'https://example.com', kind: 'text', sizes: ['inline'], posts: 'all', exclude: [], active: true, ...over });
 const page = { key: 'curious-to-coder/symptoms', series: 'dev-universe', tags: ['Web'] };
@@ -76,5 +77,27 @@ describe('booking email', () => {
   it('a starter booking has exactly one slot', () => {
     expect(slotsOf({ tier: 'starter', slot: 'rail' })).toEqual(['rail']);
     expect(slotsOf({ tier: 'premier' })).toEqual(['inline', 'end', 'rail']);
+  });
+});
+
+describe('rotating our own banners', () => {
+  const house = (id: string, over: Partial<Sponsor> = {}) => s({ id, house: true, ...over });
+  it('lists every live house banner in a fixed order, and none when a paid one has the slot', () => {
+    const all = [house('b'), house('a'), house('c', { sizes: ['rail'] })];
+    expect(houseFor(all, 'inline', page).map((x) => x.id)).toEqual(['a', 'b']);
+    expect(houseFor([...all, s({ id: 'p' })], 'inline', page)).toEqual([]);
+  });
+  it('honours exclusions', () => expect(houseFor([house('a', { exclude: [page.key] })], 'inline', page)).toEqual([]));
+  it('moves on by one on each reload and wraps', () => {
+    expect(nextCounter(null, 5, () => 0.5)).toBe(2);
+    expect(nextCounter(2, 5)).toBe(3);
+    expect(nextCounter(4, 5)).toBe(0);
+    expect(nextCounter(Number.NaN, 5, () => 0)).toBe(0);
+    expect(nextCounter(3, 1)).toBe(0);
+  });
+  it('gives each slot on a page a different banner', () => {
+    const shown = [0, 1, 2].map((offset) => indexFor(3, offset, 7));
+    expect(new Set(shown).size).toBe(3);
+    expect(indexFor(5, 2, 1)).toBe(0);
   });
 });

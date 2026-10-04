@@ -1,0 +1,18 @@
+{
+  "name": "Follow Drafted by RSS",
+  "house": true,
+  "href": "/rss.xml",
+  "kind": "text",
+  "sizes": [
+    "inline",
+    "end",
+    "rail"
+  ],
+  "headline": "Follow Drafted in your reader",
+  "line": "RSS, Atom and JSON Feed. No account, no tracking.",
+  "cta": "Get the feed",
+  "tone": "ink",
+  "motion": "sweep",
+  "posts": "all",
+  "active": true
+}

@@ -3,11 +3,16 @@
   "house": true,
   "href": "https://www.instagram.com/lyf.as.dev",
   "kind": "text",
-  "sizes": ["inline", "end", "rail"],
+  "sizes": [
+    "inline",
+    "end",
+    "rail"
+  ],
   "headline": "Lyf as Dev",
   "line": "Vlogs, travel and behind the scenes of everyday life.",
   "cta": "See Lyf as Dev",
-  "tone": "mint",
+  "tone": "rose",
+  "motion": "sweep",
   "posts": "all",
   "active": true
 }

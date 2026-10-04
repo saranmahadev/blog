@@ -6,7 +6,7 @@ import StoryRow from '@/components/blog/StoryRow.astro';
 import FeedCard from '@/components/blog/FeedCard.astro';
 import SeriesTile from '@/components/blog/SeriesTile.astro';
 import { getContent } from '@/lib/content';
-import { AUTHOR_EMAIL, formatDate, formatShort, readingTime, SITE } from '@/lib/site';
+import { AUTHOR_EMAIL, AUTHOR_URL, formatDate, formatShort, readingTime, SITE } from '@/lib/site';
 
 const { posts, series } = await getContent();
 const lead = posts.find((p) => p.data.featured) ?? posts[0];
@@ -18,7 +18,7 @@ const homeLd = JSON.stringify({
   '@context': 'https://schema.org',
   '@graph': [
     { '@type': 'Blog', '@id': abs('/#blog'), name: SITE.title, description: SITE.description, url: abs('/'), inLanguage: 'en-IN', publisher: { '@id': abs('/#author') } },
-    { '@type': 'Person', '@id': abs('/#author'), name: 'Saran Mahadev', alternateName: SITE.author, url: abs('/about/'), email: AUTHOR_EMAIL },
+    { '@type': 'Person', '@id': abs('/#author'), name: 'Saran Mahadev', alternateName: SITE.author, url: AUTHOR_URL, sameAs: [abs('/about/')], email: AUTHOR_EMAIL },
   ],
 });
 ---

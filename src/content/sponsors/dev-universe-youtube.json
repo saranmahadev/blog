@@ -3,11 +3,16 @@
   "house": true,
   "href": "https://www.youtube.com/@saranmahadev",
   "kind": "text",
-  "sizes": ["inline", "end", "rail"],
+  "sizes": [
+    "inline",
+    "end",
+    "rail"
+  ],
   "headline": "Learn, build and share on YouTube",
   "line": "Tech, AI, engineering and tutorials from Saran Mahadev.",
   "cta": "Watch on YouTube",
-  "tone": "rose",
+  "tone": "lilac",
+  "motion": "pulse",
   "posts": "all",
   "active": true
 }

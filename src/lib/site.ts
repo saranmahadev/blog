@@ -10,6 +10,8 @@ export const SITE = {
  * the mailbox owner opens the link). The same address is in firestore.rules and functions/src/index.ts, so there is
  * no role to set up and nothing to run in a console.
  */
+/** The author's own website, used as the author's url in structured data. */
+export const AUTHOR_URL = 'https://www.saranmahadev.in';
 export const AUTHOR_EMAIL = 'mail@saranmahadev.in';
 
 /** The public repository: the source of every article is here, and it is where AI agents are pointed to read the content. */

@@ -1,0 +1,18 @@
+{
+  "name": "Your banner here",
+  "house": true,
+  "href": "/advertise/",
+  "kind": "text",
+  "sizes": [
+    "inline",
+    "end",
+    "rail"
+  ],
+  "headline": "Your banner could be here",
+  "line": "Fixed sizes, honest prices, built with our own tools.",
+  "cta": "See the tiers",
+  "tone": "sky",
+  "motion": "aurora",
+  "posts": "all",
+  "active": true
+}

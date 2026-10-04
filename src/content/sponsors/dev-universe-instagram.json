@@ -3,11 +3,16 @@
   "house": true,
   "href": "https://www.instagram.com/everything.by.dev",
   "kind": "text",
-  "sizes": ["inline", "end", "rail"],
+  "sizes": [
+    "inline",
+    "end",
+    "rail"
+  ],
   "headline": "Everything.by.Dev",
   "line": "New videos, articles and updates from Dev Universe.",
   "cta": "Follow on Instagram",
   "tone": "sky",
+  "motion": "orbit",
   "posts": "all",
   "active": true
 }

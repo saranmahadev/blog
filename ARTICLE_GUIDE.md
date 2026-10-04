@@ -759,6 +759,7 @@ Banners are **automatic and data-driven**. Authors never write them and never ne
 - **Labels:** every banner, paid or our own, says *Sponsored* and its link is marked `rel="sponsored"`.
 - **Adding or retiring a banner:** add `src/content/sponsors/<name>.json` (copy `example.json`), put any image in `public/sponsors/` at the exact size, set `start` and `end` dates, and run `pnpm check:sponsors`. To retire one, set `"active": false` or let its `end` date pass. Paid banners come before our own; our own fill every slot that is not booked.
 - **Our own banners promote only things that exist.** Add a banner for a new part of Dev Universe when it launches, not before.
+- **Our own banners rotate and animate; paid ones never do.** Give a new house banner a `motion` (`aurora`, `orbit`, `pulse`, `sweep`, `grid`) and a tone other than `accent` (its text contrast is too low). The more banners, the longer the rotation; keep the headline short enough for the 90-pixel inline slot.
 - **Prices** live in `src/lib/ad-prices.ts` and nowhere else.
 
 # Part E. Templates

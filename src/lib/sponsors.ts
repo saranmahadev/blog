@@ -29,6 +29,8 @@ export type Sponsor = {
   line?: string;
   cta?: string;
   tone?: 'mint' | 'lilac' | 'sky' | 'rose' | 'accent' | 'ink';
+  /** House banners only: the animation behind the banner. */
+  motion?: 'aurora' | 'orbit' | 'pulse' | 'sweep' | 'grid';
   start?: string;
   end?: string;
   /** `all`, or post keys, series slugs or tags. */
@@ -71,4 +73,14 @@ export function pickSponsor(all: Sponsor[], slot: Slot, page: PageInfo, now = ne
   const paid = fits.filter((s) => !s.house);
   const pool = (paid.length ? paid : fits).sort((a, b) => a.id.localeCompare(b.id));
   return pool.length ? pool[hash(`${page.key}:${slot}`) % pool.length] : undefined;
+}
+
+/**
+ * Our own banners that can run on this page and slot, in a fixed order (they rotate on the page). Empty when a paid booking
+ * has the slot: paid banners are never rotated or animated, and are never mixed with ours.
+ */
+export function houseFor(all: Sponsor[], slot: Slot, page: PageInfo, now = new Date()): Sponsor[] {
+  const fits = all.filter((s) => isLive(s, now) && s.sizes.includes(slot) && targets(s, page));
+  if (fits.some((s) => !s.house)) return [];
+  return fits.filter((s) => s.house).sort((a, b) => a.id.localeCompare(b.id));
 }
