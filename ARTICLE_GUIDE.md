@@ -140,7 +140,7 @@ A post on Drafted earns its place by what the reader **takes away**. Ask of ever
 | **Voice** | Dev's voice, explanatory, present tense | First person, past tense for events, present for reflection |
 | **Facts** | Standard knowledge or checkable on the page | True and checkable; the events really happened |
 | **Structure** | Hook, numbered stops or sections, one block each, "Try it", a short checklist | Cold open, beats, a fact moment only where the story asks a question, the turn to "you", the close |
-| **Invented content** | Never | Never |
+| **Invented content** | Only an imagined world introduced as such (section 4, rule 7) | Never, except an imagined world introduced as such |
 
 There are **no labels** such as "true story" or "note". The honesty rules (section 20) apply to everything, so labels are not needed.
 
@@ -166,8 +166,9 @@ There are **no labels** such as "true story" or "note". The honesty rules (secti
 2. No real person's name, employer or private detail without Dev's explicit say-so. Prefer "a teacher", "a colleague".
 3. Quotes: a quotation mark means something was actually said, or the sentence is marked as paraphrase.
 4. Do not claim a result you did not see. "I think", "as far as I could tell" and "I did not test this" are fine sentences.
-5. A story is real, told well. Do not compose scenes that never happened, and do not disguise a real person.
+5. A personal story is real, told well. Do not compose scenes that never happened as if they happened to Dev, and do not disguise a real person. The one exception is an imagined world (rule 7).
 6. Plans and ideas that are not built yet are described as ideas, in plain words ("This is a map of what I am building, and much of it is still an idea.").
+7. **An imagined world is allowed** when the opening lines introduce it as imagined, in warm plain words (for example, "Devato is a food ordering app that exists in my imagination, and now in yours"). It is never presented as something that happened, never evidence for a claim, and never uses a real person or company. Write it in second person ("you") or with a clearly fictional character. Every technical idea inside it must be true and checkable: the world is imagined, the reasons are real.
 
 ## 5. Never overwhelm the reader
 
