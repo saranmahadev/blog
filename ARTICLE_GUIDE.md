@@ -718,6 +718,7 @@ Posts appear in RSS, Atom and JSON Feed with their **full text**, cleaned for re
 
 - Text, lists, tables, `Statement`, `Stat`, `Compare`, `Steps`, `Timeline`, `Bars`, `Heatmap`, `Sidenote`, code and `CodeWalk` code are kept.
 - **Diagrams** become their caption plus description, so write both well.
+- **Tables** need raw HTML in MDX so they can carry a `<caption>`: wrap `<table>` in `<div class="table-wrap">`. Do not write the text `javascript:` (for example a label such as "JavaScript:") anywhere in a post: the feed check treats it as an unsafe link and fails the build. Write "JavaScript prints:" instead.
 - **Interactive blocks** (`TypeLab`, `Scrolly`) lose their interactivity; the post then ends with "This post has interactive parts that need the site" and a link.
 - `description` is used as the feed summary, the meta description and the share text.
 - The **share image** (1200 × 630) is rendered from the cover at build time.

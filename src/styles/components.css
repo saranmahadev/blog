@@ -140,6 +140,11 @@ textarea.inp { height: auto; padding: 14px 16px; min-height: 110px; resize: vert
 .prose blockquote { border-left: 6px solid var(--accent); padding-left: 24px; font-style: italic; font-size: 26px; line-height: 1.4; }
 .prose ul { list-style: disc; padding-left: 1.4em; }
 .prose li + li { margin-top: 0.4em; }
+.prose .table-wrap { overflow-x: auto; max-width: 100%; }
+.prose table { width: 100%; border-collapse: collapse; font-family: var(--font-sans); font-size: 16px; line-height: 1.5; }
+.prose table caption { text-align: left; padding: 0 0 10px; color: var(--muted); font-size: 14px; }
+.prose table th, .prose table td { text-align: left; vertical-align: top; padding: 10px 12px; border: 1.5px solid var(--line); }
+.prose table thead th { background: var(--paper2); }
 .prose code { font-family: var(--font-mono); font-size: 0.78em; background: var(--paper2); padding: 0.1em 0.4em; border-radius: 6px; border: 1px solid var(--line); }
 .prose .wide { margin-left: -60px; margin-right: -60px; }
 .code { background: #1c1c1c; color: #f4f1e8; border: 1.5px solid var(--line); border-radius: 14px; box-shadow: var(--hard); overflow: hidden; font-family: var(--font-mono); font-size: 14px; line-height: 1.7; }
