@@ -33,21 +33,21 @@ export default function AccountMenu() {
   }
   return (
     <div className="acct" ref={root}>
-      <button className="row clay acct-btn" type="button" aria-label={`Account menu for ${name}${unread > 0 ? `, ${unread} new in your inbox` : ''}`} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}>
+      <button className="row clay acct-btn" type="button" aria-label={`Account menu for ${name}${unread > 0 ? `, ${unread} new in your inbox` : ''}`} aria-expanded={open} onClick={() => setOpen(!open)}>
         <span className="av tone-sky" style={{ boxShadow: 'none' }} aria-hidden="true">{initialOf(user?.displayName, user?.email)}</span>
         <strong className="acct-name">{name}</strong><span aria-hidden="true">▾</span>
         {unread > 0 && <span className="acct-dot" aria-hidden="true" />}
       </button>
       {open && (
-        <div className="slab acct-menu" role="menu" aria-label="Account menu">
+        <div className="slab acct-menu" role="group" aria-label="Account menu">
           <div className="row" style={{ padding: '10px 10px 14px', gap: 12 }}>
             <span className="av tone-sky" aria-hidden="true">{initialOf(user?.displayName, user?.email)}</span>
             <div style={{ minWidth: 0 }}><strong>{name}</strong><div className="mono muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.emailVerified ? 'Verified' : 'Email not verified'}</div></div>
           </div>
-          <a className="row acct-item" role="menuitem" href="/inbox/">Inbox {unread > 0 && <span className="badge tone-accent" style={{ marginLeft: 'auto' }}>{unread} new</span>}</a>
-          <a className="row acct-item" role="menuitem" href="/profile/#bookmarks">Bookmarks</a>
-          <a className="row acct-item" role="menuitem" href="/profile/">Profile</a>
-          <button className="row acct-item" role="menuitem" type="button" onClick={signOut}>Sign out</button>
+          <a className="row acct-item" href="/inbox/">Inbox {unread > 0 && <span className="badge tone-accent" style={{ marginLeft: 'auto' }}>{unread} new</span>}</a>
+          <a className="row acct-item" href="/profile/#bookmarks">Bookmarks</a>
+          <a className="row acct-item" href="/profile/">Profile</a>
+          <button className="row acct-item" type="button" onClick={signOut}>Sign out</button>
         </div>
       )}
     </div>

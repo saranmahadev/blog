@@ -125,6 +125,10 @@ jobs:
         run: pnpm check:a11y
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - name: Keyboard and alt text
+        run: pnpm check:keyboard
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
       - name: Lighthouse budgets
         run: pnpm check:lighthouse
         env:

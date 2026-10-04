@@ -62,7 +62,7 @@ const imageUrl = new URL(image ?? '/og/default.png', Astro.site).href;
     <SyncRoot client:idle />
     <VerifyBanner client:idle />
     <Header />
-    <main id="main">
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer />
