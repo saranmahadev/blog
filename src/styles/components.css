@@ -121,7 +121,7 @@ textarea.inp { height: auto; padding: 14px 16px; min-height: 110px; resize: vert
 .card p { color: var(--muted); font-size: 15px; line-height: 1.45; }
 .foot { background: #1c1c1c; color: #f4f1e8; border-top: 1.5px solid var(--line); padding: 64px 0 28px; --text: #f4f1e8; --line: #f4f1e8; --muted: #a8a498; --clay-bg: #303030; --clay-hi: rgba(255,255,255,.08); --clay-lo: rgba(0,0,0,.65); }
 .foot-word { font-size: clamp(90px, 15vw, 260px); color: var(--accent-lt); line-height: 0.8; margin-top: 56px; letter-spacing: -0.035em; white-space: nowrap; overflow: hidden; }
-.foot-cols { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 40px; }
+.foot-cols { display: grid; grid-template-columns: 1.6fr repeat(4, 1fr); gap: 40px; }
 .foot a:hover { color: var(--accent-lt); }
 .foot li { padding: 4px 0; }
 

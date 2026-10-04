@@ -1,0 +1,49 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { AUTHOR_EMAIL, SITE } from '@/lib/site';
+---
+
+<BaseLayout title="Terms of use" description="The rules for using Drafted, for accounts and private messages, and what you can do with its content.">
+  <section class="wrap" style="padding-top:56px;padding-bottom:32px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Terms of use</div>
+    <h1 class="disp" style="font-size:clamp(56px,9vw,140px)">Terms of use</h1>
+    <p class="mono muted" style="margin-top:14px">Last updated 4 October 2026</p>
+  </section>
+  <div class="wrap" style="padding-bottom:96px">
+    <div class="prose" style="margin-left:0">
+      <h2 id="using">Using the site</h2>
+      <p>You can read {SITE.title} freely. By creating an account or sending a message, you agree to these terms. If you do not agree, please do not create an account.</p>
+
+      <h2 id="accounts">Accounts</h2>
+      <ul>
+        <li>Give an accurate email address, and keep your password private. You are responsible for what happens under your account.</li>
+        <li>One person, one account. Please do not create accounts to get around limits.</li>
+        <li>You can delete your account at any time from your profile page. The <a href="/privacy/">privacy policy</a> explains what is erased.</li>
+      </ul>
+
+      <h2 id="messages">Private messages</h2>
+      <p>Messages are private conversations between you and me. By sending one, you let me read it and reply to it. You keep ownership of what you write. Please do not send anything unlawful, abusive, threatening, deceptive or spam, and do not include other people's private information. To keep the service usable, messages are limited in length and frequency, and messages that break these terms may be deleted and the account removed.</p>
+
+      <h2 id="content">Content and permitted use</h2>
+      <p>The articles, diagrams and design on this site are © {SITE.author}, all rights reserved. You are welcome to link to any page, and to quote short passages with credit and a link back. Code snippets in the articles may be used freely in your own work, with no warranty. Please do not republish whole articles without asking.</p>
+
+      <h2 id="information">Information, not advice</h2>
+      <p>Articles are written in good faith for learning and discussion. They are not professional advice, and I cannot guarantee that every article is complete, current or right for your situation. Check anything that matters before you rely on it.</p>
+
+      <h2 id="warranty">No warranty and limits of liability</h2>
+      <p>The site is provided as it is, without promises that it will always be available or free of errors. To the extent the law allows, I am not liable for losses that come from using the site or relying on its content. Nothing here limits any right you have that cannot be limited by law.</p>
+
+      <h2 id="links">Links to other sites</h2>
+      <p>Articles may link to other websites. I do not control them and am not responsible for their content or practices.</p>
+
+      <h2 id="changes">Changes</h2>
+      <p>I may update these terms. The date at the top shows the latest version, and continuing to use the site after a change means you accept it.</p>
+
+      <h2 id="law">Governing law</h2>
+      <p>These terms are governed by the laws of India, and the courts of India have jurisdiction over any dispute.</p>
+
+      <h2 id="contact">Contact</h2>
+      <p>Questions about these terms: <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a>. See also the <a href="/contact/">contact page</a>.</p>
+    </div>
+  </div>
+</BaseLayout>

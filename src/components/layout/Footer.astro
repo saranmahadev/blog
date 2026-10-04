@@ -20,7 +20,16 @@ import { SITE, NAV } from '@/lib/site';
         <div class="mono foot-h">Site</div>
         <ul>
           {NAV.filter((n) => n.href === '/about/').map((n) => <li><a href={n.href}>{n.label}</a></li>)}
-          <li><a href="/security/">Security and privacy</a></li>
+          <li><a href="/contact/">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="mono foot-h">Legal</div>
+        <ul>
+          <li><a href="/privacy/">Privacy</a></li>
+          <li><a href="/terms/">Terms</a></li>
+          <li><a href="/accessibility/">Accessibility</a></li>
+          <li><a href="/security/">Security</a></li>
         </ul>
       </div>
       <div>

@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { AUTHOR_EMAIL, SITE } from '@/lib/site';
+---
+
+<BaseLayout title="Accessibility statement" description="How Drafted aims to be usable by everyone, how it is checked, and how to report a barrier.">
+  <section class="wrap" style="padding-top:56px;padding-bottom:32px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Accessibility statement</div>
+    <h1 class="disp" style="font-size:clamp(56px,9vw,140px)">Accessibility statement</h1>
+    <p class="mono muted" style="margin-top:14px">Last updated 4 October 2026</p>
+  </section>
+  <div class="wrap" style="padding-bottom:96px">
+    <div class="prose" style="margin-left:0">
+      <h2 id="commitment">Our aim</h2>
+      <p>{SITE.title} aims to meet the Web Content Accessibility Guidelines (WCAG) 2.1 at level AA, so that people can read and use it with a keyboard, a screen reader, a magnifier, in light or dark colours, and with less motion.</p>
+
+      <h2 id="design">What is built in</h2>
+      <ul>
+        <li><strong>Structure:</strong> one page title, headings in order, a contents list on long articles, and a <em>Skip to content</em> link.</li>
+        <li><strong>Colour and contrast:</strong> light and dark themes, both designed for text contrast, and information is never carried by colour alone.</li>
+        <li><strong>Keyboard:</strong> every control can be reached and used with the keyboard, with a visible focus. Search opens with the <kbd>/</kbd> key and closes with <kbd>Esc</kbd>.</li>
+        <li><strong>Screen readers:</strong> controls have names, tables have captions, and every diagram has a title and a written description.</li>
+        <li><strong>Motion:</strong> animated parts stand still if your device asks for reduced motion.</li>
+        <li><strong>No images:</strong> figures are made of text and structure, so they scale, can be selected and are read aloud.</li>
+      </ul>
+
+      <h2 id="checks">How it is checked</h2>
+      <p>Before every release, automated checks scan the key pages in both light and dark themes against WCAG 2.1 A and AA rules, including the signed-in screens, and a performance and accessibility audit must meet a minimum score. A release that fails does not go live. Automated tools find only part of the possible problems, so please tell me about anything they miss.</p>
+
+      <h2 id="limits">Known limits</h2>
+      <ul>
+        <li>Interactive blocks in some articles (for example, step-by-step code walkthroughs) are designed to work without a mouse, but they may be less pleasant with some assistive technologies.</li>
+        <li>Diagrams are described in text but are not explorable node by node.</li>
+        <li>Posts that link to other sites cannot control the accessibility of those sites.</li>
+      </ul>
+
+      <h2 id="report">Report a barrier</h2>
+      <p>If something is hard to use, email <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a> with the page address and what happened. I will reply within a few working days and fix what I can. You can also tell me through the private message box under any post.</p>
+    </div>
+  </div>
+</BaseLayout>

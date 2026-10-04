@@ -1,31 +1,17 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { AUTHOR_EMAIL, SITE } from '@/lib/site';
+import { AUTHOR_EMAIL } from '@/lib/site';
 ---
 
-<BaseLayout title="Security and privacy" description="What this site stores, who can see it, how it is protected, and how to report a problem.">
+<BaseLayout title="Security" description="How Drafted is protected, and how to report a security problem.">
   <section class="wrap" style="padding-top:56px;padding-bottom:32px">
-    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Security and privacy</div>
-    <h1 class="disp" style="font-size:clamp(56px,9vw,140px)">Security and privacy</h1>
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Security</div>
+    <h1 class="disp" style="font-size:clamp(56px,9vw,140px)">Security</h1>
   </section>
   <div class="wrap" style="padding-bottom:96px">
     <div class="prose" style="margin-left:0">
       <h2 id="short-version">The short version</h2>
-      <p>You can read everything here without an account, without cookies and without being tracked. An account exists only so you can save bookmarks across devices and write privately to the author.</p>
-
-      <h2 id="stored">What is stored</h2>
-      <ul>
-        <li><strong>In your browser:</strong> your theme, bookmarks, reading progress and any message not yet sent. This stays on your device until it is synced to your account (if you are signed in).</li>
-        <li><strong>With an account:</strong> your email address, the name you chose, and your password (kept by Google Firebase as a salted hash; the site and its author never see it). One small record holds your bookmarks, how far you have read, and your theme.</li>
-        <li><strong>Messages:</strong> what you write to the author, with the time and the post it was about.</li>
-        <li><strong>Not stored:</strong> no advertising or analytics scripts, no third-party fonts or trackers, no tracking cookies. {SITE.title} sets no cookies of its own; Firebase keeps your sign-in in your browser's storage.</li>
-      </ul>
-
-      <h2 id="messages">Who can see your messages</h2>
-      <p>Only you and the author. Messages are private conversations, not public comments: the database refuses to show a thread to anyone else, and only the author can reply (you can answer the author's replies). The author can see which account sent a message.</p>
-
-      <h2 id="deleting">Deleting your data</h2>
-      <p>Delete your account from your profile and everything above is erased: your record, every message you wrote, and every conversation you started. You can also delete a single message at any time.</p>
+      <p>You can read everything here without an account, without cookies and without being tracked. What is stored if you create an account, who can see it and how to delete it is explained in the <a href="/privacy/">privacy policy</a>. This page covers how the site is protected and how to report a problem.</p>
 
       <h2 id="protection">How the site is protected</h2>
       <ul>

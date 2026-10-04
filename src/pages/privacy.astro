@@ -1,0 +1,64 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { AUTHOR_EMAIL, SITE } from '@/lib/site';
+---
+
+<BaseLayout title="Privacy policy" description="What Drafted collects, why, where it is kept, how long, and how to have it deleted.">
+  <section class="wrap" style="padding-top:56px;padding-bottom:32px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Privacy policy</div>
+    <h1 class="disp" style="font-size:clamp(56px,9vw,140px)">Privacy policy</h1>
+    <p class="mono muted" style="margin-top:14px">Last updated 4 October 2026</p>
+  </section>
+  <div class="wrap" style="padding-bottom:96px">
+    <div class="prose" style="margin-left:0">
+      <h2 id="summary">In short</h2>
+      <p>You can read everything on {SITE.title} without an account, without cookies and without being tracked. If you choose to create an account, I keep a small amount of data so you can save your place and write to me privately. I do not run advertising or analytics, and I do not sell or share your data. You can delete your account, and your data, yourself at any time.</p>
+
+      <h2 id="who">Who is responsible</h2>
+      <p>{SITE.author} (the author of this site) decides what data is collected and why. Contact: <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a>. The same address is the contact for questions, requests and complaints about your data.</p>
+
+      <h2 id="collected">What is collected</h2>
+      <h3>If you only read</h3>
+      <p>Nothing about you is stored by the site. Like any website, the hosting provider (Google Firebase Hosting) may keep technical logs of requests, such as the IP address, browser and time, for running and protecting the service.</p>
+      <h3>If you create an account</h3>
+      <ul>
+        <li><strong>Your email address and the name you choose.</strong> Used to sign you in and to show your name next to your messages.</li>
+        <li><strong>Your password.</strong> Held by Google Firebase Authentication as a salted hash. I never see it.</li>
+        <li><strong>A small record of your preferences:</strong> your bookmarks (post addresses and the time you saved them), how far you have read in each post, your theme choice, and counters that tell the site when you have a new reply.</li>
+        <li><strong>Your private messages:</strong> what you write to me, who wrote it, which post it was about, and when.</li>
+        <li><strong>Emails sent on your behalf</strong>, such as the verification and password reset emails, are sent by Firebase. I do not send you any other email.</li>
+      </ul>
+
+      <h2 id="why">Why it is used</h2>
+      <p>Each item is used for the feature you asked for, and for nothing else: to sign you in, to keep your bookmarks and progress on every device, to deliver your messages and my replies, to protect the service from abuse (limits on how fast and how often messages can be sent), and to keep it secure.</p>
+
+      <h2 id="browser">Cookies and storage in your browser</h2>
+      <p>The site sets <strong>no tracking cookies</strong> and includes no advertising or analytics scripts. It uses your browser's own storage for things you need: your theme, your bookmarks and progress, any message you have not yet sent, and your sign-in session. These are strictly necessary to provide the features, so there is no cookie banner. You can clear this storage in your browser at any time.</p>
+
+      <h2 id="where">Where it is kept and who handles it</h2>
+      <p>Account data, preferences and messages are stored with Google Cloud (Firebase Authentication, Firestore and Cloud Functions), with the database and functions in Mumbai, India. Pages are served from Google's global network. Google acts as a service provider that stores and processes this data for the site. The site loads nothing from advertising or analytics companies.</p>
+
+      <h2 id="sharing">Who can see it</h2>
+      <p>Only you can read your preferences record. Your messages can be read only by you and by me; the database refuses to show a conversation to anyone else. I do not sell or rent your data, and I do not share it, except where the law requires it.</p>
+
+      <h2 id="keep">How long it is kept</h2>
+      <p>Until you delete it. Deleting a single message removes it. Deleting your account removes your sign-in, your preferences record, every message you wrote and every conversation you started. Copies may remain in the provider's backups for a short time before they are overwritten.</p>
+
+      <h2 id="rights">Your choices and rights</h2>
+      <ul>
+        <li><strong>See and correct:</strong> your name and email are visible on your profile page, where you can change your name.</li>
+        <li><strong>Delete:</strong> use <em>Delete my account</em> on your profile page. It erases everything described above.</li>
+        <li><strong>Anything else:</strong> ask by email and I will answer within a reasonable time, normally within thirty days. You may also complain to the data protection authority in your country.</li>
+      </ul>
+
+      <h2 id="children">Children</h2>
+      <p>{SITE.title} is not directed at children. If you are under 18, please create an account only with the permission of a parent or guardian.</p>
+
+      <h2 id="security">Security</h2>
+      <p>Data is encrypted in transit, the database denies access by default, and the site is checked before every release. The details are on the <a href="/security/">security page</a>.</p>
+
+      <h2 id="changes">Changes to this policy</h2>
+      <p>If I change how data is handled, I will update this page and its date. For a material change, I will say so on the home page.</p>
+    </div>
+  </div>
+</BaseLayout>

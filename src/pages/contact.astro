@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { AUTHOR_EMAIL, SITE } from '@/lib/site';
+---
+
+<BaseLayout title="Contact" description="How to reach the author of Drafted: email, private messages, security reports and social channels.">
+  <section class="wrap" style="padding-top:56px;padding-bottom:32px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Contact</div>
+    <h1 class="disp" style="font-size:clamp(72px,12vw,180px)">Contact</h1>
+  </section>
+  <div class="wrap" style="padding-bottom:96px">
+    <div class="prose" style="margin-left:0">
+      <h2 id="email">Email</h2>
+      <p>For anything general, write to <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a>. I read every message and reply as soon as I can.</p>
+
+      <h2 id="message">A private message about a post</h2>
+      <p>Open any post and use the message box at the bottom. You need an account with a verified email. Only you and I can see the conversation, and I reply there.</p>
+
+      <h2 id="security">Security, privacy and accessibility</h2>
+      <ul>
+        <li>Found a vulnerability? See the <a href="/security/">security page</a> for how to report it.</li>
+        <li>Questions about your data? See the <a href="/privacy/">privacy policy</a>.</li>
+        <li>Hit a barrier? See the <a href="/accessibility/">accessibility statement</a>.</li>
+      </ul>
+
+      <h2 id="elsewhere">Elsewhere</h2>
+      <p>{SITE.author} also shares work on <a href="https://www.youtube.com/@saranmahadev">YouTube</a> and <a href="https://www.instagram.com/everything.by.dev">Instagram</a>.</p>
+    </div>
+  </div>
+</BaseLayout>
