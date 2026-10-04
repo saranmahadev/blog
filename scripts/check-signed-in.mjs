@@ -47,6 +47,20 @@ const browser = await chromium.launch({ executablePath: chromePath() });
 let failures = 0, scans = 0;
 const note = (m) => { failures++; console.error(m); };
 
+// Age gate: the sign-up form must refuse to create an account until "I am 18 or older" is ticked.
+{
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  await page.goto(`${base}/register/`, { waitUntil: 'load' });
+  await page.fill('#a-user', 'Kid');
+  await page.fill('#a-email', 'kid@example.com');
+  await page.fill('#a-pass', 'purple tractor lamp river');
+  await page.click('button[type=submit]');
+  const msg = await page.textContent('#a-age-h', { timeout: 5000 }).catch(() => '');
+  if (!/18/.test(msg || '')) note('register: submitting without the age box ticked was not refused');
+  await ctx.close();
+}
+
 for (const theme of ['light', 'dark']) {
   for (const [label, who] of Object.entries(SCREENS)) {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });

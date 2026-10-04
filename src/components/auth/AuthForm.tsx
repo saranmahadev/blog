@@ -17,11 +17,12 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   const auth = useAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [errField, setErrField] = useState<'email' | 'password' | 'username' | ''>('');
+  const [errField, setErrField] = useState<'email' | 'password' | 'username' | 'age' | ''>('');
   const [done, setDone] = useState<'reset' | ''>('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [adult, setAdult] = useState(false);
   const [next, setNext] = useState('/profile/');
 
   useEffect(() => { setNext(safeNext(new URLSearchParams(location.search).get('next'))); }, []);
@@ -45,6 +46,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       if (COMMON.has(password.toLowerCase()) || /^(.)\1+$/.test(password) || (name.length > 3 && password.toLowerCase().includes(name))) return fail('password', 'That password is too easy to guess. Try a few unrelated words.');
     }
     if (mode === 'register' && (username.trim().length < 1 || username.trim().length > 40)) return fail('username', 'Pick a name between 1 and 40 characters.');
+    if (mode === 'register' && !adult) return fail('age', 'You must be 18 or older to create an account.');
     setBusy(true);
     try {
       const [client, m] = await Promise.all([getAuthClient(), import('firebase/auth')]);
@@ -100,6 +102,15 @@ export default function AuthForm({ mode }: { mode: Mode }) {
             <label htmlFor="a-pass">Password</label>
             <input className="inp" id="a-pass" type="password" autoComplete={mode === 'register' ? 'new-password' : 'current-password'} value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={errField === 'password'} aria-describedby="a-pass-h" />
             {errField === 'password' ? <span className="err" role="alert" id="a-pass-h">{error}</span> : <span className="hint" id="a-pass-h">{mode === 'register' ? 'At least 10 characters. A few unrelated words is ideal.' : <a href="/reset/" style={{ textDecoration: 'underline' }}>Forgot your password?</a>}</span>}
+          </div>
+        )}
+        {mode === 'register' && (
+          <div className="field">
+            <label htmlFor="a-age" style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontWeight: 400 }}>
+              <input id="a-age" type="checkbox" checked={adult} onChange={(e) => setAdult(e.target.checked)} aria-required="true" aria-invalid={errField === 'age'} aria-describedby={errField === 'age' ? 'a-age-h' : undefined} style={{ marginTop: 4 }} />
+              <span>I am 18 or older, and I agree to the <a href="/terms/" style={{ textDecoration: 'underline' }}>terms</a> and <a href="/privacy/" style={{ textDecoration: 'underline' }}>privacy policy</a>.</span>
+            </label>
+            {errField === 'age' && <span className="err" role="alert" id="a-age-h">{error}</span>}
           </div>
         )}
         {error && !errField && <p className="err" role="alert">{error}</p>}

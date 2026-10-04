@@ -225,8 +225,9 @@ export default function AdBuilder() {
           <label className="adv-field"><span className="mono">Anything else (optional)</span><textarea className="inp" rows={3} maxLength={500} value={notes} onChange={(e) => setNotes(e.target.value)} /></label>
         </div>
         {errors.length > 0 && <ul className="adv-errors" role="alert">{errors.map((e) => <li key={e}>{e}</li>)}</ul>}
+        <p className="hint" id="adv-renew">One-time booking, paid in advance. It does not renew automatically: it ends on its end date and nothing is charged again unless you book again. No card is taken on this site.</p>
         <div className="adv-row">
-          <button type="button" className="btn ink" onClick={open}>Open my email app <span aria-hidden="true">→</span></button>
+          <button type="button" className="btn ink" onClick={open} aria-describedby="adv-renew">Open my email app <span aria-hidden="true">→</span></button>
           <button type="button" className="btn" onClick={copy}>Copy the request</button>
         </div>
         {status && <p className="serif" role="status">{status}</p>}
