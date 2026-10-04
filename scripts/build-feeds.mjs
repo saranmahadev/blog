@@ -67,7 +67,7 @@ function articleHtml(post) {
       img: (_tag, attribs) => ({ tagName: 'img', attribs: { ...attribs, src: resolve(attribs.src ?? '') ?? '' } }),
     },
     // Anything the page hides from assistive technology is decoration (marquee words, bar tracks, legends), so it goes too.
-    exclusiveFilter: (f) => f.attribs['aria-hidden'] === 'true' || ((f.tag === 'div' || f.tag === 'p' || f.tag === 'span') && !f.text.trim() && f.mediaChildren.length === 0),
+    exclusiveFilter: (f) => f.attribs['aria-hidden'] === 'true' || f.attribs['data-sponsor'] !== undefined || ((f.tag === 'div' || f.tag === 'p' || f.tag === 'span') && !f.text.trim() && f.mediaChildren.length === 0),
   }).replace(/\n{3,}/g, '\n\n').trim();
 
   const more = interactive

@@ -1,0 +1,13 @@
+{
+  "name": "Example (documentation, never shown)",
+  "house": false,
+  "href": "https://example.com",
+  "kind": "image",
+  "sizes": ["inline", "end", "rail"],
+  "image": "/sponsors/example-inline.png",
+  "alt": "Describe what the banner says, for people who cannot see it",
+  "start": "2026-01-01",
+  "end": "2026-01-30",
+  "posts": "all",
+  "active": false
+}

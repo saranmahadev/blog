@@ -10,6 +10,7 @@ import ReadTracker from '@/components/library/ReadTracker.tsx';
 import ReadBadge from '@/components/library/ReadBadge.tsx';
 import { imaxt, ImaxtCover } from '@/components/imaxt';
 import { isImageCover } from '@/lib/cover';
+import SponsorSlot from '@/components/sponsor/SponsorSlot.astro';
 
 interface Props { post: Post; series?: Series }
 const { post, series } = Astro.props;
@@ -128,6 +129,8 @@ const jsonLd = {
           <Content components={imaxt} />
         </article>
 
+        <SponsorSlot size="end" postKey={post.key} />
+
         {series && (prev || next) && (
           <nav aria-label="More in this series" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:56px;max-width:720px;margin-inline:auto">
             {prev ? <a href={prev.url} class="slab hov" style="padding:20px;display:block"><span class="mono">Previous</span><div class="head" style="font-size:22px;margin-top:6px">← {prev.data.title}</div></a> : <span />}
@@ -148,6 +151,7 @@ const jsonLd = {
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v14" /></svg>
           </button>
         </div>
+        <SponsorSlot size="rail" postKey={post.key} />
         {related.length > 0 && (
           <div>
             <div class="mono" style="margin-bottom:10px">Related</div>

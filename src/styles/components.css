@@ -407,3 +407,77 @@ button.srch { cursor: pointer; font: inherit; font-size: 14px; text-align: left;
 .sprog-n { font-size: 72px; margin: 10px 0; }
 .resume { position: fixed; left: 16px; bottom: 16px; z-index: 40; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: calc(100vw - 32px); padding: 10px 14px; background: var(--card); color: var(--text); border: 1.5px solid var(--line); border-radius: 14px; box-shadow: var(--hard); font-size: 14px; }
 .badge.plain { color: inherit; }
+
+/* Sponsored banners: fixed sizes, a small quiet tag (muted colour at full contrast, never faded), themed like the rest of the site. */
+.sponsor { margin: 2.2rem auto; max-width: 720px; font-family: var(--font-sans); font-size: 16px; line-height: 1.4; letter-spacing: 0; clear: both; }
+.sponsor-tag { display: block; margin: 0 0 6px; font: 10px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.sponsor a, .prose .sponsor a { text-decoration: none; border-bottom: 0; color: inherit; }
+.sponsor-box { display: block; transition: transform 0.12s, box-shadow 0.12s; }
+.sponsor-box:hover { transform: translate(2px, 2px); }
+.sponsor-box:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.sponsor-img img { display: block; width: 100%; height: auto; border: 1.5px solid var(--line); border-radius: 14px; background: var(--card); }
+.sponsor-text { display: flex; align-items: center; justify-content: space-between; gap: 16px; box-sizing: border-box; padding: 14px 20px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--imx-tone); color: var(--imx-on); box-shadow: var(--hard-sm); }
+.sponsor-text:hover { box-shadow: 1px 1px 0 var(--line); }
+.sponsor-copy { display: grid; gap: 2px; min-width: 0; }
+.sponsor-head { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.01em; line-height: 1.1; }
+.sponsor-line { font-size: 15px; }
+.sponsor-cta { flex: none; padding: 8px 14px; border-radius: 999px; background: var(--imx-on); color: var(--imx-tone); font-weight: 700; font-size: 14px; white-space: nowrap; }
+.sponsor-inline .sponsor-head { font-size: 20px; }
+.sponsor-inline .sponsor-line { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sponsor-end .sponsor-text { flex-direction: column; align-items: flex-start; justify-content: center; gap: 18px; padding: 24px 28px; }
+.sponsor-end .sponsor-head { font-size: 34px; }
+.sponsor-end .sponsor-line { font-size: 17px; }
+.sponsor-rail { width: 300px; max-width: 100%; margin: 24px 0; }
+.sponsor-rail .sponsor-text { flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 14px; height: 250px; padding: 20px; }
+.sponsor-rail .sponsor-head { font-size: 26px; }
+/* The exact sizes we sell, wherever there is room for them. */
+@media (min-width: 761px) {
+  .sponsor-inline .sponsor-text { height: 90px; }
+  .sponsor-end .sponsor-text { height: 200px; }
+}
+@media (max-width: 760px) {
+  .sponsor-text { flex-wrap: wrap; }
+  .sponsor-inline .sponsor-line { white-space: normal; }
+  .sponsor-end .sponsor-head { font-size: 26px; }
+}
+@media (max-width: 1100px) { .sponsor-rail { display: none; } }
+
+/* Advertise page and its builder */
+.adv { display: grid; gap: 40px; margin-top: 24px; max-width: 980px; }
+.adv-set { border: 0; padding: 0; margin: 0; display: grid; gap: 16px; min-width: 0; }
+.adv-set > legend, .adv-set > h3 { padding: 0; font-size: 26px; margin-bottom: 4px; }
+.adv-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.adv-field { display: grid; gap: 6px; min-width: 0; }
+.adv-narrow { max-width: 340px; }
+.adv-form { display: grid; gap: 16px; }
+.adv-tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.adv-tier { position: relative; display: grid; gap: 8px; align-content: start; padding: 20px; cursor: pointer; }
+.adv-tier input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.adv-tier:focus-within { outline: 3px solid var(--accent); outline-offset: 3px; }
+.adv-tier.on { background-color: var(--t-mint); color: var(--on-tone); }
+.adv-tier-n { font-size: 24px; }
+.adv-tier-p { font-family: var(--font-display); font-weight: 800; font-size: 28px; }
+.adv-tier-p small { font-size: 14px; font-weight: 600; }
+.adv-on { font-weight: 700; }
+.adv-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--card); cursor: pointer; font-size: 15px; }
+.adv-chip:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+.adv-tones { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.adv-tones legend { padding: 0; margin-bottom: 8px; }
+.adv-checks { display: grid; gap: 8px; padding: 0; list-style: none; font-size: 15px; }
+.adv-stage { border: 1.5px dashed var(--line); border-radius: 14px; padding: 20px; display: grid; justify-items: center; background: var(--paper); overflow-x: auto; }
+.adv-stage .sponsor { margin: 0; width: 100%; }
+.adv-stage .sponsor-rail { width: 300px; display: block; }
+.adv-empty { color: var(--muted); margin: 24px 0; }
+.adv-sum { padding: 20px; display: grid; gap: 6px; }
+.adv-errors { margin: 0; padding: 14px 18px 14px 34px; border: 1.5px solid var(--line); border-left: 6px solid var(--signal); border-radius: 12px; background: var(--card); display: grid; gap: 4px; }
+.adv-specimens { display: grid; gap: 28px; margin: 8px 0 40px; max-width: 980px; }
+.adv-spec { display: grid; gap: 6px; }
+.adv-spec h3 { font-size: 22px; }
+.adv-specbox .sponsor { margin: 8px 0 0; }
+.adv-specbox-rail .sponsor-rail { display: block; }
+.adv-table-wrap { overflow-x: auto; margin: 8px 0 8px; max-width: 980px; }
+.adv-table { width: 100%; border-collapse: collapse; font-family: var(--font-sans); font-size: 16px; }
+.adv-table caption { text-align: left; padding: 0 0 10px; color: var(--muted); font-size: 14px; }
+.adv-table th, .adv-table td { text-align: left; padding: 12px 14px; border: 1.5px solid var(--line); }
+.adv-table thead th { background: var(--paper2); }
+@media (max-width: 860px) { .adv-tiers { grid-template-columns: minmax(0, 1fr); } }

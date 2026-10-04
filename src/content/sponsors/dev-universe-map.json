@@ -1,0 +1,14 @@
+{
+  "name": "The Dev Universe map",
+  "house": true,
+  "href": "/dev-universe/a-connected-ecosystem/",
+  "kind": "text",
+  "sizes": ["inline", "end", "rail"],
+  "headline": "The Dev Universe map",
+  "line": "How learning, creating, teaching and building connect.",
+  "cta": "Read the map",
+  "tone": "lilac",
+  "posts": "all",
+  "exclude": ["dev-universe"],
+  "active": true
+}

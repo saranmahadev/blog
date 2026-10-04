@@ -17,7 +17,8 @@ import CurvedText from './CurvedText.astro';
 import Scrolly from './Scrolly.astro';
 import Beat from './Beat.astro';
 import TypeLab from './TypeLab.astro';
+import SponsorSlot from '../sponsor/SponsorSlot.astro';
 
 /** Passed to <Content components={imaxt} />, so .mdx posts can use every block without imports. */
-export const imaxt = { Statement, Stat, StatRow, PullQuote, Compare, Side, Steps, Step, Timeline, Event, Bars, Sidenote, CodeWalk, Marquee, Heatmap, CurvedText, Scrolly, Beat, TypeLab };
+export const imaxt = { Statement, Stat, StatRow, PullQuote, Compare, Side, Steps, Step, Timeline, Event, Bars, Sidenote, CodeWalk, Marquee, Heatmap, CurvedText, Scrolly, Beat, TypeLab, SponsorSlot };
 export { default as ImaxtCover } from './ImaxtCover.astro';

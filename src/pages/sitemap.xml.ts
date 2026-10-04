@@ -18,6 +18,7 @@ export async function GET(context: APIContext) {
     { path: '/terms/' },
     { path: '/accessibility/' },
     { path: '/contact/' },
+    { path: '/advertise/' },
     ...series.map((s) => ({ path: s.url, lastmod: new Date(newest(s.posts)) })),
     ...getTopics(posts).map((t) => ({ path: `/topics/${t.slug}/`, lastmod: new Date(newest(t.posts)) })),
     ...posts.map((p) => ({ path: p.url, lastmod: p.data.updated ?? p.data.date })),

@@ -1,0 +1,114 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Banner from '@/components/sponsor/Banner';
+import AdBuilder from '@/components/sponsor/AdBuilder';
+import Steps from '@/components/imaxt/Steps.astro';
+import Step from '@/components/imaxt/Step.astro';
+import { CURRENCY_KEYS, TERMS, TIERS, TIER_IDS, money } from '@/lib/ad-prices';
+import { IMAGE_TYPES, LIMITS, MAX_IMAGE_BYTES, SLOTS, SLOT_KEYS } from '@/lib/sponsors';
+import { AUTHOR_EMAIL, SITE } from '@/lib/site';
+
+const example = { kind: 'text' as const, href: '#', label: 'Example', headline: 'Your headline goes here', line: 'One sentence that tells readers why to click.', cta: 'Learn more', tone: 'mint', preview: true };
+const mailto = `mailto:${AUTHOR_EMAIL}?subject=${encodeURIComponent('Banner request')}&body=${encodeURIComponent('Hello, I would like to book a banner on Drafted.\n\nCOMPANY:\nCONTACT:\nLINK (https):\nTIER (Starter, Standard or Premier):\nPLACEMENTS (inline, end, rail):\nTERM (30, 60 or 90 days):\nPREFERRED START:\nBANNER: text (headline, one line, button text, colour) or my own image (I will attach it):\nALT TEXT (for images):\n')}`;
+---
+
+<BaseLayout title="Advertise" description="Show a banner to readers of Drafted: three fixed sizes, clear prices, no tracking. Build your banner, preview it, and book by email.">
+  <section class="wrap" style="padding-top:56px;padding-bottom:32px">
+    <div class="mono muted" style="margin-bottom:14px"><a href="/">Home</a> / Advertise</div>
+    <h1 class="disp" style="font-size:clamp(56px,9vw,140px)">Advertise</h1>
+    <p class="serif" style="font-size:24px;line-height:1.4;max-width:46ch;margin-top:18px;color:var(--muted)">Put a banner inside {SITE.title}'s articles. Three fixed sizes, prices in your currency, no tracking, and a preview before you book.</p>
+    <p class="mono muted" style="margin-top:14px">Last updated 4 October 2026</p>
+  </section>
+
+  <div class="wrap" style="padding-bottom:96px">
+    <div class="prose" style="margin-left:0">
+      <h2 id="what-readers-see">What readers will see</h2>
+      <p>{SITE.title} is written for software engineers, builders and curious learners. A banner appears inside the article, in one of three places and sizes. Each one is labelled and marked as a sponsored link, and none of them tracks anyone. These are the exact shapes, shown as examples.</p>
+    </div>
+
+    <div class="adv-specimens">
+      {SLOT_KEYS.map((s) => (
+        <div class="adv-spec">
+          <h3 class="head">{SLOTS[s].label}: {SLOTS[s].w} x {SLOTS[s].h}</h3>
+          <p class="serif muted">{SLOTS[s].where[0].toUpperCase() + SLOTS[s].where.slice(1)}.</p>
+          <div class={`adv-specbox adv-specbox-${s}`}><Banner slot={s} {...example} /></div>
+        </div>
+      ))}
+    </div>
+
+    <div class="prose" style="margin-left:0">
+      <h2 id="specs">Sizes and files</h2>
+      <ul>
+        <li><strong>Sizes:</strong> {SLOT_KEYS.map((s) => `${SLOTS[s].label} ${SLOTS[s].w} x ${SLOTS[s].h}`).join(' · ')}. On narrower screens a banner scales down in proportion (the side rail is hidden below 1100 px). Inline and article-end banners may also have a 320 x 100 phone version.</li>
+        <li><strong>Your own image:</strong> exactly the size above, or double (for example 1440 x 180); {IMAGE_TYPES.map((t) => t.replace('image/', '').replace('svg+xml', 'svg').toUpperCase()).join(', ')}; up to {MAX_IMAGE_BYTES / 1024} KB; with alt text. Images are hosted on this site, so nothing loads from anywhere else.</li>
+        <li><strong>Built with Imaxt:</strong> a headline (up to {LIMITS.headline} characters), one line (up to {LIMITS.line}), button text (up to {LIMITS.cta}) and a colour. We draw it in the site's own style, so it suits both the light and the dark theme.</li>
+        <li><strong>One banner per placement at a time.</strong> If a placement is not booked, readers see a banner for one of our own channels, labelled Dev Universe.</li>
+      </ul>
+
+      <h2 id="rules">What we show, and what we do not</h2>
+      <ul>
+        <li><strong>We show:</strong> tools, courses, books, events and services that are relevant to developers and learners, with an honest message.</li>
+        <li><strong>We do not show:</strong> misleading or exaggerated claims, adult content, gambling, get-rich-quick or investment schemes, anything unlawful, or anything that tracks readers.</li>
+        <li><strong>How it is shown:</strong> labelled <em>Sponsored</em>, with the link marked as sponsored. No pop-ups, no autoplay, no scripts, no pixels. A banner never appears on legal, sign-in or account pages.</li>
+        <li><strong>Our right:</strong> we may decline a banner, and may pause or remove one that breaks these rules. You are refunded for any days it was not shown.</li>
+      </ul>
+
+      <h2 id="prices">Tiers and prices</h2>
+      <p>Banners are booked by tier, for a fixed term. <strong>There are no permanent slots.</strong> Every booking ends on a set date; if you want to continue, you book again (the current sponsor is offered the slot first, but it is not guaranteed). Payment is in advance. Prices are fixed lists in each currency, not live exchange rates.</p>
+    </div>
+
+    <noscript>
+      <div class="prose" style="margin-left:0">
+        <p>Prices per 30 days in rupees (the interactive price list needs JavaScript):</p>
+        <ul>
+          {TIER_IDS.map((id) => <li><strong>{TIERS[id].name}</strong>: {TIERS[id].blurb} {money(TIERS[id].per30.INR, 'INR')}.</li>)}
+        </ul>
+        <p>Longer terms: 60 days at 5% off, 90 days at 10% off. <a href={mailto}>Email a request</a> and include your tier, placements, term, link and either your banner text or your image.</p>
+      </div>
+    </noscript>
+
+    <div class="adv-table-wrap" aria-label="Price list">
+      <table class="adv-table">
+        <caption>Price per 30 days. Longer terms: 60 days {Math.round(TERMS[1].discount * 100)}% off, 90 days {Math.round(TERMS[2].discount * 100)}% off.</caption>
+        <thead>
+          <tr><th scope="col">Tier</th><th scope="col">Placements</th>{CURRENCY_KEYS.map((c) => <th scope="col">{c}</th>)}</tr>
+        </thead>
+        <tbody>
+          {TIER_IDS.map((id) => (
+            <tr>
+              <th scope="row">{TIERS[id].name}</th>
+              <td>{TIERS[id].choose ? 'One of: ' : ''}{TIERS[id].slots.map((s) => SLOTS[s].label).join(TIERS[id].choose ? ' or ' : ' + ')}</td>
+              {CURRENCY_KEYS.map((c) => <td>{money(TIERS[id].per30[c], c)}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose" style="margin-left:0">
+      <h2 id="build">Build your banner and see it first</h2>
+      <p>Make a banner with our Imaxt styles, or try your own image, and see exactly what readers will see before you book. Everything below happens in your browser: nothing is uploaded or stored.</p>
+    </div>
+    <AdBuilder client:load />
+
+    <div class="prose" style="margin-left:0;margin-top:56px">
+      <h2 id="how">How it works</h2>
+      <Steps>
+        <Step title="Request">Fill in the form above. It opens an email to {AUTHOR_EMAIL} with your choices already written.</Step>
+        <Step title="Review">I reply within a few working days, to confirm the placement and the start date, or to suggest changes.</Step>
+        <Step title="Payment">You pay in advance by bank transfer, UPI or invoice, in the currency you chose.</Step>
+        <Step title="Final banner">You send the final image or approve the text banner.</Step>
+        <Step title="Live">The banner runs for the whole term, on every eligible article.</Step>
+        <Step title="Renew or end">The term ends on its date. You can book again, or stop. Nothing renews automatically.</Step>
+      </Steps>
+
+      <h2 id="terms">The terms in brief</h2>
+      <ul>
+        <li>Payment in advance. If a banner is not shown for part of the term, that part is refunded.</li>
+        <li>The start date is agreed by email. Banners are not shown before it.</li>
+        <li>Banners do not imply that {SITE.author} endorses the product. They are advertising.</li>
+        <li>These points are part of the <a href="/terms/#advertising">terms of use</a>. Questions: <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a> or the <a href="/contact/">contact page</a>.</li>
+      </ul>
+    </div>
+  </div>
+</BaseLayout>

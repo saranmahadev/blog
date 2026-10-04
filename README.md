@@ -158,3 +158,18 @@ What protects the site and its readers, and what to do about the rest. The reade
 4. *Protect the author mailbox* (`mail@saranmahadev.in`): it is the key to the author identity, so give it two-step verification and a unique password.
 5. *GitHub → Settings → Code security:* turn on secret scanning with push protection and Dependabot alerts; *Branches:* protect `main` (require a pull request; the `build`-label run is the check); *Actions → General:* allow only actions from GitHub and the verified creators already used, and set the default token to read-only.
 6. *Optional, stronger:* Firebase App Check with reCAPTCHA v3 makes the Cloud Functions and Firestore refuse requests that did not come from the real site. It needs a reCAPTCHA key and a client change; worth adding if the site ever sees abuse.
+
+## Advertising
+
+Banners are the only ad format. They come in three fixed sizes, are hosted on this site, carry no tracking and never load anything from another site.
+
+| Slot | Size | Where |
+|---|---|---|
+| Inline | 720 x 90 | after the introduction of an `.mdx` post |
+| End | 720 x 200 | after the last paragraph, before the message box |
+| Rail | 300 x 250 | right column, wide screens only |
+
+- **Data, not code.** Each banner is a file in `src/content/sponsors/` (shape in `example.json`; images in `public/sponsors/`). Paid sponsors take priority; our own Dev Universe banners fill every slot that is not booked. Our own banners say *Dev Universe*; paid ones say *Sponsored* and use `rel="sponsored"`. A post can opt out with `sponsors: false`.
+- **Prices** (tiers, currencies, terms) are in `src/lib/ad-prices.ts`. The Advertise page, its builder and the booking email all read that one file. There are no permanent slots: the longest term is 90 days.
+- **Advertise page** (`/advertise/`): specimens, rules, prices with a currency selector, and a builder that previews an Imaxt text banner or the visitor's own image and writes a `mailto:` request. Nothing is uploaded or stored; there is no database.
+- **Checks**: `pnpm check:sponsors` (sizes, labels, links, file budget) and `pnpm check:advertise` (the builder in a real browser). Both run in CI.

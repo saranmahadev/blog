@@ -111,6 +111,12 @@ jobs:
         run: pnpm check:links
       - name: Feeds (RSS, Atom, JSON Feed)
         run: pnpm check:feeds
+      - name: Sponsored banners (sizes, labels, links)
+        run: pnpm check:sponsors
+      - name: Advertise page builder (prices, image checks, request email)
+        run: pnpm check:advertise
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
       - name: Content Security Policy (no violations in a real browser)
         run: pnpm check:csp
         env:
