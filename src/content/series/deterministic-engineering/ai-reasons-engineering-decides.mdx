@@ -1,0 +1,157 @@
+---
+title: "What the AI Should Guess and What It Should Look Up"
+description: "A model is good when the answer is not known in advance. A deterministic system is good when the rules are. How to tell which question belongs to which, and why mixing them up costs you."
+date: 2026-10-05
+order: 2
+tags: [Deterministic Engineering, AI, Technology]
+draft: true
+cover:
+  kind: quote
+  text: "The model handles uncertainty. The system handles certainty."
+  sub: "Deterministic Engineering"
+---
+
+Take two eight-digit numbers and ask a language model to multiply them. It answers at once, in a confident tone, and the digits look right. A calculator would take the same two numbers and follow fixed rules to one answer, every time, with no tone at all.
+
+Post 1 argued that generation is cheap and proof is scarce. This one is about how to divide the work: **what you let a model guess, and what you make the system look up**.
+
+## Two Kinds of Questions
+
+Some questions have no known answer yet. What might solve this? What other designs exist? What could explain this error? What should we try first? A model is excellent here, because exploring many possibilities cheaply is what it does.
+
+Other questions have rules that already exist, and the rules decide the answer. A system should answer those, because it can do it the same way every time.
+
+<Compare>
+  <Side kind="before" label="Ask the model">What might solve this? What alternatives exist? What could explain this? Which plan might work?</Side>
+  <Side label="Ask the system">Is this syntactically valid? Is it type-safe? Is the operation permitted? Does the invariant hold? Did the test pass? Did the system reach the expected state?</Side>
+</Compare>
+
+**The model should handle uncertainty. The system should handle certainty.**
+
+## Where Each One Belongs
+
+Software work is many different activities, and they do not all suit the same tool. Here they are side by side. "Supporting" means the model helps but does not carry the result.
+
+<div class="table-wrap">
+<table>
+<caption>Engineering activities, and what each one needs</caption>
+<thead>
+<tr><th>Activity</th><th>Probabilistic AI</th><th>Deterministic infrastructure</th></tr>
+</thead>
+<tbody>
+<tr><td>Generate an implementation</td><td>Strong fit</td><td>Supports</td></tr>
+<tr><td>Generate alternatives</td><td>Strong fit</td><td>Supports</td></tr>
+<tr><td>Explain code</td><td>Strong fit</td><td>Supports</td></tr>
+<tr><td>Brainstorm architecture</td><td>Strong fit</td><td>Supports</td></tr>
+<tr><td>Infer intent</td><td>Strong fit</td><td>Supports</td></tr>
+<tr><td>Parse source code</td><td>Not needed</td><td><strong>Required</strong></td></tr>
+<tr><td>Type checking</td><td>No</td><td><strong>Required</strong></td></tr>
+<tr><td>Compilation</td><td>No</td><td><strong>Required</strong></td></tr>
+<tr><td>Dependency resolution</td><td>No</td><td><strong>Required</strong></td></tr>
+<tr><td>Policy enforcement</td><td>No</td><td><strong>Required</strong></td></tr>
+<tr><td>Security validation</td><td>Partly</td><td><strong>Required</strong></td></tr>
+<tr><td>Formal verification</td><td>Partly</td><td><strong>Required</strong></td></tr>
+<tr><td>Test execution</td><td>No</td><td><strong>Required</strong></td></tr>
+<tr><td>State management</td><td>No</td><td><strong>Required</strong></td></tr>
+<tr><td>Reproducible execution</td><td>No</td><td><strong>Required</strong></td></tr>
+<tr><td>Auditability</td><td>No</td><td><strong>Required</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+Read the top half and the bottom half separately. The top half is exploration, where a wrong guess costs little. The bottom half is truth and guarantees, where a wrong guess is the whole problem.
+
+## Deterministic Does Not Mean Old-Fashioned
+
+It is easy to hear "deterministic engineering" and picture conventional software written the slow way. That is not what this is. It is a design principle: a component whose behaviour can be specified, constrained, inspected, reproduced or verified, with stronger guarantees than free generation gives you.
+
+Many familiar tools fit that description:
+
+- **Compilers** turn source into another form by explicit language rules.
+- **Type systems** reject programs that break their constraints.
+- **Static analyzers** derive facts from a program's structure.
+- **Databases** give defined meaning to operations on data.
+- **Constraint solvers** search within explicit mathematical limits.
+- **Policy engines** decide whether an action satisfies rules written in advance.
+- **Test systems** run defined checks of behaviour.
+- **State machines** limit which transitions can happen.
+- **Graph engines** hold relationships explicitly.
+- **Sandboxed runtimes** limit what a program can actually do.
+- **Formal verification systems** try to establish properties against a formal specification.
+
+None of them competes with AI. They are **building blocks that AI can use**.
+
+<Sidenote label="Try it">Pick a task you gave an assistant recently. List each question inside it, such as "does this compile?" or "which function calls this?". Mark every one that a tool on your machine could answer exactly. Those marks are the questions the model should not be guessing.</Sidenote>
+
+## Look It Up Instead of Guessing
+
+Go back to the multiplication. You can connect the model to a calculator, and then it stops doing arithmetic from learned patterns and starts handing the arithmetic to something that does it by rule.
+
+The model did not become a better mathematician. Its **effective capability** went up, because it now has a reliable primitive to call. That word means a basic building block that you can depend on without thinking about how it works.
+
+The same move applies far beyond arithmetic: search, code analysis, databases, simulation, theorem proving, optimization, planning, running code and verification. A person works this way too. Nobody does everything in their head; we use mathematics, instruments, databases, compilers and simulations.
+
+<Statement tone="mint">One way to a smarter system is not a bigger model. **It is better tools the model can call.**</Statement>
+
+## The Parts of a Reasoning System
+
+A useful picture is that the language model is the general reasoning interface, and the deterministic engines are specialised organs it can rely on. Each ability on the left has a computational counterpart on the right.
+
+<div class="table-wrap">
+<table>
+<caption>Abilities of a reasoning system and their deterministic counterparts</caption>
+<thead>
+<tr><th>Ability</th><th>Deterministic counterpart</th></tr>
+</thead>
+<tbody>
+<tr><td>Reason</td><td>Search, solver</td></tr>
+<tr><td>Remember structure</td><td>Database, knowledge graph</td></tr>
+<tr><td>Understand code</td><td>Compiler, syntax tree, graph</td></tr>
+<tr><td>Decide within rules</td><td>Policy engine</td></tr>
+<tr><td>Calculate</td><td>Numerical engine</td></tr>
+<tr><td>Plan</td><td>Planner, constraint solver</td></tr>
+<tr><td>Validate</td><td>Verification engine</td></tr>
+<tr><td>Execute</td><td>Runtime</td></tr>
+<tr><td>Observe</td><td>Telemetry, instrumentation</td></tr>
+<tr><td>Recover</td><td>State machine, rollback</td></tr>
+<tr><td>Experiment</td><td>Simulator</td></tr>
+<tr><td>Learn from outcomes</td><td>Evaluation infrastructure</td></tr>
+</tbody>
+</table>
+</div>
+
+## Automation Is Not the Same as Engineering
+
+Two questions sound alike and lead to different systems.
+
+<Compare>
+  <Side kind="before" label="Automation asks">Can the machine do this task without me? It optimises for removing human effort.</Side>
+  <Side label="Engineering asks">Can the machine reason about this task while working inside a system that guarantees the properties that matter? It optimises for capability, reliability and controlled autonomy.</Side>
+</Compare>
+
+This matters more as AI moves from answering to acting, which is the subject of post 4.
+
+## Where This Idea Stops
+
+Every technique has a limit, and this one has several.
+
+- **Rules must exist.** If nobody can write down what "good" means, there is nothing deterministic to check against. A recommendation, a tone or a design taste has no compiler.
+- **A specification can be wrong.** A system that checks perfectly against the wrong rule gives you a perfect wrong answer. This is sometimes called the *oracle problem*: someone still has to decide what correct means.
+- **Tests prove only what they test.** Forty-eight passing tests say little about the forty-ninth case nobody wrote.
+- **A model used as a judge is not deterministic.** If an AI grades another AI's work, you still have a probabilistic check. It may be useful, but it is a different kind of evidence.
+- **Checking costs time and money.** Verifying everything is not free, so the strength of the check should match the cost of a mistake.
+
+<Sidenote label="Going deeper">Some checks give a stronger kind of certainty than a test. A type checker rules out a whole class of mistakes for every input. A test only samples inputs. Neither tells you whether the program does what its users wanted.</Sidenote>
+
+## Which Side Does This Question Belong To?
+
+When you give work to a model, run it through four questions first.
+
+<Steps>
+  <Step title="Is there a written rule?">If a rule exists, a system can apply it. Let it.</Step>
+  <Step title="Would a wrong answer be expensive?">The more it costs, the stronger the check you need.</Step>
+  <Step title="Can the answer be checked by a tool?">If yes, ask the tool and show the model its output.</Step>
+  <Step title="Is the check itself deterministic?">If an AI grades the work, treat that grade as a hint, not proof.</Step>
+</Steps>
+
+**Let the model explore. Let the system answer what has an answer.**

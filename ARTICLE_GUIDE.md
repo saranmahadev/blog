@@ -83,7 +83,7 @@ When a post explains a technical idea, keep the voice and add precision:
 
 - Define a term **the first time it appears**, in the same sentence, in plain words. ("Idempotent means doing it twice has the same effect as doing it once.")
 - Prefer **one specific claim** over three vague ones. ("Each stage retries on its own" beats "the system is highly resilient.")
-- Say what you tested and what you did not. "I tried this on my laptop only" is a good sentence.
+- Verify every code sample and number before it goes in, and show only output that really came from running it. Do not describe the machine, tool versions or test setup, and do not narrate how the code was run ("I ran this on…"). Where a result varies per run or per version, say so in one plain sentence.
 - Say "I don't know" or "I'm not sure" when true. Never fill a gap with confidence.
 - Use the analogy **before** the term (the substitute teacher's doors came before the word *inheritance* meant anything), then give the real term.
 

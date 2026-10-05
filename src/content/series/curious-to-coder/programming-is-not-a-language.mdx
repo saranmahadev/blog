@@ -4,166 +4,282 @@ description: "Stop asking which language to learn. Start learning the things tha
 date: 2026-10-04
 order: 4
 tags: [Curious to Coder, Technology, Programming]
-draft: true
+draft: false
 cover:
   kind: quote
   text: "The concepts travel. The language is a choice."
   sub: "Curious to Coder"
 ---
 
-Open a program written in a language you have never seen. Most of the time, you can read about half of it. You can see where the loop is, where the function starts and where something is being saved. The other half looks strange, and that strange half is the part worth studying: it is where one language made a different choice from another.
+Open a program written in a language you have never seen. Most of the time, you can read about half of it. You can see where the loop is, where the function starts and where something is being saved. The other half looks strange, and that strange half is where one language made a different choice from another.
 
-In the last article, the first rod was a programming language. This article takes that rod seriously. It has two halves. In **Understanding**, twelve ideas are shown in two or three languages each, so you can watch the same concept change its spelling and, sometimes, its meaning. In **Exploring**, eight projects ask you to build real things in more than one language and answer questions about what you saw.
+In the last article, the first rod was a programming language. This article takes that rod seriously, in two halves. In **Understanding**, twelve ideas get one worked example each, and each idea is explained properly: what it is, why it exists, what goes wrong, and what the trade-offs are. In **Exploring**, eight projects ask you to build real things and answer questions about what you noticed.
 
-By the end, I want you to notice something about what just happened to you. You will have met six languages, and the thing that stayed constant is not any one of them.
+You will meet six languages along the way, each in the place where it shows an idea most plainly. The language is never the subject of a section. By the end, I want you to notice what happened to you: the ideas stayed, and the languages came and went.
 
 <Statement tone="sky">A language is how you say it. The concept is what you are saying.</Statement>
 
-## Before You Start: Six Languages, One Machine
+## Before You Start: One Idea, One Example
 
-Each idea below uses the languages that show it best, usually two or three of these six:
+Each section picks one language and explains one idea through it:
 
-- **C**, close to the machine, where you manage memory yourself.
-- **Python**, readable, with types checked while the program runs.
-- **JavaScript**, which runs in browsers and, through Node, on servers.
-- **Java**, with classes and interfaces, running on a virtual machine.
-- **Go**, a small compiled language built around lightweight concurrency.
-- **Rust**, a compiled language that checks ownership of data before the program runs.
+- **Python** for syntax and semantics, and for errors, because it is readable and its tools let you look inside the language.
+- **Rust** for types and for modules, because it checks a lot before your program runs.
+- **C** for memory, because it hides nothing.
+- **JavaScript** for closures and for async, because both are central to how it works.
+- **Java** for objects and functions, and for the runtime, because it has both styles and a famous virtual machine.
+- **Go** for generics, concurrency and performance, because it is small and its tools are built in.
 
-Everything in this article was run, and the output shown is the real output. I ran it on one machine: Python 3.11, Node 22, Java 21, Go 1.24, Rust 1.97 and GCC 13, on an Intel Xeon at 2.1 GHz with four cores. I did not test other versions or other computers, and a few results change with the version, so I say so where it matters.
+A few outputs change every time you run them, such as memory addresses, race results and timings. The ones shown are from a single run, so yours will differ in those details.
 
 You don't need all six installed. Reading is useful, but running a sample teaches more, and each section asks you to **predict the output before reading it**. A wrong prediction is the most useful thing that can happen here.
 
 ## Syntax Is Spelling. Semantics Is Meaning.
 
-**Syntax** is what you are allowed to write: the brackets, keywords and punctuation. **Semantics** is what it means when it runs. Two languages can spell something almost the same way and still disagree about its meaning.
+Every language has two layers. **Syntax** is what you are allowed to write: the keywords, brackets and punctuation. **Semantics** is what it means when it runs. Most of what feels like "learning a language" is learning its syntax, and most of what makes you good at it is understanding its semantics.
 
-Take a plain question: *is this value true?* Here is the same loop in Python and JavaScript, testing four values:
+I will use Python here, because it lets you look at its own parse of your code.
+
+### From characters to a tree
+
+Before anything runs, the language turns your text into a structure. First it splits the text into **tokens** (numbers, names, operators). Then it **parses** the tokens into a tree that shows how they group. Here is the tree for `1 + 2 * 3`:
 
 ```python
-for v in [0, "", [], "0"]:
-    print(repr(v), bool(v))
-print(0 == "0")
+import ast
+print(ast.dump(ast.parse("1 + 2 * 3", mode="eval").body, indent=2))
 ```
-
-```js
-for (const v of [0, "", [], "0"]) console.log(JSON.stringify(v), Boolean(v));
-console.log(0 == "0");
-```
-
-Before you read on, decide which of the four values are true in each language. Here is what they print:
-
-Python prints:
 
 ```text
-0 False
-'' False
-[] False
-'0' True
-False
+BinOp(
+  left=Constant(value=1),
+  op=Add(),
+  right=BinOp(
+    left=Constant(value=2),
+    op=Mult(),
+    right=Constant(value=3)))
 ```
 
-JavaScript prints:
+Read it from the outside in. The outermost operation is the addition, and its right side is the multiplication. Nobody wrote a bracket, yet the tree knows the multiplication happens first. That is **precedence**: a rule of the grammar, decided before your program runs. The tree, not the text, is what the language executes.
+
+### Wrong spelling and wrong meaning are caught at different times
+
+A line can be wrong in two different ways, and the language notices at different moments:
+
+```python
+for source in ["1 +", "print(undefined)", '1 + "a"']:
+    try:
+        exec(compile(source, "<demo>", "exec"))
+    except SyntaxError as e:
+        print("before running:", type(e).__name__, "-", e.msg)
+    except Exception as e:
+        print("while running:", type(e).__name__, "-", e)
+```
 
 ```text
-0 false
-"" false
-[] true
-"0" true
-true
+before running: SyntaxError - invalid syntax
+while running: NameError - name 'undefined' is not defined
+while running: TypeError - unsupported operand type(s) for +: 'int' and 'str'
 ```
 
-The empty list is false in Python and true in JavaScript. And `0 == "0"` is false in Python, which refuses to compare a number to a string, and true in JavaScript, which quietly converts one to the other before comparing.
+`1 +` cannot become a tree, so it fails immediately. `print(undefined)` and `1 + "a"` are perfectly good trees: the spelling is fine. They fail only when the language tries to give them a meaning, because there is no such name and because a number cannot be added to text. **A syntax error is a sentence that isn't grammatical. A semantic error is a grammatical sentence that says something impossible.**
 
-C makes a third choice. There is no true or false; there is zero and not-zero:
+### Rules you cannot see in the text
 
-```c
-#include <stdio.h>
-int main(void) {
-    int zero = 0;
-    const char *empty = "";
-    printf("%d %d\n", zero ? 1 : 0, empty ? 1 : 0);
+Semantics also includes rules about *how* a tree is evaluated. Predict each line below before reading the output:
+
+```python
+print([] or "default")
+print(0 and print("never printed"))
+print(None or 0 or "")
+print(2 ** 3 ** 2, (2 ** 3) ** 2)
+print(10 - 4 - 3, 10 - (4 - 3))
+print([bool(v) for v in [0, "", [], {}, "0", [0]]])
+```
+
+```text
+default
+0
+
+512 64
+3 9
+[False, False, False, False, True, True]
+```
+
+Each line is a rule:
+
+- **Truthiness.** An empty list is false in Python, so `[] or "default"` gives `"default"`. Which values count as true is a choice each language makes, and the text `"0"` is true here because it is not empty.
+- **Short-circuiting.** `0 and print(...)` never runs the `print`. Once the left side is false, the answer is known, so the right side is skipped. The same happens with `or`, and the result is the *value* that decided it, not just `True` or `False`.
+- **Associativity.** `10 - 4 - 3` groups to the left, `(10 - 4) - 3`, giving 3. Exponent groups to the right, so `2 ** 3 ** 2` is `2 ** 9`, which is 512.
+
+Other languages draw some of these lines in different places. In JavaScript, for example, an empty list is truthy, and in C a condition only tests whether a value is zero. That is why reading a language is not enough: you need to know its semantics.
+
+<Sidenote label="Try it">Pick a language you know a little and test the same six values from the last example. Then test an expression with two operators of your own, such as `8 / 4 / 2`, and draw its tree on paper before you run it.</Sidenote>
+
+**Syntax tells you what a program looks like. Semantics tells you what it does, and it is the part that is different in every language.**
+
+## Types Decide What You Are Allowed to Do With a Value
+
+A **type** says what kind of thing a value is, and so what you may do with it. You can add two numbers, but you cannot add a number to a name. The interesting question is *when* a language checks this, and Rust checks it before the program exists.
+
+### A type is a promise about the values it allows
+
+```rust
+fn main() {
+    let count = 5;
+    let small: u8 = 255;
+    println!("{}", count * 2);
+    println!("{:?} {}", small.checked_add(1), small.wrapping_add(1));
 }
 ```
 
 ```text
-0 1
+10
+None 0
 ```
 
-The number zero is false, as expected. But `empty` is true, because it is not the text inside the string that is tested; it is a pointer, an address in memory, and that address is not zero.
+`count` has no label, because Rust works out that it is an integer. That is **type inference**. `small` is a `u8`, an unsigned number that fits in eight bits, so its values run from 0 to 255 and nothing else. Adding one to 255 has no honest answer. `checked_add` admits that by returning `None`, and `wrapping_add` goes around the clock to 0. The type is a promise about *which values can exist*, and every operation has to respect it.
 
-<Sidenote label="Try it">Pick a fourth language you know a little and test the same four values. Then test two more: `None`, `null` or `nil`, and a list containing one false value. Write down which languages agree.</Sidenote>
-
-**The same-looking line can mean different things. Learn the meaning, not the spelling.**
-
-## Types Decide What You Are Allowed to Add
-
-A **type** says what kind of thing a value is: a number, some text, a list. A language is **statically typed** if it checks types before the program runs, and **dynamically typed** if it checks them while the program runs. Languages also differ on how willing they are to convert one type into another on your behalf.
-
-Try adding the text `"1"` and the number `1`:
-
-```python
-try:
-    print("1" + 1)
-except TypeError as e:
-    print("TypeError:", e)
-```
-
-```js
-console.log("1" + 1);
-console.log("3" * "4");
-```
+### The promise is checked before you run
 
 ```rust
 fn main() {
-    let n: i32 = "1" + 1;
+    let n: i32 = "5";
     println!("{n}");
 }
 ```
 
-Python refuses, but only when it reaches that line. JavaScript decides that `+` with text means joining, and `*` means maths, so it prints two answers. Rust refuses before the program exists:
-
 ```text
-TypeError: can only concatenate str (not "int") to str
-11
-12
-error[E0369]: cannot add `{integer}` to `&str`
- --> t2.rs:2:22
+error[E0308]: mismatched types
+ --> s2b.rs:2:18
   |
-2 |     let n: i32 = "1" + 1;
-  |                  --- ^ - {integer}
-  |                  |
-  |                  &str
+2 |     let n: i32 = "5";
+  |            ---   ^^^ expected `i32`, found `&str`
+  |            |
+  |            expected due to this
 ```
 
-Three languages, three timings. JavaScript gives you an answer, but probably not the one you wanted. Python stops the program in the middle. Rust never lets the program run at all. Each choice trades something: how quickly you can write, how early a mistake is found, and how much the language guesses.
+The program never ran. The compiler found a value that breaks a promise, pointed at it and stopped. This is what **static typing** means: types are checked before the program runs. In a **dynamically typed** language, the same mistake is found when execution reaches that line, which may be in front of a user. Neither is free. Static types cost you some typing and some patience; they give back errors found early and code you can change with confidence.
 
-<Sidenote label="Try it">Write `[] + {}` in a JavaScript console and `[] + []` too. Then predict what Python does with each, and check. Notice that the lesson is not that JavaScript is wrong; the lesson is that its `+` has more than one meaning.</Sidenote>
+There is a second axis. Some languages convert between types to be helpful (`"1" + 1` becomes `"11"` in JavaScript), and some refuse (`"1" + 1` is an error in Python, and does not compile in Rust). That is the difference between **weak** and **strong** typing, and it is separate from static and dynamic.
 
-**Types are a promise about values. Languages differ on when they check the promise.**
+### Absence is a type too
 
-## Memory: Who Owns the Data, and Who Cleans It Up
+Many famous bugs come from a value that wasn't there. A **null** is a value that stands for "nothing", and it can sneak into any place that expects a real value. Rust has no null. When something might be absent, the type says so:
 
-Every value you create lives somewhere in memory. Short-lived values usually live on the **stack**, an area that grows and shrinks as functions run. Values that need to live longer, or whose size isn't known in advance, live on the **heap**. Somebody has to decide when heap memory is no longer needed, and languages disagree about who that somebody is.
-
-The first question is what happens when you copy a variable. In Python:
-
-```python
-a = [1, 2]
-b = a
-b.append(3)
-print(a, a is b)
+```rust
+fn main() {
+    let names = vec!["asha", "ravi"];
+    match names.get(5) {
+        Some(n) => println!("found {n}"),
+        None => println!("no name at 5"),
+    }
+    let first: &str = names[0];
+    println!("{first} {}", names.len());
+}
 ```
 
 ```text
-[1, 2, 3] True
+no name at 5
+asha 2
 ```
 
-`b = a` did not copy the list. It gave the same list a second name, so changing it through `b` changed it for `a`. The same thing happens in C, where both names are pointers to one block you reserved yourself:
+`get` returns an `Option`, which is either `Some(value)` or `None`, and the compiler makes you handle both. You cannot forget the empty case, because the code will not compile until you deal with it.
+
+### Types can describe choices
+
+A value can also be "one of these shapes". That is called a **sum type**, or an enum:
+
+```rust
+enum Shape {
+    Circle(f64),
+    Rect(f64, f64),
+}
+
+fn area(s: &Shape) -> f64 {
+    match s {
+        Shape::Circle(r) => 3.14 * r * r,
+        Shape::Rect(w, h) => w * h,
+    }
+}
+
+fn main() {
+    println!("{} {}", area(&Shape::Circle(1.0)), area(&Shape::Rect(2.0, 3.0)));
+}
+```
+
+```text
+3.14 6
+```
+
+Now add a third shape, `Triangle(f64, f64)`, and leave `area` alone:
+
+```text
+error[E0004]: non-exhaustive patterns: `&Shape::Triangle(_, _)` not covered
+  --> s2e.rs:8:11
+   |
+ 8 |     match s {
+   |           ^ pattern `&Shape::Triangle(_, _)` not covered
+```
+
+The compiler lists every place that forgot the new case. In a large program, that turns "I hope I found all the places" into a checklist the machine writes for you.
+
+<Sidenote label="Try it">Change `small` in the first example to `u16`, `i8` and `i64`, and find the largest value each can hold. Then write down which of your own bugs a type could have caught before you ran the code.</Sidenote>
+
+**A type is a promise. A static language checks the promise before the program runs, and a dynamic language checks it as the program runs.**
+
+## Memory: Where Values Live, and Who Cleans Up
+
+Every value you create lives somewhere in memory. Understanding where is the difference between code that mostly works and code you can explain. C is the right place to see it, because it shows the machine and hides nothing.
+
+### The stack and the heap
 
 ```c
 #include <stdio.h>
 #include <stdlib.h>
+
+int main(void) {
+    int local = 1;
+    int *heap = malloc(sizeof *heap);
+    printf("stack: %p\n", (void *)&local);
+    printf("heap:  %p\n", (void *)heap);
+    free(heap);
+}
+```
+
+```text
+stack: 0x7ffc46e0fbbc
+heap:  0x560a521db2a0
+```
+
+A **memory address** is a number that says where a value lives. The two addresses are far apart because the values live in different regions. The **stack** holds the variables of each running function. It grows when a function is called and shrinks when it returns, so it is fast and tidy, but everything on it disappears when its function ends. The **heap** holds values you request explicitly with `malloc`, and they stay until you release them. Running it again gives different addresses, because the operating system moves things around on purpose.
+
+### How big is a value?
+
+```c
+#include <stdio.h>
+
+struct loose { char a; int b; char c; };
+struct tight { int b; char a; char c; };
+
+int main(void) {
+    printf("char %zu, int %zu, long %zu, pointer %zu\n", sizeof(char), sizeof(int), sizeof(long), sizeof(int *));
+    printf("loose %zu, tight %zu\n", sizeof(struct loose), sizeof(struct tight));
+}
+```
+
+```text
+char 1, int 4, long 8, pointer 8
+loose 12, tight 8
+```
+
+Every type takes a fixed number of bytes. The two structs hold exactly the same fields, and one is 12 bytes while the other is 8. The processor reads whole numbers most easily from addresses that are multiples of their size, so the compiler inserts empty **padding** to keep each field **aligned**. The lesson is not about structs; it is that memory has a physical layout, and layout has consequences for speed and size.
+
+### Two names, one value
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
 int main(void) {
     int *a = malloc(2 * sizeof *a);
     a[0] = 1; a[1] = 2;
@@ -178,41 +294,74 @@ int main(void) {
 99
 ```
 
-In C, the `free` at the end is your job. Forget it and the memory leaks. Do it twice, or use the memory after it, and the behaviour is *undefined*, which means the language makes no promise at all. Compiling with `gcc -fsanitize=address` and reading the freed value reports `heap-use-after-free` and points at the line, which is a good way to meet that bug safely.
+`b = a` copied the *address*, not the data, so both names point to the same two numbers. Changing one changed the other. This is called **aliasing**. It is ordinary and useful, and it is also behind many bugs: you change something through one name and a different part of the program is surprised.
 
-Python, Java and JavaScript take the cleanup off your hands. They track what is still reachable and free the rest. Python mainly counts how many names refer to an object, and Java and JavaScript runtimes periodically search for what is unreachable. This is called **garbage collection**.
+### Who cleans up?
 
-Rust chooses a third answer: **ownership**. Every value has exactly one owner, and when the owner goes out of scope the value is freed. Assignment moves ownership:
+Memory you reserve must be released exactly once, and C leaves that to you. The three classic mistakes are using memory after releasing it, forgetting to release it, and keeping a pointer to something that no longer exists. Compiling with the address sanitizer (`gcc -g -fsanitize=address`) turns them from silent corruption into reports:
 
-```rust
-fn main() {
-    let a = vec![1, 2];
-    let b = a;
-    println!("{:?}", a);
+```c
+int *a = malloc(sizeof *a);
+*a = 42;
+free(a);
+printf("%d\n", *a);   // use after free
+```
+
+```text
+==650==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5633f5b8e2e7 bp 0x7ffd3c576c20 sp 0x7ffd3c576c10
+READ of size 4 at 0x502000000010 thread T0
+```
+
+```c
+char *p = malloc(100);
+p = NULL;   // the only pointer to the block is gone
+```
+
+```text
+==658==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 100 byte(s) in 1 object(s) allocated from:
+```
+
+```c
+int *broken(void) {
+    int x = 7;
+    return &x;   // x lives on the stack and vanishes when the function returns
 }
 ```
 
 ```text
-error[E0382]: borrow of moved value: `a`
- --> t3.rs:4:22
-  |
-2 |     let a = vec![1, 2];
-  |         - move occurs because `a` has type `Vec<i32>`, which does not implement the `Copy` trait
-3 |     let b = a;
-  |             - value moved here
-4 |     println!("{:?}", a);
-  |                      ^ value borrowed here after move
+s3f.c: In function 'broken':
+s3f.c:5:12: warning: function returns address of local variable [-Wreturn-local-addr]
 ```
 
-The same two lines that quietly alias in Python are a compile error in Rust, because after `let b = a`, the name `a` no longer owns anything.
+The first reads a block that was already given back. The second lost the only address of a block, so it can never be freed. The third returns the address of something that is destroyed the moment the function returns. In all three, the language did what it was told. The mistake is in the *lifetime*: the span between a value being created and being freed.
 
-<Sidenote label="Try it">In C, add `printf("%d\n", *a);` after the `free(a)` in a small program and compile it with `gcc -g -fsanitize=address`. Then, in Rust, fix the error above two ways: once with `a.clone()`, and once with a reference, `let b = &a;`. Notice what each fix costs.</Sidenote>
+Every language has to answer the question *who frees this, and when?* C answers "you do". Many languages answer "a garbage collector finds what is no longer reachable and frees it", and some count how many names refer to a value and free it at zero. Rust answers with rules the compiler checks: every value has one owner, and it is freed when the owner goes away. Each answer is a trade between effort, speed and safety, and understanding the question lets you read any of them.
 
-**Every language answers the same question: who frees this, and when? You pay for the answer in effort, speed or restrictions.**
+<Sidenote label="Try it">Compile the use-after-free example with and without `-fsanitize=address`, and compare what happens. Then change the struct field order in the sizes example to find the smallest layout for three fields of your own choice.</Sidenote>
+
+**Memory has places, sizes and lifetimes. Every language has to decide who is responsible for each.**
 
 ## Functions Can Remember Where They Were Born
 
-A **closure** is a function that carries along the variables from the place where it was created. The classic demonstration is a counter:
+A function is a value you can pass around, store and return. And a function can carry along the variables from the place where it was written. That second part is a **closure**, and JavaScript is built around it.
+
+### Functions as values
+
+```js
+const makeAdder = (n) => (x) => x + n;
+const addTen = makeAdder(10);
+console.log(addTen(5), [1, 2, 3].map(makeAdder(100)));
+```
+
+```text
+15 [ 101, 102, 103 ]
+```
+
+`makeAdder(10)` returns a new function. The `10` was a parameter of `makeAdder`, which has finished by the time `addTen(5)` runs, yet `addTen` still knows it. A function that takes or returns functions is called a **higher-order function**, and `map` is one. Much of everyday JavaScript is passing small functions to larger ones.
+
+### Remembering, per function
 
 ```js
 function makeCounter() {
@@ -220,16 +369,57 @@ function makeCounter() {
   return () => ++n;
 }
 const a = makeCounter(), b = makeCounter();
-console.log(a(), a(), b());
+console.log(a(), a(), a(), b());
 ```
 
 ```text
-1 2 1
+1 2 3 1
 ```
 
-Each counter has its own `n`, kept alive after `makeCounter` has returned. Closures are how callbacks, event handlers and many other patterns carry their context with them.
+Each call to `makeCounter` creates a fresh `n`, and the returned function keeps its own. The pair of *a function plus the variables it can see* is a closure. The variable stays alive for as long as the function does, which is why `a` and `b` count independently.
 
-They also hide a famous trap. A closure keeps the *variable*, not the value it had at that moment. Predict what each of these prints, three functions that each return the loop counter:
+### Names are found where the function was written
+
+```js
+let x = "outer";
+function show() { return x; }
+function run() {
+  let x = "inner";
+  return show();
+}
+console.log(run());
+```
+
+```text
+outer
+```
+
+`show` is called from inside `run`, where `x` is `"inner"`, yet it prints `"outer"`. It looks up names where it was **written**, not where it is **called**. This is **lexical scope**, and closures are what make it work when functions travel.
+
+### Privacy without a keyword
+
+```js
+function createAccount(start) {
+  let total = start;
+  return {
+    deposit(x) { total += x; },
+    read() { return total; },
+  };
+}
+const acct = createAccount(100);
+acct.deposit(50);
+console.log(acct.read(), acct.total);
+```
+
+```text
+150 undefined
+```
+
+Nothing outside can touch `total`. The only way in is through the two functions that closed over it. A closure is, in effect, a tiny object whose private data is whatever it captured.
+
+### The trap: it remembers the variable, not the value
+
+A closure keeps a **variable**, not a copy of the value it had. Predict what these print:
 
 ```js
 const fs = [];
@@ -240,153 +430,147 @@ for (let j = 0; j < 3; j++) gs.push(() => j);
 console.log(gs.map(g => g()));
 ```
 
-```python
-fs = [lambda: i for i in range(3)]
-print([f() for f in fs])
-gs = [lambda i=i: i for i in range(3)]
-print([g() for g in gs])
-```
-
-```go
-var fs []func() int
-for i := 0; i < 3; i++ {
-	fs = append(fs, func() int { return i })
-}
-for _, f := range fs {
-	fmt.Print(f(), " ")
-}
-```
-
 ```text
-[ 3, 3, 3 ]     JavaScript with var
-[ 0, 1, 2 ]     JavaScript with let
-[2, 2, 2]       Python
-[0, 1, 2]       Python with i=i
-0 1 2           Go
+[ 3, 3, 3 ]
+[ 0, 1, 2 ]
 ```
 
-With `var`, one variable `i` is shared by all three functions, and by the time any of them runs, the loop has finished and `i` is `3`. With `let`, every turn of the loop gets a fresh variable. Python's list-comprehension version shares one variable, so every function sees the last value, `2`, until you bind the current value with `i=i`. Go behaved like the first group before version 1.22 and, with the toolchain I used (1.24), now gives each iteration its own variable, so it prints `0 1 2`.
+With `var`, there is one `i` for the whole loop, and by the time any function runs, the loop has finished and `i` is 3. With `let`, each turn gets its own fresh variable. The same trap exists in other languages, and some have changed their rules over time, which is why the question *"which variable does this closure share?"* is worth asking every time.
 
-That is a language's *semantics* changing between versions, and it is exactly why the behaviour matters more than the spelling.
+<Sidenote label="Try it">Write a function `makeLimiter(max)` that returns a function allowing only `max` calls and then returns `"stop"`. Use no object and no global.</Sidenote>
 
-<Sidenote label="Try it">Write the Python loop with a regular `def` inside a `for` loop and predict the output. Then rewrite it using `functools.partial` instead of the `i=i` trick.</Sidenote>
+**A closure is a function plus the variables it was born next to. Always ask whether those variables are shared.**
 
-**A closure remembers a variable, not a value. Always ask which variable it remembers.**
+## Objects and Functions Are Two Ways to Organise Code
 
-## Objects and Functions Are Two Ways to Organise the Same Code
+Programs need structure, and two big families of ideas compete to supply it. **Object-oriented programming** groups data with the actions that use it, and shares behaviour between types that have something in common. **Functional programming** builds programs from functions that take values and return new values, without changing anything in place. Java has grown to support both, which makes it a good place to see them side by side.
 
-There are two big families of ideas for structuring a program. In **object-oriented programming**, you group data and the actions on that data together, and you share behaviour through types that have something in common. In **functional programming**, you build programs from functions that take values and return new values, and you avoid changing things in place. Most real languages mix both.
-
-The first article described inheritance, the idea that one class can build on another. Here is a shared idea, `area`, written three ways. Each defines two shapes that both know how to compute an area:
+### Polymorphism: one call, many behaviours
 
 ```java
 interface Shape { double area(); }
-record Square(double s) implements Shape { public double area() { return s * s; } }
-record Circle(double r) implements Shape { public double area() { return Math.PI * r * r; } }
+record Square(double side) implements Shape { public double area() { return side * side; } }
+record Circle(double radius) implements Shape { public double area() { return Math.PI * radius * radius; } }
 
-public class Main {
+public class A {
     public static void main(String[] args) {
-        for (Shape s : new Shape[] { new Square(2), new Circle(1) })
-            System.out.println(s.area());
+        Shape[] shapes = { new Square(2), new Circle(1) };
+        for (Shape s : shapes) System.out.println(s.getClass().getSimpleName() + " " + s.area());
     }
-}
-```
-
-```python
-import math
-
-class Square:
-    def __init__(self, s): self.s = s
-    def area(self): return self.s ** 2
-
-class Circle:
-    def __init__(self, r): self.r = r
-    def area(self): return math.pi * self.r ** 2
-
-for shape in [Square(2), Circle(1)]:
-    print(shape.area())
-```
-
-```rust
-trait Shape { fn area(&self) -> f64; }
-struct Square(f64);
-struct Circle(f64);
-impl Shape for Square { fn area(&self) -> f64 { self.0 * self.0 } }
-impl Shape for Circle { fn area(&self) -> f64 { std::f64::consts::PI * self.0 * self.0 } }
-
-fn main() {
-    let shapes: Vec<Box<dyn Shape>> = vec![Box::new(Square(2.0)), Box::new(Circle(1.0))];
-    for s in &shapes { println!("{}", s.area()); }
-}
-```
-
-All three print the areas (`4.0` and `3.141592653589793` in Java, and `4` and `3.141592653589793` in Python and Rust, which format `4.0` differently). The ideas differ. Java declares an **interface**, a promise that a type has certain methods, and each type states that it keeps the promise. Python never declares the promise: if it has an `area` method, it works, which is called *duck typing*. Rust uses a **trait**, similar to an interface, but a type gets its behaviour by implementing it, not by inheriting from a parent.
-
-The functional style looks different. The same job in three languages, squaring the even numbers:
-
-```python
-nums = [1, 2, 3, 4, 5, 6]
-print([n * n for n in nums if n % 2 == 0])
-```
-
-```js
-const nums = [1, 2, 3, 4, 5, 6];
-console.log(nums.filter(n => n % 2 === 0).map(n => n * n));
-```
-
-```rust
-fn main() {
-    let nums = [1, 2, 3, 4, 5, 6];
-    let out: Vec<i32> = nums.iter().filter(|n| *n % 2 == 0).map(|n| n * n).collect();
-    println!("{:?}", out);
 }
 ```
 
 ```text
-[4, 16, 36]
-[ 4, 16, 36 ]
-[4, 16, 36]
+Square 4.0
+Circle 3.141592653589793
 ```
 
-Each one describes *what* you want (keep the evens, square them) and leaves *how* to the language. No variable is changed along the way. A purely functional language such as Haskell takes this much further; I did not have one installed to run here, so I am only pointing at it.
+The loop calls `s.area()` without knowing which kind of shape it holds. The call goes to the right method for each one. That is **polymorphism**, and an **interface** is the promise that makes it possible: any type that implements `Shape` has an `area`. The first article's inheritance is a close relative: a way to share behaviour between related types.
 
-<Sidenote label="Try it">Add a third shape to each version of the area example. Count what you had to touch in each language. Then add a second *action*, `perimeter`, and count again.</Sidenote>
-
-**Objects bundle behaviour with data. Functions transform data. Languages let you choose, and most good programs use both.**
-
-## Generics: Write It Once for Many Types
-
-You want a `max` function that works on numbers and on text. Writing it twice is wasteful, and writing it with no types at all gives up the checking from earlier. **Generics** let you write it once, with a placeholder for the type.
+### Encapsulation: protect the rules
 
 ```java
-import java.util.ArrayList;
+class Account {
+    private long cents;
 
-public class Main {
-    static <T extends Comparable<T>> T max(T a, T b) { return a.compareTo(b) >= 0 ? a : b; }
+    Account(long cents) { this.cents = cents; }
+
+    void withdraw(long amount) {
+        if (amount > cents) throw new IllegalStateException("insufficient funds: have " + cents + ", need " + amount);
+        cents -= amount;
+    }
+
+    long balance() { return cents; }
+}
+```
+
+```text
+300
+Exception in thread "main" java.lang.IllegalStateException: insufficient funds: have 300, need 900
+	at Account.withdraw(B.java:7)
+```
+
+The first line is the balance after withdrawing 200 from 500. The second withdrawal, of 900, is refused. Because `cents` is `private`, the only way to change it is through `withdraw`, and `withdraw` is the only place the rule "you cannot go below zero" has to be written. That is **encapsulation**: keep the data behind a small set of operations, so the rules of the data live in one place.
+
+A practical warning: inheritance gets overused. A class that *extends* another is tied to its details, and a hierarchy gets hard to change. Many teams prefer **composition**, where an object holds another object and uses it, because it couples things loosely.
+
+### The same shapes, the other way round
+
+Here is the same domain, written so that the data is plain and the behaviour lives in functions:
+
+```java
+sealed interface Shape permits Circle, Rect {}
+record Circle(double radius) implements Shape {}
+record Rect(double w, double h) implements Shape {}
+
+public class C {
+    static double area(Shape s) {
+        return switch (s) {
+            case Circle c -> Math.PI * c.radius() * c.radius();
+            case Rect r -> r.w() * r.h();
+        };
+    }
+
+    static String describe(Shape s) {
+        return switch (s) {
+            case Circle c -> "circle of radius " + c.radius();
+            case Rect r -> r.w() + " by " + r.h();
+        };
+    }
 
     public static void main(String[] args) {
-        System.out.println(max(3, 7) + " " + max("pear", "apple"));
-        System.out.println(new ArrayList<String>().getClass() == new ArrayList<Integer>().getClass());
+        for (Shape s : new Shape[] { new Circle(1), new Rect(2, 3) })
+            System.out.println(describe(s) + ": " + area(s));
     }
 }
 ```
 
-```rust
-fn max<T: PartialOrd>(a: T, b: T) -> T { if a >= b { a } else { b } }
-
-fn main() {
-    println!("{} {}", max(3, 7), max("pear", "apple"));
-}
+```text
+circle of radius 1.0: 3.141592653589793
+2.0 by 3.0: 6.0
 ```
 
+A `sealed` interface lists every allowed shape, and a `switch` handles each one. Delete the `Rect` case from `area` and the compiler says so:
+
+```text
+E.java:7: error: the switch expression does not cover all possible input values
+        return switch (s) {
+               ^
+1 error
+```
+
+### The choice you are really making
+
+Look at what each version makes easy. In the first version, **adding a new shape** is one new class and nothing else changes, but **adding a new operation** (say, `perimeter`) means editing every class. In the second, **adding an operation** is one new function, but **adding a new shape** makes the compiler point at every `switch`. Neither is better. Which kind of change will you make more often? That is the question behind the object-versus-function choice, and it is called the **expression problem**.
+
+### Functions over data
+
+```java
+List<Integer> nums = List.of(1, 2, 3, 4, 5, 6);
+List<Integer> squares = nums.stream().filter(n -> n % 2 == 0).map(n -> n * n).toList();
+int total = nums.stream().reduce(0, Integer::sum);
+System.out.println(squares + " " + total + " " + nums);
+try { nums.add(7); } catch (UnsupportedOperationException e) { System.out.println("immutable list"); }
+```
+
+```text
+[4, 16, 36] 21 [1, 2, 3, 4, 5, 6]
+immutable list
+```
+
+Each step says *what* is wanted (keep the evens, square them, add them all up) and not *how* to loop. The original list is untouched, and the list itself refuses to change. Functions that do not change anything outside themselves are called **pure**, and values that cannot change are **immutable**. They are easier to reason about because the same input always gives the same output, and nothing else can interfere.
+
+<Sidenote label="Try it">Add a `perimeter` operation to both versions of the shapes example, then add a `Triangle`. Count how many places you had to touch each time.</Sidenote>
+
+**Objects bundle behaviour with data, and functions transform data. Choose by asking which kind of change you expect to make most.**
+
+## Generics: Write It Once for Many Types
+
+You write a `max` function for numbers. Then you need it for decimals, then for text. The logic is identical; only the type changes. **Generics** let you write the logic once with a placeholder for the type. Go added them in version 1.18, and its small design makes the idea easy to see.
+
+### One function, many types
+
 ```go
-package main
-
-import (
-	"cmp"
-	"fmt"
-)
-
 func Max[T cmp.Ordered](a, b T) T {
 	if a >= b {
 		return a
@@ -394,111 +578,246 @@ func Max[T cmp.Ordered](a, b T) T {
 	return b
 }
 
-func main() { fmt.Println(Max(3, 7), Max("pear", "apple")) }
-```
-
-```text
-7 pear
-true
-7 pear
-7 pear
-```
-
-All three give the same answer. The surprise is the second line of the Java output: `true`. A list of strings and a list of integers have the *same* runtime class. Java checks the types when it compiles and then **erases** them, so at runtime both are just lists. Rust does the opposite: for each type you use, the compiler generates a specialised copy of the function, so there is no cost at runtime. Go added generics in version 1.18; before that, you wrote the function twice or used a more general type and gave up the checking.
-
-The constraint matters too. `T extends Comparable<T>`, `T: PartialOrd` and `cmp.Ordered` are the same sentence in three accents: *this works for any type that can be ordered.* Without it, the compiler cannot know that `>=` makes sense for `T`.
-
-<Sidenote label="Try it">Remove the constraint from one of the three versions and read the compiler's complaint. Then call each with a type that has no ordering, such as a list of lists, and compare the messages.</Sidenote>
-
-**A generic function states what it needs from its types. The compiler then holds you to it.**
-
-## Errors Are Either Thrown, Returned or Ignored
-
-Something will fail: a file is missing, a number can't be read, a network drops. Languages differ in where that failure goes. Here is the same failed conversion, turning `"abc"` into a number, in four languages:
-
-```python
-try:
-    n = int("abc")
-except ValueError as e:
-    print("caught:", e)
-```
-
-```go
-n, err := strconv.Atoi("abc")
-fmt.Println(n, err)
-```
-
-```rust
-match "abc".parse::<i32>() {
-    Ok(n) => println!("{n}"),
-    Err(e) => println!("error: {e}"),
+func main() {
+	fmt.Println(Max(3, 7), Max(2.5, 1.5), Max("pear", "apple"))
 }
 ```
 
-```c
-const char *s = "abc";
-char *end;
-long n = strtol(s, &end, 10);
-printf("%ld %s\n", n, end == s ? "(nothing parsed)" : "ok");
+```text
+7 2.5 pear
+```
+
+`T` is a **type parameter**: a stand-in that the compiler fills in with `int`, `float64` or `string` at each call. You never wrote those types; the compiler worked them out from the arguments.
+
+### A container that does not care what it holds
+
+```go
+type Stack[T any] struct{ items []T }
+
+func (s *Stack[T]) Push(x T) { s.items = append(s.items, x) }
+
+func (s *Stack[T]) Pop() (T, bool) {
+	var zero T
+	if len(s.items) == 0 {
+		return zero, false
+	}
+	x := s.items[len(s.items)-1]
+	s.items = s.items[:len(s.items)-1]
+	return x, true
+}
+
+func Map[T, U any](xs []T, f func(T) U) []U {
+	out := make([]U, 0, len(xs))
+	for _, x := range xs {
+		out = append(out, f(x))
+	}
+	return out
+}
 ```
 
 ```text
-caught: invalid literal for int() with base 10: 'abc'
-0 strconv.Atoi: parsing "abc": invalid syntax
-error: invalid digit found in string
-0 (nothing parsed)
+b false
+[1 4 9]
 ```
 
-Python **throws an exception**, which jumps out of the current code until something catches it. If nothing does, the program stops. Go **returns the error** as a second value, and the caller decides what to do with it, although you can ignore it by writing `_` in its place. Rust returns a `Result`, which is either `Ok` with a value or `Err` with a problem, and the compiler warns when you don't handle it. C has no error type at all: `strtol` returns `0` for `"abc"`, the same as it returns for `"0"`, and you have to inspect a separate pointer to find out what happened.
+A `Stack[string]` holds only strings, and the compiler will not let you push a number. The same code serves a `Stack[int]`. And `Map` takes a list of `T` and a function from `T` to `U`, and gives back a list of `U`. This is the main use of generics: **containers and algorithms that work the same way whatever they hold**, with the type checks kept.
 
-Each design answers the same question: *when something goes wrong far from where it is understood, how does the news travel?* Exceptions travel automatically, which is convenient and easy to forget about. Returned errors are visible in every function signature and every call, which is more typing and harder to ignore.
+### Saying what you need from the type
 
-<Sidenote label="Try it">Write a function that reads a number from a file in Python and in Go. List every way it can fail. Then check whether each language's code handles every item on your list, or whether some can slip through.</Sidenote>
+A function that adds things cannot accept just any type. It needs a type that supports `+`:
 
-**A failure always goes somewhere. The language decides whether you have to choose where.**
+```go
+type Number interface{ ~int | ~float64 }
+
+func Sum[T Number](xs []T) T {
+	var total T
+	for _, x := range xs {
+		total += x
+	}
+	return total
+}
+```
+
+```text
+6 0.75
+```
+
+`Number` is a **constraint**: a statement of what a type must be able to do. Ask for a sum of strings and the compiler refuses:
+
+```text
+./c.go:17:17: string does not satisfy Number (string missing in ~int | ~float64)
+```
+
+The constraint is a contract in both directions. It lets the function use `+` safely, and it tells every caller exactly what is allowed. Languages implement this differently under the surface (some erase the types after checking, some generate a copy of the code per type), but the idea is the same: **a placeholder, plus a rule about what the placeholder must support**.
+
+Generics are not always the answer. If a single interface already says what you need, or the function only ever sees one type, a generic version adds complexity for nothing.
+
+<Sidenote label="Try it">Write a generic `Filter[T any](xs []T, keep func(T) bool) []T` and use it on a list of numbers and a list of strings. Then write `Contains[T comparable](xs []T, x T) bool` and find out why `any` is not enough for it.</Sidenote>
+
+**Generics are a placeholder for a type, plus a promise about what that type can do.**
+
+## Errors: Where Does the Bad News Go?
+
+Something will fail: a file is missing, text is not a number, a network drops. The real question is where the failure goes and who has to deal with it. Python's exceptions show the idea clearly.
+
+### The failure travels up
+
+```python
+def parse_age(text):
+    return int(text)
+
+def load(record):
+    return parse_age(record["age"])
+
+print(load({"age": "abc"}))
+```
+
+```text
+Traceback (most recent call last):
+  File "a.py", line 7, in <module>
+    print(load({"age": "abc"}))
+  File "a.py", line 5, in load
+    return parse_age(record["age"])
+  File "a.py", line 2, in parse_age
+    return int(text)
+ValueError: invalid literal for int() with base 10: 'abc'
+```
+
+Your file paths will be longer, and Python adds a row of `^` markers under each line, which I have left out. Nothing handled the failure, so it climbed through each function that called `int` until it reached the top and the program stopped. The **traceback** is the list of calls it climbed through, and it is the best map you will get to what went wrong. Read it from the bottom up: the last line says what, and the lines above say where.
+
+### Turn a low-level failure into a useful one
+
+```python
+class AgeError(ValueError):
+    pass
+
+def parse_age(text):
+    try:
+        age = int(text)
+    except ValueError as e:
+        raise AgeError(f"age must be a whole number, got {text!r}") from e
+    if not 0 <= age <= 130:
+        raise AgeError(f"age out of range: {age}")
+    return age
+
+for raw in ["34", "abc", "400"]:
+    try:
+        print("ok", parse_age(raw))
+    except AgeError as e:
+        print("rejected:", e)
+```
+
+```text
+ok 34
+rejected: age must be a whole number, got 'abc'
+rejected: age out of range: 400
+```
+
+The caller does not care about how `int` works. It cares that the age was bad, and why. So `parse_age` catches the low-level failure and raises one in the caller's own terms, and `from e` keeps the original attached for debugging. The same `try` catches only `AgeError`, so a real bug elsewhere will not be hidden.
+
+### Cleanup that always runs
+
+```python
+def read_first_line(path):
+    f = open(path)
+    try:
+        return f.readline().strip()
+    finally:
+        f.close()
+        print("closed", path)
+
+print(read_first_line("c.py"))
+with open("c.py") as g:
+    g.readline()
+print(g.closed)
+try:
+    read_first_line("missing.txt")
+except FileNotFoundError as e:
+    print("caught:", e.strerror, e.filename)
+```
+
+```text
+closed c.py
+def read_first_line(path):
+True
+caught: No such file or directory missing.txt
+```
+
+`finally` runs whether the code above it succeeded or failed, and it is how you guarantee a file gets closed. The `with` statement does the same job in fewer lines: the file is closed the moment the block ends, which is why `g.closed` is `True`. When `open` itself fails, there is nothing to close, so `finally` never starts.
+
+### The most dangerous handler is the one that hides the problem
+
+```python
+def average(xs):
+    return sum(xs) / len(xs)
+
+def safe(xs):
+    try:
+        return average(xs)
+    except Exception:
+        pass
+
+print(safe([2, 4, 6]))
+print(safe([]))
+print(safe(None))
+try:
+    average([])
+except ZeroDivisionError as e:
+    print("loud:", e)
+```
+
+```text
+4.0
+None
+None
+loud: division by zero
+```
+
+`safe` swallows every error, so an empty list and a `None` both quietly come back as `None`, and nobody ever learns that two different things went wrong. A bug is far easier to fix when it fails loudly where it happened.
+
+Not every language reports failure this way. Some return the error as an ordinary value that you must look at, so a forgotten check is visible in the code. The trade is the same in all of them: automatic propagation is convenient and easy to forget, and visible error handling is more typing and harder to ignore.
+
+Underneath, good error handling comes down to a few habits: separate failures you **expect** (a missing file, bad input) from **bugs** (a broken assumption), handle a failure where you can actually do something about it, add context as it travels, always release what you hold, and never hide one.
+
+<Sidenote label="Try it">Write a function that reads a number from a file. List every way it can fail, then check which of your list your code would catch, which would crash with a clear message and which would be silently wrong.</Sidenote>
+
+**A failure always goes somewhere. Decide where, and make sure it is loud when it should be.**
 
 ## Concurrency: Two Things at Once, and the Bugs That Come With It
 
-**Concurrency** means several tasks are in progress at the same time. **Parallelism** means they are literally running at the same moment on different processor cores. The trouble starts when they share data.
+**Concurrency** means several tasks are in progress at the same time. **Parallelism** means they are literally running at the same moment on different processor cores. The trouble starts when tasks share data. Go makes starting a task cheap, so it is a good place to watch what goes wrong.
 
-Here are a hundred goroutines, which are Go's lightweight threads, each adding 1 to the same counter 10,000 times. The right answer is 1,000,000:
+### The race
+
+A hundred **goroutines**, Go's lightweight threads, each add 1 to one counter ten thousand times. The right answer is 1,000,000:
 
 ```go
-package main
-
-import (
-	"fmt"
-	"sync"
-)
-
-func main() {
-	var wg sync.WaitGroup
-	count := 0
-	for g := 0; g < 100; g++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for i := 0; i < 10000; i++ {
-				count++
-			}
-		}()
-	}
-	wg.Wait()
-	fmt.Println(count)
+var wg sync.WaitGroup
+count := 0
+for g := 0; g < 100; g++ {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for i := 0; i < 10000; i++ {
+			count++
+		}
+	}()
 }
+wg.Wait()
+fmt.Println(count)
 ```
 
-I ran it three times:
+Three runs:
 
 ```text
-521228
-1000000
-468789
+412645
+349627
+589683
 ```
 
-Three runs, three answers, and one of them was right *by luck*. That is a **race condition**. `count++` looks like one step but is really three: read, add, write. Two goroutines can read the same value and both write back the same result, so an update is lost. Go can catch this: `go run -race` reports `WARNING: DATA RACE` and shows the two lines involved.
+Three runs, three wrong answers, none of them close to a million. `count++` looks like one step, but it is three: read the number, add one, write it back. Two goroutines can read the same number and both write back the same result, so an update is lost. That is a **race condition**: the result depends on timing. Go can find these. Running it with `go run -race` prints a `WARNING: DATA RACE` report and the lines involved.
 
-The fix is to let only one goroutine in at a time, with a **mutex**, a lock:
+### Take turns: a lock
 
 ```go
 var mu sync.Mutex
@@ -508,56 +827,89 @@ count++
 mu.Unlock()
 ```
 
-With the lock, I got `1000000` every time. Java has an alternative for this exact case, an atomic integer, whose increment is a single indivisible step; a hundred threads each calling `incrementAndGet` ten thousand times printed `1000000`.
+```text
+1000000
+1000000
+```
 
-Rust goes a step further and refuses to compile the unsafe version. If you try to modify a variable from a spawned thread, it stops you:
+A **mutex** (mutual exclusion lock) lets one goroutine in at a time. The updates no longer collide, and the answer is right every time. The price is that the goroutines now wait for each other, so a lock held too long makes parallel code behave like sequential code.
+
+### Don't share: pass messages
+
+The other approach is to share nothing and send values instead:
+
+```go
+jobs := make(chan int)
+results := make(chan int)
+for w := 0; w < 3; w++ {
+	go func() {
+		for n := range jobs {
+			results <- n * n
+		}
+	}()
+}
+go func() {
+	for n := 1; n <= 5; n++ {
+		jobs <- n
+	}
+	close(jobs)
+}()
+sum := 0
+for i := 0; i < 5; i++ {
+	sum += <-results
+}
+fmt.Println(sum)
+```
 
 ```text
-error[E0373]: closure may outlive the current function, but it borrows `count`, which is owned by the current function
- --> rrace.rs:5:32
-  |
-5 |     let handle = thread::spawn(|| { count += 1; });
-  |                                ^^   ----- `count` is borrowed here
-  |                                |
-  |                                may outlive borrowed value `count`
+55
 ```
 
-Python tells a different story, about whether threads can even run in parallel. Here are two threads each counting down from 20 million, against the same work done one after the other:
+A **channel** is a pipe between goroutines. Three workers take numbers from `jobs`, square them and send the results back, and no two goroutines ever touch the same variable. The Go community's saying for this is *don't communicate by sharing memory; share memory by communicating*.
 
-```python
-import time
-from threading import Thread
+### Waiting forever, and giving up
 
-def burn(n):
-    while n:
-        n -= 1
+Concurrency has a second family of bugs: tasks that wait for something that never comes.
 
-N = 20_000_000
-t = time.perf_counter(); burn(N); burn(N)
-print("sequential:", round(time.perf_counter() - t, 2), "s")
-
-t = time.perf_counter()
-ts = [Thread(target=burn, args=(N,)) for _ in range(2)]
-[x.start() for x in ts]; [x.join() for x in ts]
-print("two threads:", round(time.perf_counter() - t, 2), "s")
+```go
+ch := make(chan int)
+ch <- 1   // nobody is receiving
 ```
 
 ```text
-sequential: 0.83 s
-two threads: 0.82 s
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan send]:
 ```
 
-On a four-core machine, two threads were no faster. The standard build of CPython has a **global interpreter lock**, so only one thread runs Python code at a time. Threads still help when the work is waiting, such as network calls, but not for CPU-bound code like this. Newer Python versions offer an optional build without the lock, so check which version you are using before you rely on this.
+This is a **deadlock**: every task is waiting for another. Go noticed that nothing could ever make progress and stopped the program. You will not always get a message like that, so real programs put limits on waiting:
 
-<Sidenote label="Try it">Run the racy Go program with `go run -race` and read the report. Then run the Python timing with `multiprocessing` instead of `Thread`, and see what changes.</Sidenote>
+```go
+select {
+case msg := <-slow:
+	fmt.Println(msg)
+case <-time.After(50 * time.Millisecond):
+	fmt.Println("gave up after 50ms")
+}
+```
 
-**Shared data that more than one task can change is the source of the hardest bugs. Every language gives you a different tool for it.**
+```text
+gave up after 50ms
+```
+
+`select` waits on several things at once and takes whichever happens first. Here, a response that takes 200 ms loses to a 50 ms timeout. Every wait that can be unbounded should have a bound.
+
+<Sidenote label="Try it">Run the racy counter with `go run -race` and read the report. Then change the number of goroutines to 2 and see whether the wrong answer still appears. What does that tell you about testing for races?</Sidenote>
+
+**Shared data that more than one task can change is the source of the hardest bugs. Take turns, pass messages, and always bound your waits.**
 
 ## Async: One Thread Waiting for Many Things
 
-Most programs spend most of their time waiting: for a disk, a network, a database. **Asynchronous** programming is a way to keep one thread useful while it waits, by starting something and moving on until it finishes.
+Most programs spend most of their time waiting: for a disk, a network, a database. **Asynchronous** programming is a way to keep one thread useful while it waits, by starting something and moving on until it finishes. JavaScript is built around it, which makes it the clearest place to learn it.
 
-JavaScript is built around this. A single thread runs a loop: take a task, run it, run any promise callbacks that were queued, then take the next task. Here is a small test of the order. Guess it first:
+### The loop that runs everything
+
+JavaScript runs your code on one thread, driven by an **event loop**. Predict the order of this:
 
 ```js
 console.log("A");
@@ -573,7 +925,7 @@ B
 C
 ```
 
-The timer was set for zero milliseconds, yet it prints last. Promise callbacks run in a queue that is emptied as soon as the current code finishes, and timers wait for their turn as new tasks. That is the event loop:
+The timer was set for zero milliseconds and still printed last. The loop takes one task, runs it to the end, then runs every queued **promise** callback (a promise stands for a value that will arrive later), and only then takes the next task, such as a timer.
 
 ```mermaid caption="One turn of the JavaScript event loop"
 flowchart LR
@@ -584,248 +936,338 @@ flowchart LR
   P --> T
 ```
 
-Python has the same idea in `asyncio`. Three jobs that each wait one second finish together in about one second, because the thread starts all three and waits for them at once:
+### Waiting in order, or waiting together
 
-```python
-import asyncio, time
+`await` pauses a function until a promise is ready, without blocking the thread. Here are three one-third-of-a-second waits, once in sequence and once together:
 
-async def job(n):
-    await asyncio.sleep(1)
-    return n
+```js
+const wait = (ms, value) => new Promise((resolve) => setTimeout(() => resolve(value), ms));
 
-async def main():
-    t = time.perf_counter()
-    print(await asyncio.gather(job(1), job(2), job(3)))
-    print(round(time.perf_counter() - t, 1), "s")
-
-asyncio.run(main())
-```
-
-```text
-[1, 2, 3]
-1.0 s
-```
-
-Go takes a different road to the same result. There is no `async` keyword. You start three goroutines that each sleep for a second, and the runtime spreads them over operating system threads:
-
-```go
-for n := 1; n <= 3; n++ {
-	wg.Add(1)
-	go func() { defer wg.Done(); time.Sleep(time.Second) }()
+async function sequential() {
+  const t = performance.now();
+  const a = await wait(300, "a");
+  const b = await wait(300, "b");
+  const c = await wait(300, "c");
+  console.log("one after another:", [a, b, c], Math.round(performance.now() - t), "ms");
 }
-wg.Wait()
+
+async function together() {
+  const t = performance.now();
+  const all = await Promise.all([wait(300, "a"), wait(300, "b"), wait(300, "c")]);
+  console.log("all at once:", all, Math.round(performance.now() - t), "ms");
+}
+
+sequential().then(together);
 ```
 
 ```text
-1s
+one after another: [ 'a', 'b', 'c' ] 902 ms
+all at once: [ 'a', 'b', 'c' ] 301 ms
 ```
 
-The two models look different from the inside. In JavaScript and Python, a function chooses to give up control at an `await`, and nothing else runs on that thread until it does. In Go, the runtime decides when to switch. Each is a different answer to the same question: *how does one machine seem to do many things at once?*
+The work is the same and the time is a third. A common slowdown in real programs is awaiting things one at a time that could have been started together.
 
-<Sidenote label="Try it">In Node, put a loop that runs for two seconds inside a promise callback, and see what happens to a timer set for 100 milliseconds. Then explain the result using the diagram above.</Sidenote>
+### The loop has one rule: never block it
+
+```js
+const start = performance.now();
+setTimeout(() => console.log("timer fired after", Math.round(performance.now() - start), "ms"), 100);
+
+const until = performance.now() + 1000;
+while (performance.now() < until) {} // 1 second of work, no waiting
+console.log("busy loop finished");
+```
+
+```text
+busy loop finished
+timer fired after 1010 ms
+```
+
+The timer was due after 100 ms, and it fired after about a second, because nothing else can run while one task is busy. This is why async code suits **I/O-bound** work (mostly waiting) and does nothing for **CPU-bound** work (mostly calculating): waiting costs nothing, but calculating occupies the only thread.
+
+### Failures in async code
+
+```js
+const failAfter = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("timed out")), ms));
+
+async function main() {
+  try {
+    await failAfter(50);
+  } catch (e) {
+    console.log("caught:", e.message);
+  }
+  failAfter(50); // nobody awaits this one
+}
+main();
+```
+
+```text
+caught: timed out
+Error: timed out
+```
+
+The first failure was awaited, so `try` and `catch` worked as in ordinary code. The second was started and forgotten, so nobody was there to catch it. Node printed the error and stopped the program with exit code 1. Anything you start asynchronously needs someone responsible for what happens to it.
+
+<Sidenote label="Try it">Replace the busy loop with `await wait(1000)` and run it again. Then explain, using the event loop diagram, why the timer now fires on time.</Sidenote>
 
 **Waiting is not working. Async is the art of not wasting the time you spend waiting.**
 
 ## Modules and Packages: How Code Finds Other Code
 
-Once a program grows past one file, you need a way to split it up and a way to use other people's code. A **module** is one unit of code you can import. A **package** is usually a bundle of modules that has a name and a version, so tools can fetch it for you.
+Once a program is bigger than one file, you need two things: a way to split it, and a way to use other people's code. A **module** is one unit of code with a name that other code can import. A **package** is a bundle with a name and a version that tools can fetch for you. Rust's tools show both ideas in a clean form.
 
-Here is the same tiny module, a `hello` function used from another file, in four languages:
+### A module is a boundary
 
-```python
-# greet.py
-def hello(name):
-    return f"hello, {name}"
+A new project with a folder of code looks like this:
 
-# main.py
-from greet import hello
-print(hello("Devato"))
-```
-
-```js
-// greet.mjs
-export const hello = (name) => `hello, ${name}`;
-
-// main.mjs
-import { hello } from "./greet.mjs";
-console.log(hello("Devato"));
-```
-
-```go
-// greet/greet.go
-package greet
-
-func Hello(name string) string { return "hello, " + name }
-
-// main.go
-import "example.com/demo/greet"
-// ...
-fmt.Println(greet.Hello("Devato"))
+```text
+shop/
+  Cargo.toml
+  src/
+    main.rs
+    pricing/
+      mod.rs
 ```
 
 ```rust
-// src/greet.rs
-pub fn hello(name: &str) -> String { format!("hello, {name}") }
+// src/pricing/mod.rs
+pub fn total(prices: &[u32]) -> u32 {
+    apply_tax(prices.iter().sum())
+}
 
+fn apply_tax(amount: u32) -> u32 {
+    amount * 105 / 100
+}
+```
+
+```rust
 // src/main.rs
-mod greet;
-fn main() { println!("{}", greet::hello("Devato")); }
+mod pricing;
+
+fn main() {
+    println!("{}", pricing::total(&[100, 200]));
+}
 ```
 
-All four printed `hello, Devato`. The difference lives in the file that describes the project. Go uses `go.mod`, created by `go mod init`:
-
 ```text
-module example.com/demo
-
-go 1.24.7
+315
 ```
 
-Rust uses `Cargo.toml`, created by `cargo new`, and the `[dependencies]` section is where outside packages are listed:
+`total` is marked `pub`, so other modules can use it, and `apply_tax` is not, so they cannot. Try to call it from `main`:
 
 ```text
-[package]
-name = "demo"
-version = "0.1.0"
-edition = "2024"
+error[E0603]: function `apply_tax` is private
+ --> src/main.rs:4:29
+  |
+4 |     println!("{}", pricing::apply_tax(100));
+  |                             ^^^^^^^^^ private function
+```
 
+This is the point of a module. It has a **public surface** (what others may use) and **private details** (what only the module may touch). Keeping that surface small is what lets you rewrite the inside later without breaking anyone.
+
+### A package is a module with a name and a version
+
+Using someone else's code is one command, and it changes two files:
+
+```text
 [dependencies]
+itoa = "1.0.18"
 ```
 
-JavaScript uses `package.json`, and Python projects use files such as `pyproject.toml` or `requirements.txt`. Different file names, different tools, one job: *name the project, and list what it depends on.* How a language finds and loads code is one of the biggest day-to-day differences between languages, even though the ideas underneath are nearly identical.
+```text
+[[package]]
+name = "itoa"
+version = "1.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+```
 
-<Sidenote label="Try it">Create a project in each language you have installed and add one outside dependency. Notice which file changed, what was created next to it, and how long it took.</Sidenote>
+`Cargo.toml` is what you *asked for*: a package called `itoa`, at a compatible version. `Cargo.lock` is what you *got*: the exact version, and where it came from. The first is your intention; the second makes your build repeatable on anyone's machine. Most language ecosystems have this same pair of files under different names.
 
-**A module is a boundary. A package is a boundary with a name and a version.**
+Most packages also use packages of their own, so a tool resolves the whole tree of them. That is a convenience and a risk. Every package you add is code you did not write that now runs inside your program, and **versions** are a promise from its author about what might break when you update, which is not always kept.
+
+<Sidenote label="Try it">Create a project in any language, add one outside dependency, and then find the file that records the exact version. Count how many packages you actually pulled in.</Sidenote>
+
+**A module hides details behind a small public surface. A package is a module with a name, a version and a source you are trusting.**
 
 ## What Actually Runs: Compilers, Interpreters and Virtual Machines
 
-Your code is text. A processor runs machine instructions. Something has to translate, and when and how it translates is the biggest hidden difference between these languages.
+Your code is text, and a processor runs machine instructions. Something has to translate, and the choice of *when* and *how* is the biggest hidden difference between languages. Java shows three of the options in one system.
 
 <Compare>
-  <Side kind="before" label="Compiled ahead of time">C, Go and Rust turn the source into machine code before you run it. The result is a program the processor runs directly.</Side>
-  <Side label="Bytecode on a virtual machine">Python and Java turn the source into bytecode, a compact instruction set, and a program called a virtual machine runs it. Java and JavaScript engines also compile hot code to machine code while the program runs.</Side>
+  <Side kind="before" label="Translate ahead of time">A compiler turns the whole program into machine code before you run it. Starting is fast, and the result runs directly on the processor.</Side>
+  <Side label="Translate while running">An interpreter, or a virtual machine, reads simple instructions and runs them, and can translate the busiest parts into machine code as it learns what is hot.</Side>
 </Compare>
 
-You can look at each translation yourself. Take the smallest function there is:
+### Step one: source to bytecode
 
-```python
-def add(a, b):
-    return a + b
-```
+Take a method that does a lot of simple arithmetic:
 
 ```java
-static int add(int a, int b) { return a + b; }
+static long work() {
+    long total = 0;
+    for (int i = 0; i < 200_000_000; i++) total += i % 7;
+    return total;
+}
 ```
 
-```c
-int add(int a, int b) { return a + b; }
-```
-
-Python's `dis` module shows the bytecode:
+`javac` does not produce machine code. It produces **bytecode**, a compact instruction set for an imaginary computer. You can read it with `javap -c`:
 
 ```text
-  2           2 LOAD_FAST                0 (a)
-              4 LOAD_FAST                1 (b)
-              6 BINARY_OP                0 (+)
-             10 RETURN_VALUE
-```
-
-`javap -c` shows Java's:
-
-```text
-static int add(int, int);
+static long work();
   Code:
-     0: iload_0
-     1: iload_1
-     2: iadd
-     3: ireturn
+     0: lconst_0
+     1: lstore_0
+     2: iconst_0
+     3: istore_2
+     4: iload_2
+     5: ldc           #7                  // int 200000000
+     7: if_icmpge     24
+    10: lload_0
+    11: iload_2
+    12: bipush        7
+    14: irem
+    15: i2l
+    16: ladd
+    17: lstore_0
+    18: iinc          2, 1
+    21: goto          4
+    24: lload_0
+    25: lreturn
 ```
 
-And `gcc -O1 -S` shows the machine code the processor will actually run, on my x86-64 machine:
+Each line is one step for a stack machine: load a value, push a constant, take a remainder, add. A program called the **Java Virtual Machine** (JVM) runs this on whatever real processor you have. That is why the same compiled file runs on different kinds of computers.
+
+### Step two: the machine learns what is hot
+
+Running it the normal way, and then forcing the VM to only interpret, gives very different results:
 
 ```text
-add:
-	endbr64
-	leal	(%rdi,%rsi), %eax
-	ret
+default:
+599999994 in 297 ms
+599999994 in 339 ms
+interpreter only (-Xint):
+599999994 in 3028 ms
 ```
 
-The three are the same idea: load two things, add, return. The Python and Java versions are instructions for a program; the C version is an instruction for the processor, and it is one add instruction. Python's bytecode also differs between versions; the listing above is from 3.11.
+The answer is the same and the time is about ten times different. By default, the VM starts by interpreting, counts what runs often, and compiles those parts into real machine code while the program is running. That is a **just-in-time (JIT) compiler**. With `-Xint`, it is not allowed to, so every instruction is interpreted. You can watch it happen, because the VM can print what it compiles:
 
-<Sidenote label="Try it">Do the same with a function that contains a loop, and compare the lengths of the three outputs. Then compile the C version with `-O0` and `-O2` and see what the compiler removed.</Sidenote>
+```text
+46    7       3       Hot::square (4 bytes)
+46    8       4       Hot::square (4 bytes)
+```
 
-**There is no such thing as a language that is "interpreted" or "compiled" in itself. There are implementations, and each one makes a choice about when to translate.**
+`square` was compiled twice, at tier 3 and then at tier 4. Higher tiers mean more optimisation, applied once the VM is more sure the method matters.
+
+This explains something you may have already seen: the first run of a program on such a runtime is slower than later runs. This is **warm-up**, and it is why measurements have to repeat.
+
+The word **runtime** covers everything that sits between your program and the machine while it runs: the VM, the memory manager that frees what you no longer use, the loader that brings code in, and the scheduler for threads. Some languages ship a large runtime, and some ship almost none, and that is a big part of why they feel so different.
+
+<Sidenote label="Try it">Run the `Sum` example with `-Xint` and without, and then run it three times in the same process by calling `work()` in a loop. Describe what the first, second and third calls cost.</Sidenote>
+
+**There is no such thing as a compiled or an interpreted language. There are implementations, and each one decides when to translate.**
 
 ## Performance: Measure Before You Believe
 
-Everyone has an opinion about which language is faster. A better habit is a method. Run the same task, warm it up, repeat it, take the median, and change one thing at a time.
+Everyone has an opinion about what is fast. A better habit is a method: measure, find where the time goes, change one thing and measure again. Go has benchmarking and profiling built in, so it makes the method easy to see.
 
-Here is a small task: count the primes below five million with a sieve. I wrote it in each language, ran it five times in one process and took the median. Python, written the plain way, looks like this:
+### Two ways to find a duplicate
 
-```python
-def sieve(n):
-    is_prime = bytearray([1]) * (n + 1)
-    is_prime[0] = is_prime[1] = 0
-    for i in range(2, int(n ** 0.5) + 1):
-        if is_prime[i]:
-            for j in range(i * i, n + 1, i):
-                is_prime[j] = 0
-    return sum(is_prime)
+```go
+// HasDuplicateSlow compares every pair.
+func HasDuplicateSlow(xs []int) bool {
+	for i := 0; i < len(xs); i++ {
+		for j := i + 1; j < len(xs); j++ {
+			if xs[i] == xs[j] {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// HasDuplicateFast remembers what it has seen.
+func HasDuplicateFast(xs []int) bool {
+	seen := make(map[int]struct{}, len(xs))
+	for _, x := range xs {
+		if _, ok := seen[x]; ok {
+			return true
+		}
+		seen[x] = struct{}{}
+	}
+	return false
+}
 ```
 
-Every version found the same 348,513 primes. The medians, in milliseconds on my machine, were:
+Before measuring anything, a test confirms they always give the same answer, because a faster wrong answer is not an improvement. Then `go test -bench . -benchmem` runs each one with 100, 1,000 and 10,000 numbers:
 
-<Bars unit=" ms" tone="sky" items={[
-  { label: "Python", value: 327 },
-  { label: "Rust, unoptimised build", value: 106 },
-  { label: "C, no optimisation (-O0)", value: 49 },
-  { label: "JavaScript (Node)", value: 34 },
-  { label: "Go", value: 29 },
-  { label: "C, optimised (-O2)", value: 22 },
-]} />
+```text
+BenchmarkSlow/100-4      312478      4045 ns/op        0 B/op   0 allocs/op
+BenchmarkSlow/1000-4       3681    337693 ns/op        0 B/op   0 allocs/op
+BenchmarkSlow/10000-4        32  34741193 ns/op        0 B/op   0 allocs/op
+BenchmarkFast/100-4      241381      4597 ns/op     2344 B/op   3 allocs/op
+BenchmarkFast/1000-4      25970     44553 ns/op    36944 B/op   5 allocs/op
+BenchmarkFast/10000-4      2282    503370 ns/op   295552 B/op  33 allocs/op
+```
 
-Rust built with optimisation matched C at 22 ms, and Java's median was 31 ms. I ran the whole set twice, and the medians moved by a few milliseconds each time, so treat differences of a few milliseconds as noise. This is one task on one machine, and it says nothing about your program.
+Read it carefully, because it says several things at once:
 
-Read the chart for what it teaches, not for who won:
+- **Growth matters more than speed.** Ten times more numbers made the slow version about 83 times slower (4,045 ns to 337,693 ns), and the next ten times made it about 103 times slower (to 34.7 million ns), because it compares every pair. The fast version grew about ten times at each step. At 10,000 numbers, the slow one took about 35 ms and the fast one about 0.5 ms. This is what people mean by **complexity**: how the work grows as the input grows.
+- **For small inputs, the "slow" one is not slower.** At 100 numbers, the slow version (4,045 ns) was a little *faster* than the fast one (4,597 ns). The fast version pays to build a table. "Faster" depends on how much data you have.
+- **Speed is bought with memory.** The slow version allocated nothing. The fast one allocated about 295 KB at 10,000 numbers. Almost every optimisation is a trade.
+- **The numbers are noisy.** Run the same benchmark twice and the results move: the slow version at 10,000 numbers took 34.7 ms in one run and 39.5 ms in another, and the fast version 503 µs and 457 µs. Differences of a few percent are not information.
 
-- **The same language can differ more than two languages do.** Rust's unoptimised build was about five times slower than the optimised one, and C without optimisation was twice as slow as with it. Before comparing languages, make sure you are building the same way.
-- **Warm-up is real.** Java's five runs took 50, 40, 31, 29 and 29 ms. The first run was slowest because the virtual machine was still compiling hot code. A single measurement would have told a different story.
-- **How you write it can beat the language.** In Python, I replaced the inner loop with one slice assignment, `is_prime[i * i::i] = bytes(len(range(i * i, n + 1, i)))`, and the median fell from 327 ms to about 48 ms. Same language, about six to seven times faster, because the work moved from Python's loop into code written in C.
+### Where does the time go?
 
-<Sidenote label="Try it">Run the Python sieve on your machine three times. Write down the spread. Then change one thing, such as the size of `n`, and decide whether the difference you see is bigger than the spread.</Sidenote>
+Instead of guessing, ask the profiler. `go test -cpuprofile` records where the processor spent its time, and `go tool pprof -top` lists it:
 
-**Speed is a property of a program on a machine, built a certain way. It is not a property of a language.**
+```text
+      flat  flat%   sum%        cum   cum%
+     180ms 12.08% 12.08%      180ms 12.08%  internal/runtime/maps.h2 (inline)
+     170ms 11.41% 23.49%     1250ms 83.89%  perf.HasDuplicateFast
+     170ms 11.41% 34.90%      380ms 25.50%  runtime.mapassign_fast64
+     110ms  7.38% 42.28%      110ms  7.38%  runtime.futex
+     110ms  7.38% 49.66%      530ms 35.57%  runtime.mapaccess2_fast64
+     110ms  7.38% 57.05%      110ms  7.38%  runtime.memhash64
+```
+
+For the fast version, most of the time is spent inside the map: inserting, looking up and hashing. That tells you where a further improvement would have to come from. Without the profile, you might have spent a day optimising the loop around it.
+
+The method is short: **measure, find the hot spot, change one thing, measure again.** And remember that the best speedups usually come from a better algorithm, not a cleverer line of code, and that every number is about one program on one machine.
+
+<Sidenote label="Try it">Run both benchmarks at 20 numbers and at 1,000,000. Find the size where the two versions cross over on your machine, and write down what you expected before you measured.</Sidenote>
+
+**Speed is a property of a program, a size of input and a machine. It is not a property of a language.**
 
 ## Notice What You Just Did
 
-You have just read the same twelve ideas in six languages. Look at what stayed the same and what changed:
+You have just walked through twelve ideas and met six languages. Look at what stayed and what changed:
 
 <div class="table-wrap">
 <table>
-<caption>Twelve concepts: what stays the same, and what each language chooses</caption>
+<caption>Twelve ideas: the language we used, what stays the same, and where other languages choose differently</caption>
 <thead>
-<tr><th>Concept</th><th>The same everywhere</th><th>What a language chooses</th></tr>
+<tr><th>Idea</th><th>Seen in</th><th>What stays the same everywhere</th><th>What other languages choose</th></tr>
 </thead>
 <tbody>
-<tr><td>Syntax and semantics</td><td>Code has a form and a meaning</td><td>What counts as true; what <code>==</code> compares</td></tr>
-<tr><td>Types</td><td>Values have kinds</td><td>When types are checked, and how much is converted for you</td></tr>
-<tr><td>Memory</td><td>Data lives somewhere, and must be freed</td><td>You free it, a collector frees it, or ownership frees it</td></tr>
-<tr><td>Closures</td><td>A function can carry its surroundings</td><td>Which variable it keeps, and when it is created</td></tr>
-<tr><td>Objects and functions</td><td>Code needs structure</td><td>Interfaces, traits, duck typing, or plain functions</td></tr>
-<tr><td>Generics</td><td>One function, many types</td><td>Erased, copied per type, or constrained</td></tr>
-<tr><td>Errors</td><td>Things fail</td><td>Thrown, returned, wrapped in a result, or coded as numbers</td></tr>
-<tr><td>Concurrency</td><td>Tasks share data</td><td>Locks, atomics, channels, or compile-time ownership</td></tr>
-<tr><td>Async</td><td>Waiting should not waste time</td><td>An event loop with <code>await</code>, or lightweight threads</td></tr>
-<tr><td>Modules</td><td>Code is split and shared</td><td>The file that names the project, and the tool that fetches it</td></tr>
-<tr><td>Runtime</td><td>Source is translated before it runs</td><td>Ahead of time, bytecode on a virtual machine, or a mix</td></tr>
-<tr><td>Performance</td><td>Time and memory are limited</td><td>Almost nothing, until you measure a real program</td></tr>
+<tr><td>Syntax and semantics</td><td>Python</td><td>Text becomes a tree, and the tree has rules for evaluating it</td><td>What counts as true, how operators group, what is checked before running</td></tr>
+<tr><td>Types</td><td>Rust</td><td>A value has a kind, and the kind limits what you can do</td><td>Whether types are checked before or during the run, and how much is converted for you</td></tr>
+<tr><td>Memory</td><td>C</td><td>Values have places, sizes and lifetimes</td><td>Who frees: you, a collector, a counter or an ownership rule</td></tr>
+<tr><td>Closures</td><td>JavaScript</td><td>A function can carry the variables it was written next to</td><td>Whether loop variables are shared, and how scope is spelled</td></tr>
+<tr><td>Objects and functions</td><td>Java</td><td>Code needs structure, and structure decides which changes are easy</td><td>How much of each style a language supports</td></tr>
+<tr><td>Generics</td><td>Go</td><td>A placeholder for a type, with a rule about what it must support</td><td>How the types are implemented underneath, and how constraints are written</td></tr>
+<tr><td>Errors</td><td>Python</td><td>Failures happen and must go somewhere</td><td>Thrown, or returned as values you must inspect</td></tr>
+<tr><td>Concurrency</td><td>Go</td><td>Tasks that share data can collide, and waiting can deadlock</td><td>Locks, messages, or compile-time rules about sharing</td></tr>
+<tr><td>Async</td><td>JavaScript</td><td>Waiting should not waste the thread</td><td>An event loop with <code>await</code>, or lightweight tasks scheduled for you</td></tr>
+<tr><td>Modules</td><td>Rust</td><td>A public surface, private details, and a named, versioned package</td><td>The names of the files and tools, and how strictly privacy is enforced</td></tr>
+<tr><td>Runtime</td><td>Java</td><td>Source is translated before the processor can run it</td><td>When it is translated, and how much runtime comes along</td></tr>
+<tr><td>Performance</td><td>Go</td><td>Measure, find the hot spot, change one thing, measure again</td><td>Almost nothing, until you measure a real program</td></tr>
 </tbody>
 </table>
 </div>
 
-The middle column is the same in every row, for every language. The right column is the only thing that varies, and it is a *choice*, usually with a trade attached: speed of writing against safety, control against convenience, fast start against fast run.
+The third column is the same for every language. The fourth is where the languages differ, and it is always a *choice*, usually with a trade attached: effort against safety, control against convenience, a fast start against a fast run.
 
-That is the point of this article. Once you understand **ownership**, you see it in C as a risk, in Python as something done for you, and in Rust as a rule. Once you understand **concurrency**, you recognise a lock whatever it is called. The concepts travel with you. The language is a choice you make for a project, and you can make a different one next time.
+That is the point of this article. The concept of a **lifetime** appeared in a C program and would appear, wearing different clothes, in every other language. **Closures** showed up in JavaScript, and you will recognise one anywhere. The **race condition** was in Go, and it lives in any language where tasks share data. The language was a choice made for each example, and you could have made a different one.
 
 ## Now Build Something
 

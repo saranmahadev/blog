@@ -1,0 +1,118 @@
+---
+title: "The More an Agent Can Do, the More It Needs Rules"
+description: "A chatbot's wrong answer is an inconvenience. An agent's wrong command is an incident. How to put deterministic boundaries between a model's output and the real world."
+date: 2026-10-05
+order: 4
+tags: [Deterministic Engineering, AI, Technology]
+draft: true
+cover:
+  kind: word
+  text: "Boundaries"
+  sub: "agency needs rules"
+---
+
+A chatbot gives you a wrong paragraph. You frown, rephrase, and move on. An agent gives itself a wrong command and **runs** it. Nobody gets to frown first.
+
+The previous post drew the loop that connects a model to checking machinery. This one looks at the case where the stakes are highest: models that act.
+
+## From Answering to Acting
+
+Modern coding agents can read files, run commands, edit code, install packages, call APIs, query databases, browse the network, open pull requests and deploy applications. Each of those used to need a person at a keyboard.
+
+Each is also a place where a wrong guess has a real effect. So here is a rule I use when designing these systems:
+
+<Statement>The more agency AI receives, **the more deterministic infrastructure it needs.**</Statement>
+
+I call it a design rule and not a law. I have not proved it. It is what the examples keep showing, and it matches how mature engineering fields treat any component that can cause harm.
+
+## Untrusted on One Side, Trusted on the Other
+
+Draw a line between what a model produces and the systems that act on it. Everything on the model's side is **untrusted**: it may be right, and it may be wrong in ways that look fine.
+
+```mermaid caption="The boundary between model output and the systems that act on it"
+flowchart LR
+  accTitle: A validation boundary between model output and trusted systems
+  accDescr: Output from a model is untrusted. It passes through a validation boundary that checks it against rules. Only output that passes reaches the trusted system, such as a database or shell.
+  M[Model output, untrusted] --> V[Validation boundary]
+  V --> T[Trusted system]
+```
+
+The OWASP guidance on [improper output handling](https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/) says this in practical terms: apply the same validation to model output that you would apply to a stranger's input, encode output for the place it will be used, and use parameterised queries for databases.
+
+Parameterised means the query text and the data travel separately, so data can never turn into commands. I ran this on my machine with Python's built-in SQLite. First, the model-written style that builds a query by pasting text together, given a hostile name:
+
+```python
+name = "x' OR '1'='1"
+db.execute(f"select * from users where name = '{name}'")
+```
+
+It returned a row, `[('asha',)]`, although no user has that name. The parameterised version of the same lookup:
+
+```python
+db.execute("select * from users where name = ?", (name,))
+```
+
+It returned `[]`. The difference is not in the model. It is in the **boundary** the output passes through.
+
+The answer to "what if the model is wrong?" cannot be only "use a better model". Even a very good model can be wrong, so the better answer is to **assume it can be wrong and build the boundary around it**.
+
+## An Operating System for Agents
+
+An agent should not touch the world directly. It should ask for operations through controlled interfaces that apply rules, the way a program on your computer does not control the hardware. It asks the operating system, which enforces memory protection, permissions, filesystems and system calls.
+
+```mermaid caption="An agent that acts only through interfaces that enforce rules"
+flowchart TD
+  accTitle: An agent acting through rule-enforcing interfaces
+  accDescr: An AI agent does not act on the world directly. It uses six interfaces: files with permissions, databases with transactions, code with validation, network with domain and identity rules, execution in a sandbox with limits, and deployment with approval and rollback.
+  A[AI agent] --> F[Files: permissions]
+  A --> D[Database: transactions]
+  A --> C[Code: type and dependency checks]
+  A --> N[Network: allowed domains]
+  A --> X[Execution: sandbox and limits]
+  A --> P[Deployment: approval and rollback]
+```
+
+I will be honest about this picture: "an engineering operating layer for AI" is my name for an idea. It is not a product you can install, and parts of it exist today only as separate tools.
+
+<Sidenote label="Going deeper">Each interface answers one question for the agent: *may I?* A file system answers by permissions, a database by transactions, a network by what it allows, a deploy system by approval. The agent never gets to answer that question for itself.</Sidenote>
+
+## Boundaries in Practice
+
+If you are building an agent, or giving one access to your machine, this is the checklist I would start from.
+
+<Steps>
+  <Step title="Least privilege">Give the agent only the access the task needs: one folder, one database, one branch.</Step>
+  <Step title="Sandbox with limits">Run code in a sandbox with a cap on time, memory and network.</Step>
+  <Step title="Policy before action">Check each requested action against written rules before it runs, not after.</Step>
+  <Step title="Approval for the irreversible">A person confirms anything that cannot be undone: deleting data, deploying, spending.</Step>
+  <Step title="Rollback">Make every change reversible where you can. Keep a way back.</Step>
+  <Step title="Audit log">Record what was asked, what was allowed and what happened, in a form you can replay.</Step>
+</Steps>
+
+<Sidenote label="Try it">List every action your agent can take. Next to each, write whether it can be undone. Every action with no way back needs either a person's approval or a smaller permission.</Sidenote>
+
+## Not Every Action Needs a Gate
+
+This idea has a cost. A gate slows work, and a gate on every step makes an agent useless. The strength of a boundary should match the cost of a mistake.
+
+<Compare>
+  <Side kind="before" label="Light checks are enough">Editing a draft file in a sandbox, reading documentation, running a test on a copy of the data.</Side>
+  <Side label="Strong checks are worth it">Dropping a table, deploying to production, sending money, changing permissions, deleting backups.</Side>
+</Compare>
+
+If your gates are so frequent that people approve them without reading, you have built a ritual, not a boundary.
+
+## The Review Bottleneck
+
+There is a second reason for deterministic checks, and it is about people, not security. Suppose AI helps a team produce ten times the code, but people can still review only as much as before. Generation grew, review did not, and the gap is now where the risk sits.
+
+<StatRow>
+  <Stat value="10×" label="code generated" tone="sky" />
+  <Stat value="1×" label="code a person can review" tone="rose" />
+</StatRow>
+
+<Sidenote label="Mock data">These numbers are an illustration of the argument, not a measurement from any team.</Sidenote>
+
+One way to think about it is a rough rule of thumb: useful output depends on how much you can generate, times how much you can verify, times how reliably you can run it. Treat that as a way to reason, not a measured formula. The practical result is the same either way. If you only invest in generating, **verification becomes the limit**, and machines that check work at scale become as valuable as machines that produce it.
+
+**An agent earns more freedom by working inside better boundaries.**
