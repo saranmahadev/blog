@@ -1,0 +1,104 @@
+---
+title: "The Skills You Lose When You Delegate Everything"
+description: "Tools have always taken work off our minds. The useful question is which work to hand over and which to keep. What the research says, what it does not, and what to keep practising."
+date: 2026-10-05
+order: 5
+tags: [Deterministic Engineering, AI, Technology]
+draft: true
+cover:
+  kind: quote
+  text: "Automate execution before you automate understanding."
+  sub: "Deterministic Engineering"
+---
+
+You have used a navigation app for years, and it has never failed you. Then one day someone asks you how to reach a place you have driven to a hundred times, and you realise you cannot say the turns. The app did its job so well that you stopped keeping the map.
+
+That is a small version of a question that matters for engineers now. This post leaves machines for a while and looks at **the person using them**.
+
+## Offloading Is Not New
+
+Handing thinking to a tool has a name: *cognitive offloading*. It is not a modern problem. Calculators reduced arithmetic effort. Compilers reduced the need to write machine instructions by hand. Search engines reduced memorising. GPS reduced navigating.
+
+So "does technology reduce mental effort?" is the wrong question. It does, and that is the point of a tool. The better one is this:
+
+<Statement>Which effort should the tool remove, and **which ability must stay with the person?**</Statement>
+
+## What the Research Says, and What It Does Not
+
+There is real research on this, and it is easy to quote loosely, so here is what each piece claims.
+
+<div class="table-wrap">
+<table>
+<caption>Two pieces of research on AI and thinking, and their limits</caption>
+<thead>
+<tr><th>Source</th><th>What it reports</th><th>What it cannot tell you</th></tr>
+</thead>
+<tbody>
+<tr><td>A 2026 review in <em>Trends in Cognitive Sciences</em> by Cash and colleagues, <a href="https://www.psypost.org/is-ai-making-us-stupid-through-cognitive-offloading-new-review-explores-the-evidence/">summarised by PsyPost</a></td><td>Offloading thinking to AI can impede learning a skill and lead to skill decay, but the risk depends on how AI is used. Core abilities seem more resilient than specific skills.</td><td>It is a theoretical review, so it does not measure your own team. It does not say AI use harms everyone.</td></tr>
+<tr><td>A 2025 study by Gerlich in <em>Societies</em>, <a href="https://papers.ssrn.com/abstract=5082524">on SSRN</a></td><td>With 666 participants, frequent AI use was associated with lower critical-thinking scores, linked through cognitive offloading.</td><td>It shows a correlation, not a cause. People with weaker thinking habits may use AI more.</td></tr>
+</tbody>
+</table>
+</div>
+
+I worked from summaries of these, not the full papers, so please read the sources yourself before you quote them. The same review says AI helps most when it augments thinking and does not replace it, which is the line this post follows.
+
+## Two Ways to Solve the Same Problem
+
+Picture a hard problem in a system you do not fully understand. Here are two ways to get through it.
+
+<Compare>
+  <Side kind="before" label="Working it out">Understand the system. Form a guess. Design the fix. Implement. Test. Debug. Learn why it failed.</Side>
+  <Side label="Asking first">Ask the AI. Receive an implementation. Run it. Accept it.</Side>
+</Compare>
+
+The second is much faster for many tasks, and I am not arguing against it. But look at what it skips: building a model of the system, reasoning about the algorithm, debugging, forming the architecture in your head, analysing failure, and the experience of implementing.
+
+The output improves today while the skill that produced it does not get used. That is the automation paradox: **the better the automation gets at a skill, the less chance the person has to practise it**.
+
+## Productivity Is Not Just Speed
+
+Does AI make engineers faster? The honest answer is "it depends", and a well-known study shows why. In 2025, METR ran a randomised trial with [16 experienced open-source developers on 246 real tasks](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/) in their own mature repositories. Tasks were randomly assigned to be done with or without AI tools.
+
+<StatRow>
+  <Stat value="24%" label="faster, as developers expected" tone="sky" />
+  <Stat value="19%" label="longer, as measured" tone="rose" />
+</StatRow>
+
+That study is easy to misuse. It covers one setting, early-2025 tools and a small group of expert developers working on code they knew well. METR itself [later said](https://metr.org/blog/2026-02-24-uplift-update/) that a follow-up was hard to read, because many developers would no longer work without AI and so would not join, which biases the result. METR thinks developers are probably more sped up now than in 2025, but says its data is weak evidence for how much.
+
+So the study does not say AI makes developers slower. It says speed depends on the task, how well you know the code, the tool, how much you must verify and how the work is organised. Which means that the usual measure, how fast code appears, is the wrong one.
+
+**The better question is how fast an engineer gets from intent to software that is verified, maintainable and correct.**
+
+## What to Keep Doing Yourself
+
+If some effort should be removed and some should stay, how do you choose? A rule I find useful is to automate execution before you automate understanding. Hand over the mechanical work first. Be careful with the foundational work.
+
+<Compare>
+  <Side kind="before" label="Hand over early">Boilerplate, mechanical edits, repetitive tests, formatting, dependency checks, first drafts of code you can verify.</Side>
+  <Side label="Keep practising">Computer science basics, system architecture, debugging unfamiliar failures, weighing trade-offs, designing abstractions, security thinking, forming mental models, questioning assumptions.</Side>
+</Compare>
+
+AI can still speed up the second list, for example by explaining a concept or suggesting a hypothesis. The point is that it should not stand in for your reasoning.
+
+<Sidenote label="Try it">Next time you hit a bug, write two sentences on what you think is wrong before you ask for help. After you get an answer, compare it with your guess. Over a few weeks you will see whether your guesses are improving.</Sidenote>
+
+## The Engineer's Job Moves
+
+This does not remove engineers. It changes what the job is made of. A person who designs the **boundaries** around an AI asks questions like these:
+
+- What should the model be allowed to do, and what should never be delegated?
+- Which properties must be guaranteed, and what should be represented explicitly?
+- What should be verified automatically, and what evidence is enough?
+- How is failure detected, and how does the system recover?
+- Where must a human approval stay?
+
+That is a different job from writing every instruction. It is arguably a harder one. The work moves from writing every instruction to **designing the system in which machines can safely write and run instructions**.
+
+## What to Learn
+
+If AI is the tool, what should the engineer know? I would not say "learn how to prompt". A foundation of computer architecture, operating systems, networking, databases, programming languages, compilers, distributed systems, security, algorithms, testing, formal methods and how AI systems work lets you judge what a model hands you.
+
+I am not saying you must master all of that before you touch an AI tool. It is a direction. Without foundations, AI becomes a substitute for understanding, and with them it multiplies what you can do.
+
+<Statement tone="lilac">Aim for AI capability, human understanding and deterministic checks **all going up together.**</Statement>

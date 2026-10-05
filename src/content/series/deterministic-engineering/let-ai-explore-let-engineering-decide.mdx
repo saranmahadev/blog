@@ -1,0 +1,81 @@
+---
+title: "Let AI Explore. Let Engineering Decide."
+description: "Five propositions, one mantra and an open question: how to build the machinery that lets AI do serious work while we can still tell whether the work is correct."
+date: 2026-10-05
+order: 6
+tags: [Deterministic Engineering, AI, Technology]
+draft: true
+cover:
+  kind: quote
+  text: "Let AI explore. Let engineering decide."
+  sub: "Deterministic Engineering"
+---
+
+In the first post, you asked an assistant for a bill-splitting function and it answered in four seconds. The only evidence it was right was that it looked right. A plausible answer costs almost nothing now.
+
+Five posts later, the question has not changed. It was never whether the answer is plausible. It is **whether we can tell that it is correct**.
+
+## Not Less Automation
+
+Before the summary, one thing needs saying plainly. This series is not asking you to stop automating. We should automate repetitive work, mechanical changes, validation, testing, dependency analysis, code generation, deployment flows, monitoring and routine debugging.
+
+What we should avoid is turning human understanding into black-box delegation. The goal is **automation with stronger computational boundaries**.
+
+## Five Propositions
+
+Here is the argument of the whole series in five short claims.
+
+<Steps>
+  <Step title="Generation will become abundant">AI keeps lowering the cost of producing candidate code, plans, content and decisions.</Step>
+  <Step title="Generation is not correctness">A probabilistic system can give a plausible answer with no guarantee that it is right.</Step>
+  <Step title="More agency needs more boundaries">The closer a model gets to real actions, the more permissions, constraints, verification, observability and rollback matter.</Step>
+  <Step title="Substitution can cost skills">Unstructured automation can reduce chances to practise important skills, while carefully designed assistance can support them.</Step>
+  <Step title="The next layer combines both">The most capable systems will pair probabilistic reasoning with deterministic computation, and will have better interfaces to reality, not just better models.</Step>
+</Steps>
+
+## Two Paths
+
+People usually picture the future of AI as one line: a bigger model leads to more automation, which leads to more autonomy. The series argues for a different line.
+
+<Compare>
+  <Side kind="before" label="The path people picture">Bigger model, then more automation, then more autonomy.</Side>
+  <Side label="The path argued here">Better models, plus deterministic building blocks, plus better representations, plus verification, plus execution boundaries, plus feedback. The result is more reliable intelligence.</Side>
+</Compare>
+
+## An Old Mantra With New Lines
+
+Software engineers have a familiar order: make it work, make it right, make it fast. In an age of generated code I would add three things in front of it: make it reason, make it constrained, make it verifiable.
+
+<Statement tone="mint" align="center">Let AI explore. **Let engineering decide.**</Statement>
+
+## The Work That Gets Bigger
+
+If this is right, the future is not AI replacing engineers. It is engineers building the machinery that lets AI be trusted to act. That is a lot of work, and none of it is small:
+
+<Marquee words={["Compilers", "Type systems", "Policies", "Verification", "Simulation", "Sandboxes", "Formal methods", "Observability"]} tone="mint" />
+
+More compilers and constraint engines. More simulation, formal methods and observability. More secure runtimes, structured representations, evaluation systems, deterministic APIs and explicit boundaries. The paradox is that AI may raise the value of the very disciplines it seems to threaten.
+
+When machines can generate nearly anything, the scarce skill is knowing **what should be generated, what must not be, what is correct, what is safe, and how to show the difference**.
+
+## What Would Prove This Wrong
+
+I am making an argument about where the scarce thing will be. I am not reporting a result, so it is fair to say what would change my mind.
+
+- If models became reliable enough, cheaply enough, that wrapping them in checks cost more than the mistakes it prevented, the case for heavy machinery would weaken.
+- If an AI could produce a guarantee that anyone can check, such as a proof a small checker accepts, that would be the idea working. The checker is deterministic, so it would support the thesis, but it would change who does the proving.
+- If teams that generate more and verify less turn out fine over many years, then I have overstated the risk.
+
+I do not know which way these go. I would watch the evidence and not the demos.
+
+## The Question to Carry Forward
+
+The AI industry has put most of its effort into one half of the problem: generation. The next half is grounding, constraint, verification and execution.
+
+So the question I would take from this series is not how to make AI do more work. It is this:
+
+<PullQuote by="The question of this series">How do we build the machinery that lets AI do serious work, without losing our ability to know whether that work is correct?</PullQuote>
+
+That question is a good place to start if you are curious about engineering at all. You do not become an engineer in this era by out-typing a model. You become one by learning how to know, and how to make a machine show its work.
+
+<CurvedText text="Deterministic Engineering" shape="circle" mark="D" tone="mint" decorative />

@@ -1,0 +1,118 @@
+---
+title: "When Generation Is Cheap, Proof Gets Expensive"
+description: "AI can write a plausible solution in seconds. It cannot show alone that the solution is correct, and that gap is where engineering work moves next."
+date: 2026-10-05
+order: 1
+tags: [Deterministic Engineering, AI, Technology]
+draft: true
+cover:
+  kind: word
+  text: "Proof"
+  sub: "plausible is not correct"
+---
+
+Say you ask an AI assistant for a function that splits a restaurant bill between friends. It answers in four seconds. The code is tidy, the names are sensible, and the one example you try gives the right numbers.
+
+You paste it in and move on. Nothing in that moment told you whether the function is correct. It only told you that it **looks** correct, and those are different facts.
+
+That difference is the subject of this series. AI is getting very good at producing answers. The harder, more valuable work is now knowing which answers to trust, and **why**.
+
+<Statement>AI should not replace deterministic engineering. **It should depend on it.**</Statement>
+
+## The Idea in One Sentence
+
+A **deterministic** system is one where the same input gives the same output, and the rules that produce it are written down. A compiler is deterministic. So is a type checker, a database engine, or a test suite that does not depend on luck. A language model is not: it picks its words from probabilities, so asking twice can give two different answers.
+
+I am using the word a little loosely. A test that talks to a flaky network is not strictly deterministic. What I care about is the part that matters for trust: the rules are explicit, and the result can be checked and repeated.
+
+The idea of the whole series fits in one table. A model proposes. Something else decides.
+
+<div class="table-wrap">
+<table>
+<caption>What an AI proposes, and what can check it</caption>
+<thead>
+<tr><th>The model proposes</th><th>What checks it</th><th>What that check can establish</th></tr>
+</thead>
+<tbody>
+<tr><td>Code</td><td>A compiler</td><td>The code follows the language's formal rules</td></tr>
+<tr><td>A database query</td><td>A database engine</td><td>The query runs against the real data and returns what it returns</td></tr>
+<tr><td>A deployment plan</td><td>A policy engine</td><td>Every requested operation is permitted</td></tr>
+<tr><td>A refactoring</td><td>A type checker, static analyzer, tests</td><td>Properties of the resulting system, such as types, dependencies and behaviour</td></tr>
+</tbody>
+</table>
+</div>
+
+None of this is AI against deterministic software. It is **AI for reasoning, and deterministic systems for reality**.
+
+## Writing Code Used to Be the Slow Part
+
+A software change used to need a person to do every step: understand the requirement, design a solution, write it, connect the dependencies, test it, debug it, review it, deploy it and maintain it. Generative AI attacks several of those at once, and the cost of a first working implementation is falling fast.
+
+That changes what is scarce. If one implementation is nearly free, ten are nearly free too, and the work becomes **choosing among ten and knowing which one is right**. These are the things that get more valuable:
+
+- correctness and verification
+- context, architecture and constraints
+- security and observability
+- evaluation and maintainability
+- accountability: someone who answers for the result
+
+<Compare>
+  <Side kind="before" label="Before">The slow part was producing the solution.</Side>
+  <Side label="Now">The slow part is knowing the solution is right.</Side>
+</Compare>
+
+**When production becomes abundant, validation becomes scarce.**
+
+<Sidenote label="Going deeper">Economists would say the cost of one input fell, so the cost of the thing that complements it, here checking, becomes the limit. I am borrowing that idea loosely. I am not measuring it.</Sidenote>
+
+## Plausible Is Not Proof
+
+A model predicts its output from statistical patterns it learned. That is why it is so flexible, and it is also why a confident answer carries no guarantee. This is not a flaw in one model. It is how probabilistic generation works.
+
+It matters most when the output touches real systems. The OWASP list of risks for LLM applications includes [improper output handling](https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/): model-generated content is passed to a database, a shell, a browser or an interpreter without being validated, which can lead to cross-site scripting, SQL injection, remote code execution and path traversal. Its advice is to treat the model like any other user, and to validate what comes back.
+
+Review by another AI is not an automatic fix. A study from Toronto Metropolitan University tested GitHub Copilot's code review feature on code with known flaws. It found that the tool [frequently missed critical vulnerabilities](https://arxiv.org/abs/2509.13650) such as SQL injection, cross-site scripting and insecure deserialization, while its comments mostly covered low-severity matters like style and typos.
+
+I do not read this as "AI cannot engineer". I read it as: **when correctness matters, the check has to come from outside the thing that produced the answer.**
+
+<Sidenote label="Try it">Ask any assistant for a small function, then ask it "Is this correct?" It will very likely say yes. Now write three tests for the function, including one odd input, and run them. Compare what the answer told you with what the tests told you.</Sidenote>
+
+## Confidence Is Not Verification
+
+A model can say, "I am confident this implementation is correct." As engineering evidence, that sentence is worth very little. A deterministic system says something of a different kind.
+
+<Compare>
+  <Side kind="before" label="AI confidence">"This appears likely." A judgement from patterns, with nothing to inspect.</Side>
+  <Side label="Deterministic evidence">"Under these defined conditions, this property was verified." A result you can repeat.</Side>
+</Compare>
+
+The reports these systems give back are plain. They say something is proven, violated or failed, and they name the condition:
+
+```text
+Compilation:         PASS
+Type checking:       PASS
+Unit tests:          48 of 48
+Security scan:       1 finding (high)
+Dependency policy:   PASS
+```
+
+<Sidenote label="Mock data">This report is an example of the format. No real project produced it.</Sidenote>
+
+An AI that receives a report like this has something stronger than its own confidence. It has **evidence**, and it can use it to correct itself. The third post in this series builds that loop.
+
+## What the Series Covers
+
+This is not an argument that people should write everything by hand, and it is not against automation. The aim is more automation, placed inside stronger boundaries. The six posts go like this:
+
+<Steps>
+  <Step title="Proof gets expensive">This post: generation is cheap, validation is scarce.</Step>
+  <Step title="Guess or look up">Which questions belong to the model and which belong to deterministic systems.</Step>
+  <Step title="The loop">The architecture: generate, validate, execute, observe, verify.</Step>
+  <Step title="Boundaries">Why an agent that can act needs rules around what it can do.</Step>
+  <Step title="What stays human">The skills you can lose by delegating everything.</Step>
+  <Step title="The finale">Five propositions, and the question worth asking next.</Step>
+</Steps>
+
+I should say one thing now so it does not surprise you later. Deterministic checks have limits too. A test only proves what it tests, and a specification can be wrong. I come back to that in post 2.
+
+**AI can explore as widely as it likes. The question is what gets to decide.** That is where we start next.
