@@ -464,6 +464,12 @@ button.srch { cursor: pointer; font: inherit; font-size: 14px; text-align: left;
 
 .sponsor-fx { position: relative; overflow: hidden; isolation: isolate; --fx-a: 0.5; }
 .sponsor-fx[data-tone='ink'] { --fx-a: 0.14; }
+/* The text colour inherited by sponsor links is the page's, which is pale in dark mode; a white box keeps its own. */
+.sponsor a.sponsor-text[data-tone='white'], .prose .sponsor a.sponsor-text[data-tone='white'] { color: var(--imx-on); }
+/* A white box has no light to add, so its highlights are a faint shade instead. */
+.sponsor-fx[data-tone='white'] { --fx-a: 0.07; }
+.sponsor-fx[data-tone='white'].fx-aurora::before { background: radial-gradient(40% 40% at 25% 40%, rgb(0 0 0 / var(--fx-a)), transparent 62%), radial-gradient(35% 35% at 78% 62%, rgb(0 0 0 / calc(var(--fx-a) * 0.7)), transparent 62%); }
+.sponsor-fx[data-tone='white'].fx-sweep::before { background: linear-gradient(105deg, transparent 38%, rgb(0 0 0 / var(--fx-a)) 50%, transparent 62%); }
 .sponsor-fx > * { position: relative; z-index: 1; }
 .sponsor-fx::before, .sponsor-fx::after { content: ''; position: absolute; z-index: 0; pointer-events: none; }
 /* aurora: soft light drifting behind the text */
