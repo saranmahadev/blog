@@ -28,7 +28,7 @@ export type Sponsor = {
   headline?: string;
   line?: string;
   cta?: string;
-  tone?: 'mint' | 'lilac' | 'sky' | 'rose' | 'accent' | 'ink';
+  tone?: 'mint' | 'lilac' | 'sky' | 'rose' | 'accent' | 'ink' | 'white';
   /** House banners only: the animation behind the banner. */
   motion?: 'aurora' | 'orbit' | 'pulse' | 'sweep' | 'grid';
   start?: string;
