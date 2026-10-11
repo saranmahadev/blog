@@ -2,12 +2,12 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Banner from '@/components/sponsor/Banner';
 import AdBuilder from '@/components/sponsor/AdBuilder';
-import Steps from '@/components/imaxt/Steps.astro';
-import Step from '@/components/imaxt/Step.astro';
+import { imaxt } from '@/components/imaxt';
 import { CURRENCY_KEYS, TERMS, TIERS, TIER_IDS, money } from '@/lib/ad-prices';
 import { IMAGE_TYPES, LIMITS, MAX_IMAGE_BYTES, SLOTS, SLOT_KEYS } from '@/lib/sponsors';
 import { AUTHOR_EMAIL, SITE } from '@/lib/site';
 
+const { Steps, Step } = imaxt;
 const example = { kind: 'text' as const, href: '#', label: 'Example', headline: 'Your headline goes here', line: 'One sentence that tells readers why to click.', cta: 'Learn more', tone: 'mint', preview: true };
 const mailto = `mailto:${AUTHOR_EMAIL}?subject=${encodeURIComponent('Banner request')}&body=${encodeURIComponent('Hello, I would like to book a banner on Drafted.\n\nCOMPANY:\nCONTACT:\nLINK (https):\nTIER (Starter, Standard or Premier):\nPLACEMENTS (inline, end, rail):\nTERM (30, 60 or 90 days):\nPREFERRED START:\nBANNER: text (headline, one line, button text, colour) or my own image (I will attach it):\nALT TEXT (for images):\n')}`;
 ---

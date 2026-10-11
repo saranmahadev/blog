@@ -3,6 +3,12 @@
 @import '@fontsource/space-mono/400.css';
 @import '@fontsource/space-mono/700.css';
 @import '@fontsource-variable/source-serif-4';
+/* Before tokens.css: the package's :root sets its own default design tokens under the same
+   names this site's tokens use, with different values. Source order - tokens.css redeclaring
+   them further down - is what makes this site's palette win; a CSS layer would do the same
+   for :root but would also demote the package's .imx-* component rules below this site's
+   generic ones (e.g. .btn), which is not wanted. */
+@import '@inflate-ai/imaxt-core/styles.css';
 @import './tokens.css';
 @import './components.css';
 
