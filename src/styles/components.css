@@ -262,6 +262,9 @@ main { flex: 1; }
 /* ---------- Article extras ---------- */
 .prose pre.astro-code { background: #1c1c1c !important; color: #f4f1e8; border: 1.5px solid var(--line); border-radius: 14px; box-shadow: var(--hard); padding: 18px 20px; font-family: var(--font-mono); font-size: 14px; line-height: 1.7; overflow-x: auto; }
 .prose pre.astro-code code { background: none; border: 0; padding: 0; font-size: inherit; }
+/* github-dark comment grey (#6A737D) is 3.7:1 on the code background; lift it to pass AA. Unscoped
+   (not just .prose) so it covers every astro-code block, including the /imaxt/ Lab page's demos. */
+.astro-code span[style*="#6A737D"] { color: #a0a9b3 !important; }
 .prose img, .prose figure img { border-radius: 14px; margin-inline: auto; }
 .prose hr { border: 0; text-align: center; height: 1.5rem; }
 .prose hr::before { content: '···'; letter-spacing: 0.6em; color: var(--muted); }
