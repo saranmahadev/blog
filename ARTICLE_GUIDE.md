@@ -705,7 +705,7 @@ CI scans every key page with axe (WCAG 2.1 A and AA) in light and dark, and fail
 The site sends a strict **Content-Security-Policy**, and CI loads pages in a real browser and fails on any violation.
 
 **Never put these in a post:**
-- Images of any kind, including remote images and screenshots (the policy allows only the site's own assets, and the site is designed without images).
+- Images of any kind, including remote images and screenshots (the policy allows only the site's own assets, and the site is designed without images). The rare, explicit exception: set `allowImages: true` in frontmatter and place the file at `public/articles/<slug>/<filename>`, referenced in the body as `![alt](/articles/<slug>/<filename>)`. CSP's `img-src` only allows `'self'` and `data:`, so a remote image will not load regardless.
 - `<iframe>`, YouTube or other embeds, social widgets, tracking pixels, analytics snippets. Link out instead: `[Watch the talk](https://…)`.
 - `<script>`, inline `style` blocks, or event attributes (`onclick`). Only the site's own islands run (for example `TypeLab`).
 - External fonts or stylesheets.

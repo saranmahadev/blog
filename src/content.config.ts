@@ -23,6 +23,9 @@ const basePost = z.object({
   canonical: z.url().optional(),
   // Set to false to keep sponsored banners off this post (for example a personal story).
   sponsors: z.boolean().default(true),
+  // Posts use no images (ARTICLE_GUIDE.md section 18) - this is the rare, explicit exception.
+  // Set only when the post truly needs one; the image itself lives in public/articles/<slug>/.
+  allowImages: z.boolean().default(false),
 });
 
 // Standalone posts: src/content/posts/<slug>.md(x)  ->  /<slug>/
