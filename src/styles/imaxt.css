@@ -1,12 +1,5 @@
-/* Imaxt: typography and layout as the visuals. Only loaded on pages that render an Imaxt
-   block, so Fraunces never costs the pages that do not use it. */
+/* Only loaded on pages that render an Imaxt block, so Fraunces never costs the pages that
+   do not use it. The rest of @inflate-ai/imaxt-core's stylesheet (tokens, .imx-* component
+   rules) loads globally via global.css - see the comment there for why. */
 @import '@fontsource-variable/fraunces/opsz.css';
 @import '@fontsource-variable/fraunces/opsz-italic.css';
-
-/* @inflate-ai/imaxt-core ships its own default design tokens (color, type, shadow) so it
-   works standalone. This site's own tokens (src/styles/tokens.css) use real, different
-   values under the same names - a different accent, line color and shadow recipe, not
-   just fallback placeholders - so the package import is wrapped in a layer: unlayered CSS
-   always wins over a layered one, regardless of load order, which keeps this site's values
-   in charge wherever the names collide. */
-@import '@inflate-ai/imaxt-core/styles.css' layer(imaxt-core-defaults);

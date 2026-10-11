@@ -34,11 +34,11 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       '@inflate-ai/imaxt-astro':
-        specifier: ^0.1.2
-        version: 0.1.2(astro@7.3.8(@astrojs/markdown-remark@7.3.1)(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
+        specifier: ^0.1.3
+        version: 0.1.3(astro@7.3.8(@astrojs/markdown-remark@7.3.1)(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
       '@inflate-ai/imaxt-core':
-        specifier: ^0.1.2
-        version: 0.1.2
+        specifier: ^0.1.3
+        version: 0.1.3
       astro:
         specifier: ^7.3.8
         version: 7.3.8(@astrojs/markdown-remark@7.3.1)(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
@@ -1044,13 +1044,13 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@inflate-ai/imaxt-astro@0.1.2':
-    resolution: {integrity: sha512-iwvBJmIyvsySJN5FZzsq6wGga1xsYXSjcLqSVtxyjNhpdp7gcROVCbDZ/ORv1JmRqvO03moPGHTANDI4GXzCUg==}
+  '@inflate-ai/imaxt-astro@0.1.3':
+    resolution: {integrity: sha512-xa6O55UtZKTLpG7WiwqjTBzaHoP2yCK1CbcNS1D6C0usPgQzOrg3Miv3MveaQP4iurMo3zq0vR6Q71ad4vOxxg==}
     peerDependencies:
       astro: ^7.3.8
 
-  '@inflate-ai/imaxt-core@0.1.2':
-    resolution: {integrity: sha512-sbkx3zsEoctsb7AZStfWoLwLMmqLE8bWPwv4kK/k28Ia7aQDu+YHz8fnYevR6nHKqIGwO+xFHCBK/7tv8FULhQ==}
+  '@inflate-ai/imaxt-core@0.1.3':
+    resolution: {integrity: sha512-7pavMdW5qkYeeT3EEWn8Xy9qhbw8BNfbVxSbdG7FnhsRP/k/8E5yGWyIRpoombBYTSEISmh9ZQhMbVijZ4Mv9w==}
 
   '@inquirer/ansi@1.0.2':
     resolution: {integrity: sha512-S8qNSZiYzFd0wAcyG5AXCvUHC5Sr7xpZ9wZ2py9XR88jUz8wooStVx5M6dRzczbBWjic9NP7+rY0Xi7qqK/aMQ==}
@@ -7036,12 +7036,12 @@ snapshots:
   '@img/sharp-win32-x64@0.35.5':
     optional: true
 
-  '@inflate-ai/imaxt-astro@0.1.2(astro@7.3.8(@astrojs/markdown-remark@7.3.1)(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))':
+  '@inflate-ai/imaxt-astro@0.1.3(astro@7.3.8(@astrojs/markdown-remark@7.3.1)(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))':
     dependencies:
-      '@inflate-ai/imaxt-core': 0.1.2
+      '@inflate-ai/imaxt-core': 0.1.3
       astro: 7.3.8(@astrojs/markdown-remark@7.3.1)(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
 
-  '@inflate-ai/imaxt-core@0.1.2':
+  '@inflate-ai/imaxt-core@0.1.3':
     dependencies:
       '@fontsource-variable/fraunces': 5.3.0
 
