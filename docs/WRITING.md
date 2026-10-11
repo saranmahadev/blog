@@ -24,6 +24,8 @@ Everything needed to add a post or a series. The voice and the editorial rules a
 
 Posts use no images. Imaxt blocks (Statement, Stat, PullQuote, Compare, Steps, Timeline, Bars, Sidenote, CodeWalk, Marquee) turn type and layout into figures. Write the post as `.mdx` and use them directly, with no imports. Every block and its source is on the hidden `/imaxt/` Lab page; the code is in `src/components/imaxt/` and `src/styles/imaxt.css`.
 
+The rare exception: set `allowImages: true` in frontmatter, place the file at `public/articles/<slug>/<filename>`, and reference it in the body as `![alt](/articles/<slug>/<filename>)` - see `ARTICLE_GUIDE.md` section 18.
+
 A post can set a typographic cover in its frontmatter (`kind`: `word`, `stat`, `quote` or `stack`); without one, a stacked cover is made from the title:
 
 ```yaml
