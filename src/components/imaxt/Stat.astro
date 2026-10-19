@@ -1,0 +1,11 @@
+---
+import { renderStat, type StatData } from '@inflate-ai/imaxt/core';
+
+interface Props extends StatData {}
+---
+
+<Fragment set:html={renderStat(Astro.props)} />
+<script>
+  import { attachStatCountUp } from '@inflate-ai/imaxt/core';
+  attachStatCountUp(document);
+</script>

@@ -1,0 +1,13 @@
+---
+import { escapeHtml } from '@inflate-ai/imaxt/core';
+
+interface Props { stage: string; sub?: string }
+const { stage, sub } = Astro.props;
+const html = await Astro.slots.render('default');
+const inline = sub ? `${escapeHtml(stage)} · ${escapeHtml(sub)}` : escapeHtml(stage);
+---
+
+<section class="imx-beat" data-stage={stage} data-sub={sub}>
+  <div class="imx-beat-inline imx-label" set:html={inline} />
+  <div class="imx-beat-body" set:html={html} />
+</section>

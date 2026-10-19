@@ -1,0 +1,15 @@
+---
+import { type CodeWalkData, renderCodeWalk } from '@inflate-ai/imaxt/core';
+
+interface Props extends Omit<CodeWalkData, 'code' | 'html'> {
+  /** Optional when a default slot is given - the slot's rendered output becomes the code markup. */
+  code?: string;
+}
+const html = Astro.slots.has('default') ? await Astro.slots.render('default') : undefined;
+---
+
+<Fragment set:html={renderCodeWalk({ ...Astro.props, code: Astro.props.code ?? '', html })} />
+<script>
+  import { attachCodeWalk } from '@inflate-ai/imaxt/core';
+  attachCodeWalk(document);
+</script>

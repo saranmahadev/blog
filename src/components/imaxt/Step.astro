@@ -1,0 +1,9 @@
+---
+import { renderStep, type StepData } from '@inflate-ai/imaxt/core';
+
+interface Props extends Omit<StepData, 'html'> {}
+const { title } = Astro.props;
+const html = await Astro.slots.render('default');
+---
+
+<Fragment set:html={renderStep({ title, html })} />

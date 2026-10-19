@@ -1,0 +1,9 @@
+---
+import { renderSide, type SideData } from '@inflate-ai/imaxt/core';
+
+interface Props extends Omit<SideData, 'html'> {}
+const { label, kind, tone } = Astro.props;
+const html = await Astro.slots.render('default');
+---
+
+<Fragment set:html={renderSide({ html, label, kind, tone })} />

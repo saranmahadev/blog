@@ -1,0 +1,9 @@
+---
+import { type PullQuoteData, renderPullQuote } from '@inflate-ai/imaxt/core';
+
+interface Props extends Omit<PullQuoteData, 'html'> {}
+const { by, wide } = Astro.props;
+const html = await Astro.slots.render('default');
+---
+
+<Fragment set:html={renderPullQuote({ html, by, wide })} />

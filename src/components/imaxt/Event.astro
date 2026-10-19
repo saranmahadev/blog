@@ -1,0 +1,9 @@
+---
+import { type EventData, renderEvent } from '@inflate-ai/imaxt/core';
+
+interface Props extends Omit<EventData, 'html'> {}
+const { date, title } = Astro.props;
+const html = await Astro.slots.render('default');
+---
+
+<Fragment set:html={renderEvent({ date, title, html })} />

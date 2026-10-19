@@ -1,0 +1,9 @@
+---
+import { renderSidenote, type SidenoteData } from '@inflate-ai/imaxt/core';
+
+interface Props extends Omit<SidenoteData, 'html'> {}
+const { label } = Astro.props;
+const html = await Astro.slots.render('default');
+---
+
+<Fragment set:html={renderSidenote({ html, label })} />

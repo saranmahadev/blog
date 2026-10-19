@@ -1,24 +1,11 @@
 ---
-import { ImaxtCover as PackageImaxtCover } from '@inflate-ai/imaxt-astro';
-import type { Tone } from '@inflate-ai/imaxt-core';
+import { renderImaxtCover, type ImaxtCoverData } from '@inflate-ai/imaxt/core';
 import { isImaxtCover, type Cover } from '@/lib/cover';
 
-interface Props {
+interface Props extends Omit<ImaxtCoverData, 'cover'> {
   cover?: Cover;
-  title: string;
-  tone?: Tone;
-  caption?: string;
-  ratio?: string;
-  style?: string;
 }
 const { cover, title, tone, caption, ratio, style } = Astro.props;
 ---
 
-<PackageImaxtCover
-  cover={isImaxtCover(cover) ? cover : undefined}
-  title={title}
-  tone={tone}
-  caption={caption}
-  ratio={ratio}
-  style={style}
-/>
+<Fragment set:html={renderImaxtCover({ cover: isImaxtCover(cover) ? cover : undefined, title, tone, caption, ratio, style })} />

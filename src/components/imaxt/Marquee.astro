@@ -1,0 +1,7 @@
+---
+import { type MarqueeData, renderMarquee } from '@inflate-ai/imaxt/core';
+
+interface Props extends MarqueeData {}
+---
+
+<Fragment set:html={renderMarquee(Astro.props)} />

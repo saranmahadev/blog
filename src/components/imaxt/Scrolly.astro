@@ -1,0 +1,17 @@
+---
+import { resolveTone } from '@inflate-ai/imaxt/core';
+
+interface Props { tone?: string }
+const tone = resolveTone(Astro.props.tone ?? 'sky');
+---
+
+<div class="imx imx-scrolly-wrap">
+  <div class="imx-scrolly" data-tone={tone}>
+    <div class="imx-scrolly-stage imx-slab" aria-hidden="true"><div class="imx-scrolly-slides"></div></div>
+    <div class="imx-scrolly-beats"><slot /></div>
+  </div>
+</div>
+<script>
+  import { attachScrolly } from '@inflate-ai/imaxt/core';
+  attachScrolly(document);
+</script>

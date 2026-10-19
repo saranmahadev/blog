@@ -4,7 +4,7 @@ import { Code } from 'astro:components';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { imaxt, ImaxtCover } from '@/components/imaxt';
 
-const { Statement, Stat, StatRow, PullQuote, Compare, Side, Steps, Step, Timeline, Event, Bars, Sidenote, CodeWalk, Marquee, Heatmap, CurvedText, Scrolly, Beat, TypeLab } = imaxt;
+const { Statement, Stat, StatRow, PullQuote, Compare, Side, Steps, Step, Timeline, Event, Sidenote, CodeWalk, Marquee, CurvedText, Scrolly, Beat } = imaxt;
 
 const src = {
   statement: `<Statement>Every retrieval project rebuilds the **same plumbing**.</Statement>
@@ -30,11 +30,6 @@ const src = {
   <Event date="Step 2" title="Promise">Machines promise to ignore older proposals.</Event>
   <Event date="Step 3" title="Accept">A majority accepts it.</Event>
 </Timeline>`,
-  bars: `<Bars unit="%" max={100} tone="accent" items={[
-  { label: "Model A", value: 72 },
-  { label: "Model B", value: 81 },
-  { label: "Model C", value: 64 },
-]} />`,
   note: `<Sidenote label="Mock data">Numbers here are placeholders.</Sidenote>`,
   walk: `<CodeWalk steps={[
   { lines: "1", title: "Stable id", text: "Same chunk, same id." },
@@ -49,14 +44,6 @@ await checkpoint.save(id);
 
 </CodeWalk>`,
   marquee: `<Marquee words={["Embed", "Filter", "Rank", "Repeat"]} tone="accent" />`,
-  heat: `<Heatmap
-  caption="Common modes, one digit per audience"
-  rows={["600", "640", "644", "755"]}
-  cols={["Owner", "Group", "Others"]}
-  data={[[6, 0, 0], [6, 4, 0], [6, 4, 4], [7, 5, 5]]}
-  min={0}
-  max={7}
-/>`,
   curved: `<CurvedText text="Drag the sliders" shape="arc" />
 <CurvedText text="Drafted" shape="circle" mark="D" tone="mint" spin decorative />`,
   scrolly: `<Scrolly tone="sky">
@@ -64,7 +51,6 @@ await checkpoint.save(id);
   <Beat stage="Embed" sub="step 2">Turn every chunk into a vector.</Beat>
   <Beat stage="Write" sub="step 3">Store it under a stable id.</Beat>
 </Scrolly>`,
-  typelab: `<TypeLab sample="Same letters, different voice" />`,
   diagram: `\`\`\`mermaid caption="A forward proxy sits between clients and the internet"
 flowchart LR
   accTitle: Forward proxy
@@ -139,11 +125,6 @@ const walkCode = `const id = \`\${doc.id}:\${chunk.index}\`;\nawait index.upsert
       </Timeline>
       <Code code={src.timeline} lang="mdx" theme="github-dark" />
 
-      <h2>Bars</h2>
-      <p>A ranking or chart built from type. Values are real text, so screen readers and search see them.</p>
-      <Bars unit="%" max={100} tone="accent" items={[{ label: 'Model A', value: 72 }, { label: 'Model B', value: 81 }, { label: 'Model C', value: 64 }]} />
-      <Code code={src.bars} lang="mdx" theme="github-dark" />
-
       <h2>Sidenote</h2>
       <Sidenote label="Mock data">Numbers here are placeholders.</Sidenote>
       <Code code={src.note} lang="mdx" theme="github-dark" />
@@ -160,11 +141,6 @@ const walkCode = `const id = \`\${doc.id}:\${chunk.index}\`;\nawait index.upsert
       <Marquee words={['Embed', 'Filter', 'Rank', 'Repeat']} tone="accent" />
       <Code code={src.marquee} lang="mdx" theme="github-dark" />
 
-      <h2>Heatmap</h2>
-      <p>A real table whose cells are tinted by value. The number is always printed, so colour is never the only signal.</p>
-      <Heatmap caption="Common modes, one digit per audience" rows={['600', '640', '644', '755']} cols={['Owner', 'Group', 'Others']} data={[[6, 0, 0], [6, 4, 0], [6, 4, 4], [7, 5, 5]]} min={0} max={7} />
-      <Code code={src.heat} lang="mdx" theme="github-dark" />
-
       <h2>CurvedText</h2>
       <p>Text on an arc, a wave or a ring. It stays real, selectable text. A ring can carry a mark and spin slowly (still when motion is reduced).</p>
       <CurvedText text="Drag the sliders" shape="arc" />
@@ -179,11 +155,6 @@ const walkCode = `const id = \`\${doc.id}:\${chunk.index}\`;\nawait index.upsert
         <Beat stage="Write" sub="step 3">Store it under a stable id.</Beat>
       </Scrolly>
       <Code code={src.scrolly} lang="mdx" theme="github-dark" />
-
-      <h2>TypeLab</h2>
-      <p>An interactive font playground (a React island that loads when scrolled into view). It offers only the axes this site ships.</p>
-      <TypeLab sample="Same letters, different voice" />
-      <Code code={src.typelab} lang="mdx" theme="github-dark" />
 
       <h2>Diagrams</h2>
       <p>Write a Mermaid diagram in a <code>mermaid</code> fenced block, in any <code>.md</code> or <code>.mdx</code> post. It is drawn to SVG at build time (flowchart, sequence, state, class, ER, Gantt, timeline, mindmap, pie and more), skinned to the Imaxt look, and switches with the light and dark theme. Every diagram must have <code>accTitle</code> and <code>accDescr</code>; the build fails without them. Add <code>caption="..."</code> or <code>wide</code> after the language. Live examples: <a href="/curious-to-coder/symptoms-that-you-should-pursue-coding/">a flowchart</a>, <a href="/dev-universe/a-connected-ecosystem/">a diagram with a center</a>.</p>

@@ -1,0 +1,7 @@
+---
+import { type CurvedTextData, renderCurvedText } from '@inflate-ai/imaxt/core';
+
+interface Props extends CurvedTextData {}
+---
+
+<Fragment set:html={renderCurvedText(Astro.props)} />

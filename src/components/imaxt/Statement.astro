@@ -1,0 +1,9 @@
+---
+import { renderStatement, type StatementData } from '@inflate-ai/imaxt/core';
+
+interface Props extends Omit<StatementData, 'html'> {}
+const { tone, align, wide, bleed } = Astro.props;
+const html = await Astro.slots.render('default');
+---
+
+<Fragment set:html={renderStatement({ html, tone, align, wide, bleed })} />
