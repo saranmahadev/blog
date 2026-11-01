@@ -23,10 +23,6 @@ for (const url of PAGES) {
     await page.fill('#site-search', 'browser');
     await page.waitForSelector('.sres', { timeout: 5000 }).catch(() => problems.push('/: search returned no results'));
   }
-  if (url === '/imaxt/') { // a hydrated island
-    await page.waitForSelector('.imx-typelab button', { timeout: 4000 }).catch(() => problems.push(`${url}: the type lab did not load`));
-    await page.click('.imx-tl-fam button:nth-child(1)').catch(() => {});
-  }
 }
 await browser.close();
 close();

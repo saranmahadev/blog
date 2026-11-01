@@ -127,7 +127,7 @@ export default function Search() {
               placeholder="Search posts and series" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onInputKey}
              
             />
-            <button type="button" className="kbd sdlg-esc" onClick={close} aria-label="Close search">esc</button>
+            <button type="button" className="kbd sdlg-esc" onClick={close} aria-label="Esc, close search">esc</button>
           </div>
 
           <div className="sdlg-filters" role="group" aria-label="Filter results">
