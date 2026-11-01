@@ -33,7 +33,7 @@ export default function AccountMenu() {
   }
   return (
     <div className="acct" ref={root}>
-      <button className="row clay acct-btn" type="button" aria-label={`Account menu for ${name}${unread > 0 ? `, ${unread} new in your inbox` : ''}`} aria-expanded={open} onClick={() => setOpen(!open)}>
+      <button className="row brut acct-btn" type="button" aria-label={`Account menu for ${name}${unread > 0 ? `, ${unread} new in your inbox` : ''}`} aria-expanded={open} onClick={() => setOpen(!open)}>
         <span className="av tone-sky" style={{ boxShadow: 'none' }} aria-hidden="true">{initialOf(user?.displayName, user?.email)}</span>
         <strong className="acct-name">{name}</strong><span aria-hidden="true">▾</span>
         {unread > 0 && <span className="acct-dot" aria-hidden="true" />}
