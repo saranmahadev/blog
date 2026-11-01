@@ -37,7 +37,7 @@
     "@astrojs/react": "^7.0.0",
     "@fontsource-variable/archivo": "^5.3.0",
     "@fontsource-variable/fraunces": "^5.3.0",
-    "@fontsource-variable/source-serif-4": "^5.3.0",
+    "@fontsource-variable/source-serif-4": "^5.3.1",
     "@fontsource/space-mono": "^5.3.0",
     "@inflate-ai/imaxt": "^1.0.1",
     "astro": "^7.3.8",
