@@ -41,7 +41,7 @@ export default defineConfig({
   build: { format: 'directory' },
   redirects: { '/library/': '/profile/#bookmarks' }, // bookmarks moved into the profile
   integrations: [mdx(), react()],
-  vite: { plugins: [tailwindcss()] },
+  vite: { plugins: [tailwindcss()], build: { assetsInlineLimit: (file) => (file.endsWith('.woff2') ? false : undefined) } }, // CSP font-src is 'self': never inline fonts as data: URIs
   markdown: {
     // Mermaid fences are handled by the diagram plugin, not the code highlighter.
     syntaxHighlight: { type: 'shiki', excludeLangs: ['mermaid'] },
