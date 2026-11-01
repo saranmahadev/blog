@@ -15,7 +15,7 @@ Three layers, one rule each:
 
 1. **Structure is brutalist:** 1.5px ink rules, hairline dividers, heavy condensed headlines, mono labels.
 2. **Content tiles are slabs:** flat colour, 1.5px border, 14px radius, a 4px hard offset shadow. They press 2px on hover.
-3. **Controls are clay:** buttons, icon buttons, switches and segmented controls with soft dual shadows. Tags are flat outlined labels, not clay.
+3. **Controls are brutal:** buttons, icon buttons, switches and segmented controls share the slab recipe: 1.5px border, 10px radius, a hard offset shadow that collapses on press. Tags are flat outlined labels.
 
 The article body stays Medium-clean: serif text, narrow measure, no decoration.
 
