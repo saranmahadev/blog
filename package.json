@@ -42,7 +42,7 @@
     "@inflate-ai/imaxt": "^1.0.1",
     "astro": "^7.4.2",
     "firebase": "^13.1.0",
-    "react": "^19.3.0",
+    "react": "^19.3.1",
     "react-dom": "^19.3.0",
     "sanitize-html": "^2.18.1"
   },
