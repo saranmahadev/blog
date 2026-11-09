@@ -33,14 +33,14 @@
     "test:rules": "firebase emulators:exec --project demo-drafted --only firestore \"vitest run --config vitest.config.ts\""
   },
   "dependencies": {
-    "@astrojs/mdx": "^8.1.1",
-    "@astrojs/react": "^7.1.1",
+    "@astrojs/mdx": "^8.1.3",
+    "@astrojs/react": "^7.1.4",
     "@fontsource-variable/archivo": "^5.3.0",
     "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/source-serif-4": "^5.3.1",
     "@fontsource/space-mono": "^5.3.0",
     "@inflate-ai/imaxt": "^1.0.1",
-    "astro": "^7.4.2",
+    "astro": "^7.4.7",
     "firebase": "^13.1.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
-    "@astrojs/markdown-remark": "^7.3.4",
+    "@astrojs/markdown-remark": "^7.3.6",
     "@axe-core/playwright": "^4.14.0",
     "@firebase/rules-unit-testing": "^6.0.0",
     "@lhci/cli": "^0.15.1",
