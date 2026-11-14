@@ -40,7 +40,7 @@
     "@fontsource-variable/source-serif-4": "^5.3.1",
     "@fontsource/space-mono": "^5.3.0",
     "@inflate-ai/imaxt": "^1.0.1",
-    "astro": "^7.4.2",
+    "astro": "^7.4.7",
     "firebase": "^13.1.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
