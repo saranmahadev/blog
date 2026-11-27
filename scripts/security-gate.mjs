@@ -47,6 +47,21 @@ const check = (name, problems = [], notes = []) => {
   check('security.txt', problems, notes);
 }
 
+// ---------------------------------------------------------------- deploy target
+// The Firebase project hosts several sites (each with its own custom domain). Without an explicit
+// `site`, a deploy goes to the project's DEFAULT site, which is a different product. Pin it.
+{
+  const EXPECTED_SITE = 'blog-saranmahadev'; // serves blog.saranmahadev.in
+  const problems = [];
+  try {
+    const site = JSON.parse(readFileSync('firebase.json', 'utf8')).hosting?.site;
+    if (site !== EXPECTED_SITE) problems.push(`firebase.json hosting.site is ${JSON.stringify(site)}, expected "${EXPECTED_SITE}" (otherwise the deploy lands on the project's default site)`);
+  } catch {
+    problems.push('firebase.json is missing or not valid JSON');
+  }
+  check('deploy target', problems);
+}
+
 // ---------------------------------------------------------------- 2 + 3. headers and CSP
 {
   const problems = [];
