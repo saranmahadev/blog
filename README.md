@@ -85,7 +85,9 @@ unsafe. Everything else (type check, link and SEO audits) is local only.
 ## Production setup
 
 - **Site URL:** `https://blog.saranmahadev.in`, set in `astro.config.mjs` and in the workflow.
-- **Firebase project:** `stride-11129` (`.firebaserc`). The deploy uses the repository secret
+- **Firebase project and site:** project `stride-11129` (`.firebaserc`), hosting site `blog-saranmahadev`
+  (pinned in `firebase.json`; the project also hosts other sites, and the security gate refuses to
+  build for any other target). The deploy uses the repository secret
   `FIREBASE_DEPLOY_SERVICE_ACCOUNT`; keep that account limited to Firebase Hosting deploy.
 - **Headers and CSP:** `firebase.json`. The script hashes in the CSP are regenerated on every build.
 - **IndexNow:** after each live deploy, `scripts/indexnow.mjs` submits the sitemap URLs.
