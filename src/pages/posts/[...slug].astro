@@ -1,0 +1,143 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostRow from '../../components/PostRow.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import SeriesNav from '../../components/SeriesNav.astro';
+import { getRelated, tagSlug } from '../../lib/content';
+import { articleNode, citationsFrom, wordCount } from '../../lib/seo';
+import { postMarkdownPath, postPath } from '../../lib/markdown';
+import { SITE } from '../../lib/site';
+import { coverFor, formatDate, labelFor, readingTime } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const series = post.data.series ? await getEntry(post.data.series) : undefined;
+const { tone, pattern } = coverFor(post);
+const related = await getRelated(post);
+const origin = Astro.site!.origin;
+const url = `${origin}${postPath(post)}`;
+const headline = post.data.seoTitle ?? post.data.title;
+---
+
+<BaseLayout
+  title={`${headline} | Drafted`}
+  description={post.data.description}
+  image={`/og/${post.id}.png`}
+  imageAlt={`${post.data.title}: a post on Drafted by ${SITE.author.name}`}
+  type="article"
+  publishedAt={post.data.publishedAt}
+  modifiedAt={post.data.publishedAt}
+  tags={post.data.tags}
+  section={series?.data.title ?? post.data.tags[0]}
+  markdownPath={postMarkdownPath(post)}
+  breadcrumbs={[
+    { name: 'Home', path: '/' },
+    { name: 'Archive', path: '/posts/' },
+    { name: post.data.title, path: postPath(post) },
+  ]}
+  graph={[
+    articleNode({
+      origin,
+      url,
+      headline: post.data.title,
+      description: post.data.description,
+      image: `${origin}/og/${post.id}.png`,
+      datePublished: post.data.publishedAt,
+      dateModified: post.data.publishedAt,
+      keywords: post.data.tags,
+      section: series?.data.title ?? post.data.tags[0],
+      words: wordCount(post.body),
+      citations: citationsFrom(post.body),
+      markdownUrl: `${origin}${postMarkdownPath(post)}`,
+      series: series ? { name: series.data.title, url: `${origin}/series/${series.id}/` } : undefined,
+    }),
+  ]}
+>
+  <div class="progress" aria-hidden="true"><span></span></div>
+  <article data-pagefind-body>
+    <header class="shell">
+      <div class={`band ${tone} ${pattern}`} transition:name={`cover-${post.id}`}>
+        {post.data.coverWord && <span class="cover-word" aria-hidden="true">{post.data.coverWord}</span>}
+        {
+          series ? (
+            <a class="label label-inverse" href={`/series/${series.id}/`}>{series.data.title}</a>
+          ) : (
+            <span class="label label-inverse">{labelFor(post)}</span>
+          )
+        }
+        <h1>{post.data.title}</h1>
+      </div>
+    </header>
+
+    <div class="shell article-layout">
+    <TableOfContents headings={headings} />
+    <div class="column article">
+      <p class="lede">{post.data.description}</p>
+      <div class="byline">
+        <span class="avatar" aria-hidden="true">SM</span>
+        <p>
+          <strong>Saran Mahadev</strong>
+          <span class="meta">
+            <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, 'long')}</time>
+            <span aria-hidden="true">·</span>
+            <span>{readingTime(post.body)} min read</span>
+          </span>
+        </p>
+        <button class="copy-link" type="button">Copy link</button>
+      </div>
+
+      <SeriesNav post={post} variant="top" />
+
+      <div class="prose"><Content /></div>
+
+      <SeriesNav post={post} variant="end" />
+
+      <footer class="article-footer">
+        {post.data.tags.length > 0 && (
+          <ul class="tag-list" aria-label="Tags">
+            {post.data.tags.map((tag) => <li><a href={`/topics/${tagSlug(tag)}/`}>{tag}</a></li>)}
+          </ul>
+        )}
+        <aside class="author-box" aria-labelledby="author-heading">
+          <span class="avatar" aria-hidden="true">SM</span>
+          <div>
+            <h2 class="author-name" id="author-heading">
+              Written by <a href={SITE.author.url} rel="author noopener">{SITE.author.name}</a>
+            </h2>
+            <p>
+              Creator, engineer, educator, builder and entrepreneur. More of my work is at
+              <a href={SITE.author.url} rel="noopener">saranmahadev.in</a> and on
+              <a href="https://www.youtube.com/@saranmahadev" rel="noopener">YouTube</a>.
+            </p>
+          </div>
+        </aside>
+      </footer>
+    </div>
+    </div>
+  </article>
+
+  {
+    related.length > 0 && (
+      <section class="shell keep-reading" aria-labelledby="keep-reading">
+        <h2 class="section-label" id="keep-reading">Keep reading</h2>
+        <div class="rows rows-3">
+          {related.map((entry) => <PostRow post={entry} />)}
+        </div>
+      </section>
+    )
+  }
+
+  <script>
+    import '../../scripts/article.ts';
+    import '../../scripts/mermaid.ts';
+  </script>
+</BaseLayout>

@@ -1,0 +1,84 @@
+---
+title: "Security"
+description: "How to report a security issue on Drafted, what to expect from me, what is in scope, the safe harbour I offer, and how the site is protected."
+updatedAt: 2026-11-27
+---
+
+**If you find a security problem on this site, please tell me. I will take it seriously, thank you, and fix it.**
+
+I am one person running a personal site, so the commitments below are realistic ones rather than a corporate promise. I keep them.
+
+## How to report
+
+Email [mail@saranmahadev.in](mailto:mail@saranmahadev.in) with the subject **"Security: "** followed by a short summary. A machine-readable version of this policy is at [/.well-known/security.txt](/.well-known/security.txt).
+
+Please include:
+
+1. **What you found** and the exact URL.
+2. **Steps to reproduce it**, or a short proof of concept, including any requests and responses.
+3. **The impact** as you see it.
+4. **How you would like to be credited**, or that you would rather not be.
+
+I do not publish an encryption key. Please send only what is needed to reproduce the issue, and never real personal data of other people.
+
+## What you can expect from me
+
+| Step | When |
+| --- | --- |
+| I reply to confirm I have your report, and tell you whether I believe it affects the site | Within **15 days** |
+| I send you a status update while I work on it | At least every **15 days** |
+| I fix or mitigate a confirmed issue | Within **90 days**, and sooner for serious ones |
+| I thank you, and credit you if you want | Once it is fixed |
+
+If I cannot meet a date, I will tell you why and agree a new one with you.
+
+## Coordinated disclosure
+
+Please give me the chance to fix an issue before you publish the details. I ask you to wait until it is fixed, or until **90 days** after your report, whichever comes first. This is the same window used by Google Project Zero and CERT-EU. If an issue is being actively exploited, tell me, and we will move much faster. After 90 days you are free to disclose.
+
+## Scope
+
+**In scope:** `blog.saranmahadev.in` and the content it serves.
+
+**Out of scope:**
+
+- Other sites under `saranmahadev.in`, unless they publish their own policy.
+- Services run by others, including Google Firebase and GitHub. Please report problems to the provider.
+- Denial-of-service or volume-based attacks, spam, social engineering, and physical attacks.
+- Automated scanner output with no demonstrated impact, and missing "best practice" headers with no real problem behind them.
+- Reports that only say a known, public, non-sensitive file exists.
+
+## Testing rules
+
+- Do not run high-volume or automated scans that could slow the site for others.
+- Do not access, change, copy or delete data that is not yours. This site holds no user accounts, but stop and tell me at once if you reach anything sensitive.
+- Do not use social engineering, or test anyone else's systems.
+- Do not demand payment or anything else as a condition of reporting.
+
+## Safe harbour
+
+If you follow this policy and act in good faith, I consider your research authorized, and I will not take legal action against you, or support others in doing so, for it. This promise covers only claims that are mine to make as the owner of this site. It cannot bind third parties, such as Google or GitHub, so please check their policies before testing their services. If you are unsure whether something is allowed, ask me first. This is a plain-language commitment, not legal advice.
+
+## No bounty
+
+This is a personal blog, so there is no monetary reward. You will have my sincere thanks, and public credit if you want it.
+
+## What I publish
+
+When a confirmed issue had real impact, I will add a short advisory below: what happened, who it affected, how it was fixed, and credit to you.
+
+## Acknowledgments
+
+Thank you to everyone who has reported a vulnerability and helped fix it. No reports have been received so far.
+
+## How the site is built to be safe
+
+- **A static site.** There are no user accounts, databases, comments or server-side code of its own, which removes most of the common attack surface.
+- **HTTPS everywhere,** with HSTS so browsers never fall back to plain HTTP.
+- **A strict Content Security Policy** that only lets this site's own, verified scripts run, plus further headers against framing, MIME sniffing and unwanted browser features.
+- **No third-party scripts, fonts or embeds,** so no outside code runs when you visit.
+- **Checks before every release.** Before a change can be published, it must pass a security gate: no known serious vulnerabilities in the dependencies, no secrets in the code, the headers and policy in place, and nothing loaded from other sites. The gate runs on my machine before the change is pushed, and again in the publishing job, so skipping the first run cannot get a change through. If any check fails, the release does not go out.
+- **Dependencies kept current** through automated update proposals.
+- **A narrow deployment path.** The site is published by an automated job using an account that can only publish this site. The editing tool is not part of the live site.
+
+Related pages: [Privacy](/privacy/), [Terms](/terms/), [Accessibility](/accessibility/), [Legal](/legal/).

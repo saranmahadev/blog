@@ -1,0 +1,32 @@
+---
+import { getEntry } from 'astro:content';
+import type { Post } from '../lib/content';
+import { coverFor, formatDate, labelFor, readingTime } from '../lib/posts';
+
+interface Props {
+  post: Post;
+  /** Series part number; replaces the initial on the thumbnail. */
+  part?: number;
+  /** Heading level for the title: 2 when the list sits directly under the page h1, otherwise 3. */
+  level?: 2 | 3;
+}
+
+const { post, part, level = 3 } = Astro.props;
+const Heading = `h${level}` as 'h2' | 'h3';
+const series = post.data.series ? await getEntry(post.data.series) : undefined;
+const { tone, pattern } = coverFor(post);
+---
+
+<article class="row" data-tags={post.data.tags.join(',')}>
+  <div class={`thumb ${tone} ${pattern}`} aria-hidden="true" transition:name={`cover-${post.id}`}>{part ? String(part).padStart(2, '0') : post.data.title.charAt(0)}</div>
+  <div class="row-body">
+    <p class="meta">
+      <span class={`label ${tone}`}>{labelFor(post, series?.data.title)}</span>
+      <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+      <span aria-hidden="true">·</span>
+      <span>{readingTime(post.body)} min</span>
+    </p>
+    <Heading class="row-title"><a class="stretch" href={`/posts/${post.id}/`}>{post.data.title}</a></Heading>
+    <p class="row-desc">{post.data.description}</p>
+  </div>
+</article>

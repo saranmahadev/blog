@@ -1,0 +1,351 @@
+/*
+  Standard Markdown, styled. Posts use no custom components: a blockquote that opens with a bold
+  label is a note, a paragraph that is entirely bold is a statement, tables and lists do the rest.
+*/
+
+/* Statement: a paragraph that is entirely bold (tagged by plugins/statement.mjs) */
+.prose > p.statement {
+  font-family: var(--font-ui);
+  font-size: 1.2em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.prose > p.statement:first-child {
+  font-size: clamp(1.6rem, 4.2vw, 2.4rem);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+/* Note: a blockquote that opens with a bold label ("**Going deeper.** ...") */
+.prose blockquote:has(> p:first-child > strong:first-child) {
+  padding: 1rem 1.25rem;
+  border-left: 5px solid var(--accent);
+  border-radius: 0.6rem;
+  background: var(--surface);
+  font-size: 0.95em;
+  font-style: normal;
+  line-height: 1.65;
+}
+
+.prose blockquote:has(> p:first-child > strong:first-child) > p:first-child > strong:first-child {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Lists: numbered lists read as steps */
+.prose ol > li::marker {
+  color: var(--accent-text);
+  font-family: var(--font-ui);
+  font-weight: 800;
+}
+
+/* Tables */
+.prose table {
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.prose th {
+  border-bottom: 2px solid var(--foreground);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.prose td {
+  min-width: 9rem;
+  vertical-align: top;
+}
+
+.prose table:has(th:nth-child(3)) td:first-child {
+  font-weight: 700;
+}
+
+/* Caption convention: an italic-only paragraph directly above a table, or below a diagram */
+.prose p:has(> em:only-child) + table,
+.prose p:has(> em:only-child) + .table-scroll {
+  margin-top: 0.5rem;
+}
+
+.prose p:has(> em:only-child):has(+ table) {
+  margin-bottom: 0.25rem;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+}
+
+/* Diagrams (Mermaid) */
+.diagram {
+  margin: 2em 0 1.2em;
+  padding: 1.25rem;
+  overflow-x: auto;
+  border-radius: 0.8rem;
+  background: var(--surface);
+  text-align: center;
+}
+
+.diagram svg {
+  display: block;
+  max-width: none;
+  height: auto;
+  margin-inline: auto;
+}
+
+.diagram-failed {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.prose .diagram + p:has(> em:only-child) {
+  margin-bottom: 2em;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* Cover word: faint display word inside the generated cover */
+.cover-word {
+  position: absolute;
+  right: -0.04em;
+  bottom: -0.2em;
+  color: var(--cover-fg);
+  font-family: var(--font-ui);
+  font-size: clamp(5rem, 18vw, 13rem);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  opacity: 0.08;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.card-side .cover-word {
+  font-size: clamp(4rem, 9vw, 7rem);
+}
+
+.card > :not(.cover-word),
+.band > :not(.cover-word) {
+  position: relative;
+}
+
+/* Very long titles on the lead card */
+.card-lead .card-title.card-title-long {
+  max-width: 20ch;
+  font-size: clamp(2rem, 4.4vw, 3.6rem);
+  letter-spacing: -0.04em;
+}
+
+/* Sidebar: breathing room between stacked blocks */
+.rail-topics {
+  margin-top: 2.25rem;
+}
+
+/* Mermaid tags its text groups with class="label", which would pick up the site's chip style. */
+.diagram .label {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.5; /* what Mermaid measured with; a taller value clips node text */
+  text-transform: none;
+}
+
+/* Mermaid node text is a <p>; keep article paragraph spacing and leading out of diagrams. */
+.diagram p {
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1.5;
+}
+
+/* Archive: filter row sits under the page title */
+.archive-filter {
+  margin: 0 0 1.75rem;
+}
+
+/* Accessibility */
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 700;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+main:focus {
+  outline: none;
+}
+
+.diagram:focus-visible,
+.prose pre:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+/* Meta text on tinted covers: enough opacity to keep 4.5:1 on the lightest tone */
+.card .meta {
+  opacity: 0.92;
+}
+
+/* Footer (element + class: must outrank the older .site-footer rule in global.css) */
+footer.site-footer {
+  display: block;
+  width: min(100% - 2 * var(--gutter), var(--wide));
+  margin-inline: auto;
+  padding-block: 2.5rem 1.75rem;
+  border-top: 2px solid var(--foreground);
+  font-size: 0.9rem;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+.footer-brand p {
+  max-width: 24ch;
+  margin: 0.75rem 0 0;
+  color: var(--text-muted);
+}
+
+.footer-heading {
+  margin: 0 0 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.site-footer ul {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  list-style: none;
+}
+
+.site-footer a:not(.site-name) {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.site-footer a:not(.site-name):hover {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.footer-base {
+  margin: 2.25rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 52rem) {
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Legal pages */
+.legal-body {
+  padding-bottom: 2rem;
+}
+
+.legal-body .prose h2 {
+  font-size: 1.45em;
+}
+
+.legal-nav {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.legal-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  list-style: none;
+}
+
+.legal-nav a {
+  display: block;
+  padding: 0.35rem 0.85rem;
+  border: 2px solid var(--foreground);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.legal-nav a:hover,
+.legal-nav a[aria-current="page"] {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Author box */
+.author-box {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  padding: 1.25rem;
+  border-radius: 0.8rem;
+  background: var(--surface);
+}
+
+.author-name {
+  margin: 0 0 0.25rem;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.author-box p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.author-box a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.prose table:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}

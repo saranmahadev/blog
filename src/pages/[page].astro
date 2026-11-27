@@ -1,0 +1,67 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// /legal/, /privacy/, /terms/, /accessibility/ and /security/ come from src/content/legal.
+export async function getStaticPaths() {
+  const pages = await getCollection('legal');
+  return pages.map((page) => ({ params: { page: page.id }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+const origin = Astro.site!.origin;
+const url = `${origin}/${page.id}/`;
+
+const all = (await getCollection('legal')).sort((a, b) => a.data.title.localeCompare(b.data.title));
+---
+
+<BaseLayout
+  title={`${page.data.title} | Drafted`}
+  description={page.data.description}
+  modifiedAt={page.data.updatedAt}
+  breadcrumbs={[
+    { name: 'Home', path: '/' },
+    { name: page.data.title, path: `/${page.id}/` },
+  ]}
+  graph={[
+    {
+      '@type': 'WebPage',
+      '@id': `${url}#webpage`,
+      url,
+      name: page.data.title,
+      description: page.data.description,
+      dateModified: page.data.updatedAt.toISOString(),
+      inLanguage: 'en',
+      isPartOf: { '@id': `${origin}/#website` },
+      publisher: { '@id': `${origin}/#author` },
+    },
+  ]}
+>
+  <div class="shell page">
+    <header class="page-header">
+      <p class="eyebrow">Legal</p>
+      <h1>{page.data.title}</h1>
+      <p>
+        Last updated{' '}
+        <time datetime={page.data.updatedAt.toISOString().slice(0, 10)}>
+          {page.data.updatedAt.toLocaleDateString('en', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </time>
+      </p>
+    </header>
+    <div class="column legal-body">
+      <div class="prose"><Content /></div>
+      <nav class="legal-nav" aria-label="Legal pages">
+        <ul>
+          {
+            all.map((entry) => (
+              <li>
+                <a href={`/${entry.id}/`} aria-current={entry.id === page.id ? 'page' : undefined}>{entry.data.title}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </div>
+</BaseLayout>

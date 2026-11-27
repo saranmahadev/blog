@@ -1,0 +1,76 @@
+name: Deploy
+
+# CI builds and deploys. Every other check (type check, link/SEO/agent-file audits, the security
+# gate with the dependency audit) runs on the author's machine in the git hooks; see README.md.
+#
+# Push to main  -> live site (https://blog.saranmahadev.in)
+# Pull request  -> temporary Firebase preview channel (expires in 7 days)
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+env:
+  # Public, not a secret. Canonical URLs, the sitemap, RSS and share images all derive from it.
+  SITE_URL: https://blog.saranmahadev.in
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Astro build, Pagefind search index, and the CSP hashes written into firebase.json.
+      - name: Build
+        run: npm run build
+
+      # The one check kept in CI, because skipping the git hooks (--no-verify) must never be a way
+      # to ship something unsafe. It takes a few seconds and inspects what was just built. If it
+      # fails, nothing deploys, new content included: security.txt, headers and CSP, secrets,
+      # third-party loads, and vulnerable dependencies.
+      - name: Security gate
+        run: node scripts/security-gate.mjs --audit
+
+      # Secrets are not available to pull requests from forks, so previews are same-repo only.
+      - name: Deploy preview
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
+          projectId: stride-11129
+          expires: 7d
+
+      - name: Deploy live
+        if: github.event_name != 'pull_request'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
+          projectId: stride-11129
+          channelId: live
+
+      # Tells Bing and other IndexNow engines about the URLs straight after a live deploy.
+      - name: Notify IndexNow
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true
+        run: node scripts/indexnow.mjs

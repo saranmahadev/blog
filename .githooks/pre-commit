@@ -1,0 +1,17 @@
+#!/bin/sh
+# Runs on `git commit`. If site sources are part of the commit, run every check locally:
+# type check, build, link/SEO/agent-file audits and the security gate. CI then only builds and deploys.
+
+changed=$(git diff --cached --name-only --diff-filter=ACMRD)
+
+if ! printf '%s\n' "$changed" | grep -Eq '^(src/|public/|plugins/|scripts/|astro\.config\.mjs$|keystatic\.config\.ts$|package(-lock)?\.json$|tsconfig\.json$|firebase\.json$)'; then
+  echo "pre-commit: no site sources in this commit, skipping the checks."
+  exit 0
+fi
+
+echo "pre-commit: site sources changed. Running all checks (about 15 seconds)..."
+if ! node scripts/release.mjs --stage; then
+  echo ""
+  echo "pre-commit: commit blocked. Fix the problems above, then commit again."
+  exit 1
+fi

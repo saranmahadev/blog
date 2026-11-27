@@ -1,0 +1,61 @@
+---
+import { getCollection, render } from 'astro:content';
+import { getSeriesPosts } from '../../lib/content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostRow from '../../components/PostRow.astro';
+import { toneFor } from '../../lib/posts';
+import { itemListNode } from '../../lib/seo';
+import { postPath } from '../../lib/markdown';
+
+export async function getStaticPaths() {
+  const series = await getCollection('series');
+  return series.map((item) => ({
+    params: { slug: item.id },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const posts = await getSeriesPosts(item.id);
+const { Content } = await render(item);
+const origin = Astro.site!.origin;
+const url = `${origin}/series/${item.id}/`;
+---
+
+<BaseLayout
+  title={`${item.data.title}: a series | Drafted`}
+  description={item.data.description}
+  breadcrumbs={[
+    { name: 'Home', path: '/' },
+    { name: 'Series', path: '/series/' },
+    { name: item.data.title, path: `/series/${item.id}/` },
+  ]}
+  graph={[
+    {
+      '@type': ['CollectionPage', 'CreativeWorkSeries'],
+      '@id': `${url}#series`,
+      url,
+      name: item.data.title,
+      description: item.data.description,
+      inLanguage: 'en',
+      author: { '@id': `${origin}/#author` },
+      isPartOf: { '@id': `${origin}/#website` },
+      numberOfItems: posts.length,
+      mainEntity: itemListNode(origin, posts.map((post) => ({ name: post.data.title, path: postPath(post) }))),
+    },
+  ]}
+>
+  <div class="shell page">
+    <header class={`band pat-1 ${toneFor(item.id)}`}>
+      <p class="label label-inverse">Series · {posts.length} {posts.length === 1 ? 'part' : 'parts'}</p>
+      <h1>{item.data.title}</h1>
+      <p class="band-desc">{item.data.description}</p>
+    </header>
+    <div class="column">
+      {item.body?.trim() && <div class="prose"><Content /></div>}
+      <div class="rows">
+        {posts.length ? posts.map((post, index) => <PostRow post={post} part={index + 1} level={2} />) : <p class="empty-state">No posts in this series yet.</p>}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

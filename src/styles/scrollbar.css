@@ -1,0 +1,73 @@
+/*
+  Scrollbars: a slim warm track with a rounded thumb that turns Burnt Orange on hover.
+  Colours come from the --scrollbar-* tokens (tokens.css), so both themes follow the palette.
+  WebKit/Blink get the full custom bar; Firefox gets the standard thin version. The two are kept
+  apart on purpose: where the standard properties are set, Chromium ignores the ::-webkit rules.
+*/
+
+html {
+  scrollbar-gutter: stable;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  html::-webkit-scrollbar-track {
+    border-left: 1px solid var(--border-subtle);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    min-height: 3rem;
+    border: 4px solid transparent;
+    border-radius: 999px;
+    background: var(--scrollbar-thumb);
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: var(--scrollbar-thumb-active);
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Horizontal scrollers that already hide their bar (topic chips). */
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Inside small containers a thinner bar looks less heavy. */
+  .diagram::-webkit-scrollbar,
+  .prose pre::-webkit-scrollbar,
+  .prose table::-webkit-scrollbar,
+  .search-results::-webkit-scrollbar,
+  .toc::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    scrollbar-width: thin;
+  }
+
+  .chips {
+    scrollbar-width: none;
+  }
+}

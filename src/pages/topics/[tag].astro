@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostRow from '../../components/PostRow.astro';
+import { getTopics } from '../../lib/content';
+import { itemListNode } from '../../lib/seo';
+import { postPath } from '../../lib/markdown';
+
+export async function getStaticPaths() {
+  const topics = await getTopics();
+  return topics.map((topic) => ({
+    params: { tag: topic.slug },
+    props: { topic },
+  }));
+}
+
+const { topic } = Astro.props;
+const origin = Astro.site!.origin;
+---
+
+<BaseLayout
+  title={`${topic.name}: posts and writing | Drafted`}
+  description={`Every Drafted post tagged ${topic.name} (${topic.posts.length}): long-form writing by Saran Mahadev on AI, software engineering and systems, newest first.`}
+  breadcrumbs={[
+    { name: 'Home', path: '/' },
+    { name: 'Topics', path: '/topics/' },
+    { name: topic.name, path: `/topics/${topic.slug}/` },
+  ]}
+  graph={[
+    {
+      '@type': 'CollectionPage',
+      '@id': `${origin}/topics/${topic.slug}/#page`,
+      url: `${origin}/topics/${topic.slug}/`,
+      name: topic.name,
+      isPartOf: { '@id': `${origin}/#website` },
+      mainEntity: itemListNode(origin, topic.posts.map((post) => ({ name: post.data.title, path: postPath(post) }))),
+    },
+  ]}
+>
+  <div class="shell page">
+    <header class="page-header">
+      <a class="eyebrow" href="/topics/">← All topics</a>
+      <h1>{topic.name}</h1>
+      <p>{topic.posts.length} {topic.posts.length === 1 ? 'post' : 'posts'}</p>
+    </header>
+    <div class="rows">
+      {topic.posts.map((post) => <PostRow post={post} level={2} />)}
+    </div>
+  </div>
+</BaseLayout>

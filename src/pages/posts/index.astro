@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostRow from '../../components/PostRow.astro';
+import { getPosts, getTopics } from '../../lib/content';
+import { itemListNode } from '../../lib/seo';
+import { postPath } from '../../lib/markdown';
+
+const posts = await getPosts();
+const topics = await getTopics();
+
+const origin = Astro.site!.origin;
+const years = [...new Set(posts.map(({ data }) => data.publishedAt.getFullYear()))];
+---
+
+<BaseLayout
+  title="Archive | Drafted"
+  description="Every post on Drafted, newest first: AI, software engineering and systems writing by Saran Mahadev."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Archive', path: '/posts/' }]}
+  graph={[
+    {
+      '@type': 'CollectionPage',
+      '@id': `${origin}/posts/#page`,
+      url: `${origin}/posts/`,
+      name: 'Archive',
+      isPartOf: { '@id': `${origin}/#website` },
+      mainEntity: itemListNode(origin, posts.map((post) => ({ name: post.data.title, path: postPath(post) }))),
+    },
+  ]}
+>
+  <div class="shell page">
+    <header class="page-header">
+      <h1>Archive</h1>
+      <p>{posts.length} {posts.length === 1 ? 'post' : 'posts'}, newest first.</p>
+    </header>
+    {
+      topics.length > 0 && (
+        <div class="chips archive-filter" role="group" aria-label="Filter by topic">
+          <button class="chip" type="button" data-tag="" aria-pressed="true">All</button>
+          {topics.map((topic) => (
+            <button class="chip" type="button" data-tag={topic.name} aria-pressed="false">{topic.name}</button>
+          ))}
+        </div>
+      )
+    }
+    <p class="visually-hidden" role="status" id="filter-status"></p>
+    {
+      posts.length ? (
+        years.map((year) => (
+          <section class="year-group" aria-labelledby={`y-${year}`}>
+            <h2 class="section-label" id={`y-${year}`}>{year}</h2>
+            <div class="rows">
+              {posts
+                .filter(({ data }) => data.publishedAt.getFullYear() === year)
+                .map((post) => (
+                  <PostRow post={post} />
+                ))}
+            </div>
+          </section>
+        ))
+      ) : (
+        <p class="empty-state">No published posts yet. Add one in <a href="/keystatic">Keystatic</a>.</p>
+      )
+    }
+  </div>
+
+  <script>
+    import '../../scripts/archive.ts';
+  </script>
+</BaseLayout>
