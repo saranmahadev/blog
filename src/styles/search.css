@@ -1,0 +1,228 @@
+/* Search button + palette */
+
+.search-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding: 0 0.7rem;
+  border: 2px solid var(--foreground);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.search-button:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.search-button svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.search-button kbd {
+  padding: 0.05rem 0.4rem;
+  border: 1px solid currentColor;
+  border-radius: 0.3rem;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+@media (max-width: 40rem) {
+  .search-button span,
+  .search-button kbd {
+    display: none;
+  }
+
+  .search-button {
+    width: 2.25rem;
+    justify-content: center;
+    padding: 0;
+  }
+}
+
+.search-dialog {
+  width: min(100% - 2rem, 40rem);
+  max-height: min(80vh, 36rem);
+  margin: 10vh auto auto;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid var(--foreground);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--foreground);
+}
+
+.search-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-dialog::backdrop {
+  background: color-mix(in srgb, var(--brand-warm-black) 60%, transparent);
+  backdrop-filter: blur(3px);
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  font: 600 1.15rem var(--font-ui);
+}
+
+.search-field input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-field input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.search-field input:focus-visible {
+  outline: none;
+}
+
+.search-close {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.search-results {
+  flex: 1;
+  margin: 0;
+  padding: 0.5rem;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.search-results a {
+  display: block;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.6rem;
+  text-decoration: none;
+}
+
+.search-results a:hover,
+.search-results a:focus-visible {
+  background: var(--surface-strong);
+  outline: none;
+}
+
+.search-results strong {
+  font-size: 1.05rem;
+}
+
+.search-results p {
+  margin: 0.2rem 0 0;
+  color: var(--text-secondary);
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.search-results mark {
+  background: var(--highlight);
+  color: inherit;
+}
+
+.search-status {
+  margin: 0;
+  padding: 0.6rem 1.1rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.search-status:empty {
+  display: none;
+}
+
+/* Topics */
+
+.topic-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+  list-style: none;
+}
+
+.topic-cloud a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.6rem 1.1rem;
+  border: 2px solid var(--foreground);
+  border-radius: 999px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.topic-cloud a span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.topic-cloud a:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.topic-cloud a:hover span {
+  color: inherit;
+}
+
+.tag-list a {
+  display: block;
+  padding: 0.35rem 0.8rem;
+  text-decoration: none;
+}
+
+.tag-list li:has(a) {
+  padding: 0;
+}
+
+.tag-list li:has(a):hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* View transitions: keep the morph, drop motion for people who ask for less. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,28 @@
+---
+import { getEntry } from 'astro:content';
+import type { Post } from '../lib/content';
+import { coverFor, formatDate, labelFor, readingTime } from '../lib/posts';
+
+interface Props {
+  post: Post;
+  size?: 'lead' | 'side';
+}
+
+const { post, size = 'side' } = Astro.props;
+const series = post.data.series ? await getEntry(post.data.series) : undefined;
+const { tone, pattern } = coverFor(post);
+const Heading = size === 'lead' ? 'h2' : 'h3';
+const longTitle = post.data.title.length > 48;
+---
+
+<article class={`card card-${size} ${tone} ${pattern}`} transition:name={`cover-${post.id}`}>
+  {post.data.coverWord && <span class="cover-word" aria-hidden="true">{post.data.coverWord}</span>}
+  <p class="meta">
+    <span class="label label-inverse">{labelFor(post, series?.data.title)}</span>
+    <span>{formatDate(post.data.publishedAt)}</span>
+    <span aria-hidden="true">·</span>
+    <span>{readingTime(post.body)} min read</span>
+  </p>
+  <Heading class={longTitle ? 'card-title card-title-long' : 'card-title'}><a class="stretch" href={`/posts/${post.id}/`}>{post.data.title}</a></Heading>
+  <p class="card-desc">{post.data.description}</p>
+</article>

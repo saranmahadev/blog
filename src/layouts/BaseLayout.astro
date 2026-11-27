@@ -1,0 +1,207 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import { SITE, clip } from '../lib/site';
+import { blogNode, breadcrumbNode, personNode, websiteNode, type Crumb } from '../lib/seo';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Path of a share image (e.g. `/og/my-post.png`). Defaults to the site card. */
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article';
+  publishedAt?: Date;
+  modifiedAt?: Date;
+  tags?: string[];
+  section?: string;
+  /** Keep a page out of search results (still crawlable, links still followed). */
+  noindex?: boolean;
+  /** Path of this page's Markdown twin, advertised to agents. */
+  markdownPath?: string;
+  breadcrumbs?: Crumb[];
+  isHome?: boolean;
+  /** Extra schema.org nodes for this page (BlogPosting, CollectionPage, ...). */
+  graph?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = '/og/default.png',
+  imageAlt = 'Drafted: writing by Saran Mahadev',
+  type = 'website',
+  publishedAt,
+  modifiedAt,
+  tags = [],
+  section,
+  noindex = false,
+  markdownPath,
+  breadcrumbs = [],
+  isHome = false,
+  graph = [],
+} = Astro.props;
+const path = Astro.url.pathname;
+const origin = Astro.site!.origin;
+const canonical = new URL(path, Astro.site);
+const imageUrl = new URL(image, Astro.site);
+const metaDescription = clip(description);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    personNode(origin),
+    websiteNode(origin),
+    ...(isHome ? [blogNode(origin)] : []),
+    ...(breadcrumbs.length ? [breadcrumbNode(origin, breadcrumbs)] : []),
+    ...graph,
+  ],
+};
+// "<" is escaped so no string in the data can close the script tag early.
+const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
+---
+
+<!doctype html>
+<html lang={SITE.language} data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={metaDescription} />
+    <meta
+      name="robots"
+      content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+    />
+    <link rel="canonical" href={canonical.href} />
+
+    <meta name="author" content={SITE.author.name} />
+    <link rel="author" href={SITE.author.url} />
+    <link rel="me" href={SITE.author.url} />
+
+    <meta name="theme-color" content={SITE.themeColor.light} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={SITE.themeColor.dark} media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="alternate" type="application/rss+xml" title="Drafted (RSS)" href="/rss.xml" />
+    <link rel="alternate" type="application/feed+json" title="Drafted (JSON Feed)" href="/feed.json" />
+    {markdownPath && <link rel="alternate" type="text/markdown" title="Markdown version" href={markdownPath} />}
+
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={imageUrl.href} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {publishedAt && <meta property="article:published_time" content={publishedAt.toISOString()} />}
+    {type === 'article' && <meta property="article:modified_time" content={(modifiedAt ?? publishedAt)?.toISOString()} />}
+    {type === 'article' && <meta property="article:author" content={SITE.author.url} />}
+    {section && <meta property="article:section" content={section} />}
+    {type === 'article' && tags.map((tag) => <meta property="article:tag" content={tag} />)}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={imageUrl.href} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+
+    <script type="application/ld+json" set:html={jsonLdText} />
+    <ClientRouter />
+    <script is:inline>
+      // Runs before first paint, and again after every router swap (the swap resets <html> attributes).
+      const applyTheme = () => {
+        document.documentElement.classList.add('js');
+        let saved = null;
+        try { saved = localStorage.getItem('theme'); } catch {}
+        const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = saved ?? preferred;
+      };
+      applyTheme();
+      document.addEventListener('astro:after-swap', applyTheme);
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header" transition:name="site-header" transition:animate="none">
+      <div class="header-inner">
+      <a class="site-name" href="/"><span class="brand-mark" aria-hidden="true"></span>Drafted</a>
+      <nav aria-label="Primary navigation">
+        <a href="/" aria-current={path === '/' ? 'page' : undefined}>Home</a>
+        <a href="/series/" aria-current={path.startsWith('/series') ? 'page' : undefined}>Series</a>
+        <a href="/posts/" aria-current={path.startsWith('/posts') ? 'page' : undefined}>Archive</a>
+      </nav>
+      <button class="search-button" type="button" data-search-open aria-label="Search" aria-keyshortcuts="/ Control+K">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <span>Search</span>
+        <kbd aria-hidden="true">/</kbd>
+      </button>
+      <button class="theme-toggle" type="button" aria-label="Toggle color theme">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"></path>
+        </svg>
+      </button>
+      </div>
+    </header>
+    <main id="main" tabindex="-1"><slot /></main>
+    <dialog class="search-dialog" id="search" aria-label="Search posts">
+      <div class="search-field">
+        <input id="search-input" type="search" placeholder="Search posts" autocomplete="off" spellcheck="false" aria-controls="search-results" />
+        <form method="dialog"><button class="search-close" type="submit">Esc</button></form>
+      </div>
+      <ol class="search-results" id="search-results"></ol>
+      <p class="search-status" id="search-status" role="status"></p>
+    </dialog>
+    <footer class="site-footer">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="site-name" href="/"><span class="brand-mark" aria-hidden="true"></span>Drafted</a>
+          <p>{SITE.tagline} on AI, software engineering and systems.</p>
+        </div>
+        <nav aria-labelledby="footer-explore">
+          <h2 class="footer-heading" id="footer-explore">Explore</h2>
+          <ul>
+            <li><a href="/posts/">Archive</a></li>
+            <li><a href="/series/">Series</a></li>
+            <li><a href="/topics/">Topics</a></li>
+            <li><a href="/rss.xml">RSS feed</a></li>
+            <li><a href="/llms.txt">For AI agents</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="footer-legal">
+          <h2 class="footer-heading" id="footer-legal">Legal</h2>
+          <ul>
+            <li><a href="/legal/">Legal</a></li>
+            <li><a href="/privacy/">Privacy</a></li>
+            <li><a href="/terms/">Terms</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="/security/">Security</a></li>
+          </ul>
+        </nav>
+        <nav aria-labelledby="footer-connect">
+          <h2 class="footer-heading" id="footer-connect">Connect</h2>
+          <ul>
+            <li><a href={SITE.author.url} rel="noopener">About</a></li>
+            <li><a href={`mailto:${SITE.email}`}>Contact</a></li>
+            <li><a href="https://www.youtube.com/@saranmahadev" rel="noopener">YouTube</a></li>
+            <li><a href="https://www.instagram.com/everything.by.dev" rel="noopener">Instagram</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="footer-base">© {new Date().getFullYear()} {SITE.author.name}. All rights reserved.</p>
+    </footer>
+    <script>
+      import '../scripts/search.ts';
+      import '../scripts/theme.ts';
+      import '../scripts/scrollables.ts';
+    </script>
+  </body>
+</html>

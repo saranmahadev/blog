@@ -1,0 +1,41 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+// h2 and h3 only; fewer than three entries is not worth a rail.
+const items = Astro.props.headings.filter(({ depth }) => depth === 2 || depth === 3);
+---
+
+{
+  items.length >= 3 && (
+    <>
+      {/* Wide screens: a sticky rail beside the article. CSS decides which version shows, so nothing
+          changes size after load (a script collapsing it would cause a layout shift). */}
+      <aside class="toc toc-rail" aria-label="On this page">
+        <p class="toc-title">On this page</p>
+        <ol>
+          {items.map(({ slug, text, depth }) => (
+            <li class={depth === 3 ? 'toc-sub' : undefined}>
+              <a href={`#${slug}`}>{text}</a>
+            </li>
+          ))}
+        </ol>
+      </aside>
+
+      {/* Small screens: closed by default above the article. */}
+      <details class="toc toc-inline">
+        <summary>On this page</summary>
+        <ol>
+          {items.map(({ slug, text, depth }) => (
+            <li class={depth === 3 ? 'toc-sub' : undefined}>
+              <a href={`#${slug}`}>{text}</a>
+            </li>
+          ))}
+        </ol>
+      </details>
+    </>
+  )
+}

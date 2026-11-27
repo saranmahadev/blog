@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostRow from '../components/PostRow.astro';
+import { getPosts } from '../lib/content';
+
+const latest = (await getPosts()).slice(0, 3);
+---
+
+<BaseLayout title="Page not found | Drafted" description="This page does not exist." noindex>
+  <div class="shell page">
+    <header class="page-header">
+      <p class="eyebrow">404</p>
+      <h1>Nothing here.</h1>
+      <p>The page may have moved, or the link is wrong. Try one of the latest posts instead.</p>
+    </header>
+    <div class="rows">
+      {latest.map((post) => <PostRow post={post} level={2} />)}
+    </div>
+    <a class="more-link" href="/">Back to the front page →</a>
+  </div>
+</BaseLayout>

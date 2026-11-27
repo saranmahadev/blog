@@ -1,0 +1,62 @@
+---
+import { getEntry } from 'astro:content';
+import { getSeriesPosts, type Post } from '../lib/content';
+import { toneFor } from '../lib/posts';
+
+interface Props {
+  post: Post;
+  /** `top` shows "Part N of M" with the full list; `end` shows previous / next. */
+  variant: 'top' | 'end';
+}
+
+const { post, variant } = Astro.props;
+const series = post.data.series ? await getEntry(post.data.series) : undefined;
+const parts = series ? await getSeriesPosts(series.id) : [];
+const index = parts.findIndex((part) => part.id === post.id);
+const previous = parts[index - 1];
+const next = parts[index + 1];
+---
+
+{
+  series && index >= 0 && variant === 'top' && (
+    <nav class={`series-nav ${toneFor(series.id)}`} aria-label={`${series.data.title} series`}>
+      <p class="series-nav-head">
+        <a href={`/series/${series.id}/`}>{series.data.title}</a>
+        <span>Part {index + 1} of {parts.length}</span>
+      </p>
+      <details>
+        <summary>All parts</summary>
+        <ol>
+          {parts.map((part) => (
+            <li>
+              {part.id === post.id ? (
+                <span aria-current="page">{part.data.title}</span>
+              ) : (
+                <a href={`/posts/${part.id}/`}>{part.data.title}</a>
+              )}
+            </li>
+          ))}
+        </ol>
+      </details>
+    </nav>
+  )
+}
+
+{
+  series && index >= 0 && variant === 'end' && (previous || next) && (
+    <nav class="series-pager" aria-label="Previous and next in series">
+      {previous ? (
+        <a class="pager-link" rel="prev" href={`/posts/${previous.id}/`}>
+          <span>← Previous · Part {index}</span>
+          <strong>{previous.data.title}</strong>
+        </a>
+      ) : <span />}
+      {next ? (
+        <a class="pager-link pager-next" rel="next" href={`/posts/${next.id}/`}>
+          <span>Next · Part {index + 2} →</span>
+          <strong>{next.data.title}</strong>
+        </a>
+      ) : <span />}
+    </nav>
+  )
+}

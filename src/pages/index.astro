@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import PostRow from '../components/PostRow.astro';
+import { getPosts, getTopics } from '../lib/content';
+import { toneFor } from '../lib/posts';
+import { SITE } from '../lib/site';
+
+const posts = await getPosts();
+const series = await getCollection('series');
+
+// Featured posts lead the page; fall back to the newest so the mosaic is never empty.
+const spotlight = [
+  ...posts.filter(({ data }) => data.featured),
+  ...posts.filter(({ data }) => !data.featured),
+].slice(0, 3);
+const [lead, ...side] = spotlight;
+const spotlightIds = new Set(spotlight.map((post) => post.id));
+// Latest is a short list; the full history lives in the archive.
+const stream = posts.filter((post) => !spotlightIds.has(post.id)).slice(0, 6);
+
+const topics = (await getTopics()).slice(0, 10);
+const seriesCount = (id: string) => posts.filter(({ data }) => data.series?.id === id).length;
+---
+
+<BaseLayout title={SITE.homeTitle} description={SITE.description} isHome>
+  <h1 class="visually-hidden">Drafted: writing by Saran Mahadev</h1>
+  {
+    lead ? (
+      <section class="shell mosaic" aria-label="Top stories">
+        <PostCard post={lead} size="lead" />
+        <div class="mosaic-side">
+          {side.map((post) => <PostCard post={post} />)}
+        </div>
+      </section>
+    ) : (
+      <p class="shell empty-state">Posts will appear here.</p>
+    )
+  }
+
+  <div class="shell front">
+    <section class="stream" aria-labelledby="stream-heading">
+      <h2 class="section-label" id="stream-heading">Latest</h2>
+      <div class="rows">
+        {stream.map((post) => <PostRow post={post} />)}
+      </div>
+      <a class="more-link" href="/posts/">Browse the full archive →</a>
+    </section>
+
+    <aside class="rail" aria-label="Explore">
+      {
+        series.length > 0 && (
+          <section>
+            <h2 class="section-label">Series</h2>
+            <ul class="tiles">
+              {series.map((item) => (
+                <li class={`tile ${toneFor(item.id)}`}>
+                  <a class="stretch" href={`/series/${item.id}/`}>{item.data.title}</a>
+                  <span>{seriesCount(item.id)} {seriesCount(item.id) === 1 ? 'post' : 'posts'}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        topics.length > 0 && (
+          <section class="rail-topics">
+            <h2 class="section-label">Topics</h2>
+            <ul class="tag-list">
+              {topics.map((topic) => <li><a href={`/topics/${topic.slug}/`}>{topic.name}</a></li>)}
+            </ul>
+            <a class="more-link" href="/topics/">All topics →</a>
+          </section>
+        )
+      }
+    </aside>
+  </div>
+</BaseLayout>

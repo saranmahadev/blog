@@ -1,0 +1,5 @@
+# Source files are stored with LF line endings on every machine, whatever core.autocrlf says.
+* text=auto eol=lf
+*.png binary
+*.ico binary
+*.wasm binary

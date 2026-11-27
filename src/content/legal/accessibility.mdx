@@ -1,0 +1,49 @@
+---
+title: "Accessibility"
+description: "How Drafted aims to work for everyone: the standard we target, what we have done and tested, known limitations, and how to report a barrier."
+updatedAt: 2026-11-27
+---
+
+**Drafted should be easy to read and use, whoever you are and however you browse.**
+
+## Our target
+
+We aim to meet the **Web Content Accessibility Guidelines (WCAG) 2.2, level AA**.
+
+## Where we stand
+
+Based on our own testing, we believe the site meets WCAG 2.2 AA. This is a self-assessment: the site has not been audited by an independent accessibility specialist, and it has not yet been tested with screen readers, so we cannot claim full conformance.
+
+## What we have done
+
+- **Structure:** a proper heading outline with one main heading per page, landmarks for navigation and content, and a "Skip to content" link as the first item you can reach with the keyboard.
+- **Keyboard:** everything can be used without a mouse, including search, the topic filters and the theme switch. Focus is always visible. Scrollable diagrams and code blocks can receive focus so they can be scrolled with the keyboard.
+- **Colour and contrast:** text and interface elements are checked against the WCAG contrast ratios in both the light and dark themes. The site follows your system's light or dark setting, and you can change it yourself.
+- **Reading comfort:** text scales with your browser settings, pages work from small phones up to wide screens, and body text uses a comfortable size, spacing and line length.
+- **Motion:** animation and page transitions are turned off if your system asks for reduced motion.
+- **Links and diagrams:** links have descriptive text. Every diagram has a caption and a text alternative, and its text source stays readable even if scripts do not run.
+
+## How we test
+
+- Automated scans with the axe-core engine on every type of page, in both themes.
+- Manual keyboard walkthroughs.
+- Contrast ratios calculated for the full colour palette.
+
+Last full check: 27 November 2026.
+
+## Known limitations
+
+- **Screen readers:** not yet tested with NVDA, JAWS or VoiceOver. Issues may exist that automated checks do not find.
+- **Diagrams:** they are drawn in your browser by JavaScript from a text description. Without JavaScript you see that text instead of a picture.
+- **Wide tables:** on small screens a wide table scrolls sideways inside its own area.
+- **Outside content:** posts link to external sources, such as papers and documentation, whose accessibility we do not control.
+
+## Compatibility
+
+The site relies on HTML, CSS, JavaScript and WAI-ARIA, and is built for current versions of Chrome, Edge, Firefox and Safari.
+
+## Feedback
+
+If you find a barrier, or need something in another format, please email [mail@saranmahadev.in](mailto:mail@saranmahadev.in) with the page address and a short description. We aim to reply within **15 days**, and to tell you how and when a confirmed problem will be fixed.
+
+Related pages: [Privacy](/privacy/), [Terms](/terms/), [Security](/security/), [Legal](/legal/).

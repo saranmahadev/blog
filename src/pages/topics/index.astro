@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTopics } from '../../lib/content';
+import { itemListNode } from '../../lib/seo';
+
+const topics = await getTopics();
+const origin = Astro.site!.origin;
+---
+
+<BaseLayout
+  title="Topics | Drafted"
+  description="Browse Drafted by topic: every tag used across posts on AI, software engineering and systems, with post counts."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Topics', path: '/topics/' }]}
+  graph={[
+    {
+      '@type': 'CollectionPage',
+      '@id': `${origin}/topics/#page`,
+      url: `${origin}/topics/`,
+      name: 'Topics',
+      isPartOf: { '@id': `${origin}/#website` },
+      mainEntity: itemListNode(origin, topics.map((topic) => ({ name: topic.name, path: `/topics/${topic.slug}/` }))),
+    },
+  ]}
+>
+  <div class="shell page">
+    <header class="page-header">
+      <h1>Topics</h1>
+      <p>{topics.length} {topics.length === 1 ? 'topic' : 'topics'}, most written-about first.</p>
+    </header>
+    {
+      topics.length ? (
+        <ul class="topic-cloud">
+          {topics.map((topic) => (
+            <li>
+              <a href={`/topics/${topic.slug}/`}>
+                {topic.name} <span>{topic.posts.length}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty-state">Topics appear once posts have tags.</p>
+      )
+    }
+  </div>
+</BaseLayout>

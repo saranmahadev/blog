@@ -1,0 +1,115 @@
+/*
+  Dark Chocolate v1.1 (Dev Universe / Decisions / Design Palette.md).
+  Layer 1: palette scales. Layer 2: semantic theme tokens. Layer 3: cover tones.
+  Components reference semantic and tone tokens only, never raw hex.
+*/
+
+:root {
+  /* Layer 1: palette scales (subset in use) */
+  --brand-milk: #F5EFE5;
+  --brand-almond: #DCCBB7;
+  --brand-orange: #D97835;
+  --brand-cocoa: #75432D;
+  --brand-chocolate: #281710;
+  --brand-warm-black: #100D0B;
+
+  --orange-200: #FFE2C5;
+  --orange-300: #FFC494;
+  --orange-400: #F4A166;
+  --orange-500: #E98B49;
+  --orange-600: #D97835;
+  --orange-700: #B85D23;
+  --orange-800: #934719;
+  --orange-900: #6D3213;
+
+  --chocolate-400: #B88F77;
+  --chocolate-600: #75432D;
+  --chocolate-800: #402419;
+  --chocolate-900: #281710;
+  --chocolate-1000: #180D09;
+
+  --milk-100: #FFFEFB;
+  --milk-300: #F5EFE5;
+  --milk-400: #E9DFD0;
+  --milk-500: #DCCBB7;
+  --milk-700: #938170;
+  --black-400: #75675A;
+
+  /* Layer 2: semantic tokens, light theme (Milk) */
+  color-scheme: light;
+  --background: #F5EFE5;
+  --surface: #FFFEFB;
+  --surface-elevated: #FAF7F1;
+  --surface-strong: #E9DFD0;
+  --foreground: #281710;
+  --text-secondary: #6E5E51;
+  --text-muted: #75432D;
+  --border: #DCCBB7;
+  --border-subtle: #E9DFD0;
+  --primary: #281710;
+  --primary-foreground: #F5EFE5;
+  --accent: #B85D23;
+  --accent-foreground: #FFFFFF;
+  --focus-ring: #934719;
+
+  /* Reading extras: selection and the highlighter underline on links */
+  --scrollbar-track: var(--background);
+  --scrollbar-thumb: var(--milk-700);
+  --scrollbar-thumb-hover: var(--orange-700);
+  --scrollbar-thumb-active: var(--orange-800);
+
+  /* Orange 700 is 3.97:1 on Milk: fine for borders and large text, not small text. */
+  --accent-text: var(--orange-800);
+
+  --selection: var(--orange-200);
+  --highlight: var(--orange-300);
+  --code-bg: var(--chocolate-1000);
+  --code-fg: var(--milk-300);
+
+  /* Syntax highlighting (Shiki css-variables theme) */
+  --astro-code-foreground: var(--code-fg);
+  --astro-code-background: var(--code-bg);
+  --astro-code-token-comment: var(--chocolate-400);
+  --astro-code-token-keyword: var(--orange-500);
+  --astro-code-token-string: var(--orange-200);
+  --astro-code-token-string-expression: var(--orange-200);
+  --astro-code-token-constant: var(--orange-300);
+  --astro-code-token-function: var(--milk-100);
+  --astro-code-token-parameter: var(--milk-500);
+  --astro-code-token-punctuation: var(--milk-500);
+  --astro-code-token-link: var(--orange-400);
+
+  /* Layer 3: cover tones. Orange stays a minority: two of six. */
+  --tone-0-bg: var(--orange-600);   --tone-0-fg: var(--chocolate-900);   /* Ember */
+  --tone-1-bg: var(--chocolate-600); --tone-1-fg: var(--milk-300);       /* Cocoa */
+  --tone-2-bg: var(--milk-500);     --tone-2-fg: var(--chocolate-900);   /* Almond */
+  --tone-3-bg: var(--chocolate-800); --tone-3-fg: var(--orange-300);     /* Chocolate */
+  --tone-4-bg: var(--orange-300);   --tone-4-fg: var(--chocolate-900);   /* Apricot */
+  --tone-5-bg: var(--chocolate-400); --tone-5-fg: var(--chocolate-1000); /* Clay */
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #100D0B;
+  --surface: #1A1410;
+  --surface-elevated: #281C15;
+  --surface-strong: #332016;
+  --foreground: #F5EFE5;
+  --text-secondary: #DCCBB7;
+  --text-muted: #B9A792;
+  --border: #493020;
+  --border-subtle: #302923;
+  --primary: #D97835;
+  --primary-foreground: #281710;
+  --accent: #F4A166;
+  --accent-foreground: #281710;
+  --focus-ring: #F4A166;
+
+  --scrollbar-thumb: var(--black-400);
+  --scrollbar-thumb-hover: var(--orange-400);
+  --scrollbar-thumb-active: var(--orange-600);
+
+  --accent-text: var(--accent);
+  --selection: var(--orange-900);
+  --highlight: var(--orange-900);
+}

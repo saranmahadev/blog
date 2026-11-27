@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { toneFor } from '../../lib/posts';
+import { itemListNode } from '../../lib/seo';
+
+const series = await getCollection('series');
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+const origin = Astro.site!.origin;
+const countFor = (id: string) => posts.filter(({ data }) => data.series?.id === id).length;
+---
+
+<BaseLayout
+  title="Series | Drafted"
+  description="Multi-part series on Drafted, written to be read in order: long-running topics in AI and software engineering."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Series', path: '/series/' }]}
+  graph={[
+    {
+      '@type': 'CollectionPage',
+      '@id': `${origin}/series/#page`,
+      url: `${origin}/series/`,
+      name: 'Series',
+      isPartOf: { '@id': `${origin}/#website` },
+      mainEntity: itemListNode(origin, series.map((item) => ({ name: item.data.title, path: `/series/${item.id}/` }))),
+    },
+  ]}
+>
+  <div class="shell page">
+    <header class="page-header">
+      <h1>Series</h1>
+      <p>Long-running topics, written in order.</p>
+    </header>
+    <ul class="tiles tiles-wide">
+      {series.map((item) => (
+        <li class={`tile ${toneFor(item.id)}`}>
+          <a class="stretch" href={`/series/${item.id}/`}>{item.data.title}</a>
+          <p>{item.data.description}</p>
+          <span>{countFor(item.id)} {countFor(item.id) === 1 ? 'post' : 'posts'}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>

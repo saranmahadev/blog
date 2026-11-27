@@ -1,0 +1,21 @@
+#!/bin/sh
+# Runs on `git push`. Builds fresh, then runs the security gate with the dependency audit,
+# so nothing reaches CI that the gate would reject.
+
+echo "pre-push: building, then running the security gate (dependencies, secrets, headers, build contents)..."
+
+log=$(mktemp)
+if ! npm run build --silent > "$log" 2>&1; then
+  cat "$log"
+  rm -f "$log"
+  echo ""
+  echo "pre-push: push blocked. The build failed (output above)."
+  exit 1
+fi
+rm -f "$log"
+
+if ! node scripts/security-gate.mjs --audit; then
+  echo ""
+  echo "pre-push: push blocked. Fix the problems above, commit, and push again."
+  exit 1
+fi
